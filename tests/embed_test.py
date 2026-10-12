@@ -111,6 +111,36 @@ def live_start():
     sb.panel().refresh()
     check(sb.actions()["Strata_CreateVersion"].isEnabled(), "Create version enabled once a project is active")
     App.closeDocument(doc.Name)
+    # tabified behind another dock: raising the other tab must not count as "user hid the panel"
+    from PySide import QtWidgets as QW
+    mw = Gui.getMainWindow()
+    p = sb.panel()
+    params = App.ParamGet(sb.PARAMS)
+    params.SetBool("PanelVisible", True)
+    other = QW.QDockWidget("Other", mw)
+    other.setObjectName("EmbedTestOtherDock")
+    other.setWidget(QW.QLabel("other"))
+    mw.addDockWidget(QtCore.Qt.LeftDockWidgetArea, other)
+    p.show()
+    mw.tabifyDockWidget(p, other)
+    QW.QApplication.processEvents()
+    p.raise_()  # Strata's tab in front first, so raising the other one is a real change
+    QW.QApplication.processEvents()
+    params.SetBool("PanelVisible", True)
+    seen = []
+    p.visibilityChanged.connect(lambda v: seen.append(v))
+    other.raise_()
+    QW.QApplication.processEvents()
+    check(bool(mw.tabifiedDockWidgets(p)), "panel is tabified with another dock")
+    check(False in seen, "raising another tab emits visibilityChanged(False) (the trigger is reproduced)")
+    check(params.GetBool("PanelVisible", True), "PanelVisible stays true when another tab is raised")
+    p.raise_()
+    p.hide()  # what the panel's close button does
+    check(not params.GetBool("PanelVisible", True), "hiding the panel explicitly is remembered")
+    p.show()
+    check(params.GetBool("PanelVisible", False), "showing it again is remembered")
+    mw.removeDockWidget(other)
+    other.deleteLater()
     later(4500, lambda: live_end(root))
 
 

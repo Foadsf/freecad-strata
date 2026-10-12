@@ -206,7 +206,10 @@ def install():
     mw.addDockWidget(AREAS.get(area, QtCore.Qt.RightDockWidgetArea), p)
     p.setMinimumWidth(300)
     p.setVisible(params.GetBool("PanelVisible", True))
-    p.visibilityChanged.connect(lambda v: params.SetBool("PanelVisible", bool(v)))
+    # Remember only explicit show/hide. visibilityChanged(False) also fires when the dock is
+    # tabified and another tab is raised, which would hide the panel at the next start
+    # (reported by freecad-nxstyle). The toggle-view action follows explicit hide/show only.
+    p.toggleViewAction().toggled.connect(lambda on: params.SetBool("PanelVisible", bool(on)))
 
     pill = StatusPill(p)
     mw.statusBar().addPermanentWidget(pill)
