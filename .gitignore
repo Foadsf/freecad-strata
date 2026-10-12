@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+tests/fc_engine_result.txt
+tests/gui_cfg.json
+tests/demo/
+*.FCBak
