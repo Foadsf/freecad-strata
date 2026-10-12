@@ -79,6 +79,7 @@ class Panel(QtWidgets.QDockWidget):
     def __init__(self, mw):
         super().__init__("Versions and history", mw)
         self.setObjectName("StrataPanel")
+        theme.register(self)
         self.project: Project | None = None
         self.busy = False
         self._last_sync = None
@@ -953,6 +954,7 @@ class StatusPill(QtWidgets.QToolButton):
     def __init__(self, panel):
         super().__init__()
         self.setObjectName("StrataStatus")
+        theme.register(self)
         self.setStyleSheet(theme.stylesheet())
         self.setToolButtonStyle(QtCore.Qt.ToolButtonTextBesideIcon)
         self.setCursor(QtCore.Qt.PointingHandCursor)

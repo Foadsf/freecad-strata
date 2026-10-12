@@ -80,8 +80,21 @@ def live_start():
     check("manipulator" not in sb._state, "host_toolbar=True removes the workbench manipulator")
     check(not sb._state["toolbar_timer"].isActive(), "host_toolbar=True stops the toolbar timer")
     check(area() == "left", "panel_area='left' docks the panel left")
-    theme.set_overrides(light={"accent": "#00838F"})
+    from PySide import QtWidgets
+    real_all = QtWidgets.QApplication.allWidgets
+    walked = []
+    QtWidgets.QApplication.allWidgets = staticmethod(lambda: walked.append(1) or real_all())
+    try:
+        theme.set_overrides(light={"accent": "#00838F"})
+        calls_by_strata = len(walked)
+        QtWidgets.QApplication.instance().allWidgets()  # positive control: the detector must see this
+        check(len(walked) == calls_by_strata + 1, "allWidgets() detector works (positive control)")
+        del walked[calls_by_strata:]
+    finally:
+        QtWidgets.QApplication.allWidgets = real_all
     check("#00838F" in sb.panel().styleSheet(), "set_overrides restyles the open panel")
+    check("#00838F" in sb.panel().status.styleSheet(), "set_overrides restyles the status pill")
+    check(not walked, "set_overrides does not walk QApplication.allWidgets()")
     try:
         theme.set_overrides(light={"no_such_token": "#000"})
         check(False, "set_overrides rejects unknown tokens")

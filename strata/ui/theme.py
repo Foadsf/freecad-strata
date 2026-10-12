@@ -43,16 +43,37 @@ def set_overrides(light: dict | None = None, dark: dict | None = None,
     if lanes_dark:
         LANES_DARK[:] = list(lanes_dark)
     _icon_cache.clear()
-    app = QtWidgets.QApplication.instance()
-    if app is None:
-        return
     sheet = stylesheet()
-    for w in app.allWidgets():
-        if w.objectName() in ("StrataPanel", "StrataStatus"):
-            w.setStyleSheet(sheet)
-            if hasattr(w, "schedule_refresh"):
-                w.schedule_refresh()
-            w.update()
+    # Only Strata's own registered widgets: walking QApplication.allWidgets() has crashed
+    # FreeCAD 1.1.4 while a spreadsheet view was open (reported by the freecad-nxstyle integration).
+    for w in list(_styled):
+        if not _alive(w):
+            _styled.remove(w)
+            continue
+        w.setStyleSheet(sheet)
+        if hasattr(w, "schedule_refresh"):
+            w.schedule_refresh()
+        w.update()
+
+
+_styled: list = []  # top-level Strata widgets that carry the stylesheet
+
+
+def register(widget):
+    """Called by Strata's panel and status pill so set_overrides can restyle them."""
+    _styled.append(widget)
+
+
+def _alive(widget) -> bool:
+    try:
+        import shiboken6
+        return shiboken6.isValid(widget)
+    except ImportError:
+        try:
+            widget.objectName()
+            return True
+        except RuntimeError:
+            return False
 
 
 def is_dark() -> bool:
