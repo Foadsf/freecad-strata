@@ -62,7 +62,9 @@ Until Strata is listed in the official add-on index, add it as a custom reposito
 2. Under **Custom repositories** click **+** and enter
    - Repository URL: `https://github.com/Foadsf/freecad-strata`
    - Branch: `main`
-3. Click **OK**, open **Tools → Addon manager**, find **Strata**, click **Install** and restart FreeCAD.
+3. Click **OK**, open **Tools → Addon manager**, search for **strata** (custom repositories are listed under their repository name, *freecad-strata*), click **Install** and restart FreeCAD.
+
+The Addon Manager installs it into `Mod/freecad-strata`. Use either the Addon Manager or the manual install below, not both, or Strata would be loaded twice.
 
 ### Option B: Manual install
 
@@ -85,7 +87,7 @@ On Windows (PowerShell):
 git clone https://github.com/Foadsf/freecad-strata.git "$env:APPDATA\FreeCAD\v1-1\Mod\Strata"
 ```
 
-Restart FreeCAD. The **Versions and history** panel appears on the right, and a **Strata** toolbar (Versions and history, Create version, Compare, Releases, Sync) is available in every workbench. If you closed the panel, click the history-clock button in that toolbar or the *project · workspace* indicator in the status bar. To uninstall, delete the `Strata` folder (or use the Addon Manager); your projects' history stays in their `.strata` folders.
+Restart FreeCAD. The **Versions and history** panel appears on the right, and a **Strata** toolbar (Versions and history, Create version, Compare, Releases, Sync) is available in every workbench. A small *Strata* entry also appears in the workbench selector with the same commands in its menu. If you closed the panel, click the history-clock button in that toolbar or the *project · workspace* indicator in the status bar. To uninstall, delete the `Strata` folder (or use the Addon Manager); your projects' history stays in their `.strata` folders.
 
 ## Quick start
 
@@ -226,6 +228,8 @@ The GUI walkthrough builds a demo project, drives the panel and every dialog, sw
 ```bash
 python tests/run_gui_hidden.py <work-folder> <screenshot-folder>
 ```
+
+The Addon Manager test installs Strata from this GitHub repository through the real Addon Manager window: it types in the search box, clicks the entry and the Install button. It then restarts FreeCAD to check that Strata starts by itself and records a save, and finally uninstalls through the Uninstall button. Run it with a throwaway `--user-cfg`; see the docstring in `tests/am_install_test.py`.
 
 ## Roadmap
 

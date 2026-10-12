@@ -80,6 +80,15 @@ def _ensure_toolbar(*_):
     fallback.show()
 
 
+def safe_install():
+    """Startup entry point used by InitGui.py: never lets an error escape into FreeCAD's startup."""
+    try:
+        install()
+    except Exception:
+        import traceback
+        App.Console.PrintError("Strata failed to start:\n%s\n" % traceback.format_exc())
+
+
 def install():
     if "panel" in _state:
         return

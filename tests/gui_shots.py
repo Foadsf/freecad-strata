@@ -95,7 +95,12 @@ def version(name):
 @step
 def boot():
     import strata.boot
-    strata.boot.install()
+    # Strata must have started on its own from InitGui.py; never start it here, or a broken
+    # startup would go unnoticed (it did once: InitGui raised NameError and every run still passed).
+    if strata.boot.panel() is None:
+        log("STARTUP FAILED: Strata did not start from InitGui.py")
+        LOG.close()
+        os._exit(4)
     mw = Gui.getMainWindow()
     mw.showNormal()
     mw.resize(1680, 1000)

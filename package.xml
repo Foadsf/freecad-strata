@@ -18,10 +18,12 @@
   <tag>git</tag>
   <tag>release management</tag>
   <content>
-    <other>
+    <workbench>
       <name>Strata</name>
-      <description>Global panel and toolbar (not a workbench): available in every workbench.</description>
+      <description>Versions and history panel, toolbar and status indicator, available in every workbench.</description>
+      <classname>StrataWorkbench</classname>
       <subdirectory>./</subdirectory>
-    </other>
+      <icon>strata/resources/strata.svg</icon>
+    </workbench>
   </content>
 </package>

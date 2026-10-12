@@ -1,21 +1,42 @@
 # SPDX-License-Identifier: LGPL-2.1-or-later
 # Strata: Onshape-style versions, workspaces and releases for FreeCAD.
-# Not a workbench: the panel and toolbar are available in every workbench.
+#
+# The "Versions and history" panel, the toolbar and the status-bar indicator are installed at
+# startup and stay available in every workbench. FreeCAD only runs this file for add-ons whose
+# package.xml declares a workbench, so Strata also registers a small workbench of its own.
+
+import FreeCADGui
 
 
-def _strata_install():
-    import FreeCAD
-    try:
+class StrataWorkbench(FreeCADGui.Workbench):
+    MenuText = "Strata"
+    ToolTip = "Versions, workspaces, history and releases"
+
+    def __init__(self):
+        import os
+        import strata
+        self.__class__.Icon = os.path.join(os.path.dirname(strata.__file__), "resources", "strata.svg")
+
+    def Initialize(self):
+        commands = ["Strata_Panel", "Strata_CreateVersion", "Strata_Compare", "Strata_Releases", "Strata_Sync"]
+        self.appendToolbar("Strata", commands)
+        self.appendMenu("&Strata", commands)
+
+    def Activated(self):
         import strata.boot
-        strata.boot.install()
-    except Exception:
-        import traceback
-        FreeCAD.Console.PrintError("Strata failed to start:\n%s\n" % traceback.format_exc())
+        p = strata.boot.panel()
+        if p is not None:
+            p.show()
+
+    def GetClassName(self):
+        return "Gui::PythonWorkbench"
 
 
-def _strata_defer():
-    from PySide import QtCore
-    QtCore.QTimer.singleShot(0, _strata_install)
+FreeCADGui.addWorkbench(StrataWorkbench())
 
+# FreeCAD executes this file with separate globals and locals, so top-level functions cannot call
+# each other here. Install once the main window is up; errors are reported, never raised.
+import strata.boot  # noqa: E402
+from PySide import QtCore  # noqa: E402
 
-_strata_defer()
+QtCore.QTimer.singleShot(0, strata.boot.safe_install)
