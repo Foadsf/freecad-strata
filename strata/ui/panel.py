@@ -74,6 +74,8 @@ class TitleBar(QtWidgets.QWidget):
 
 
 class Panel(QtWidgets.QDockWidget):
+    refreshed = QtCore.Signal()  # after every refresh: the active project may have changed
+
     def __init__(self, mw):
         super().__init__("Versions and history", mw)
         self.setObjectName("StrataPanel")
@@ -342,6 +344,12 @@ class Panel(QtWidgets.QDockWidget):
     def refresh(self):
         if self.busy:
             return
+        try:
+            self._refresh()
+        finally:
+            self.refreshed.emit()
+
+    def _refresh(self):
         doc = App.ActiveDocument
         if doc is not None and fc.is_preview(doc):
             proj = self.project  # keep showing the project the preview came from

@@ -25,6 +25,36 @@ LANES_LIGHT = ["#1F6FEB", "#8250DF", "#BF5B04", "#1A7F37", "#CF222E", "#0E7490",
 LANES_DARK = ["#4C8DF6", "#A371F7", "#F0883E", "#3FB950", "#F85149", "#39C5CF", "#D29922"]
 
 
+def set_overrides(light: dict | None = None, dark: dict | None = None,
+                  lanes_light: list | None = None, lanes_dark: list | None = None):
+    """Let a host add-on restyle Strata (e.g. its own accent colour) and restyle open widgets.
+
+    light/dark: token -> colour, merged into LIGHT/DARK (unknown keys are rejected).
+    lanes_*: replacement workspace lane colours for the version graph (the first is the Main lane).
+    """
+    for target, values in ((LIGHT, light), (DARK, dark)):
+        if values:
+            unknown = set(values) - set(target)
+            if unknown:
+                raise KeyError("unknown theme tokens: %s" % ", ".join(sorted(unknown)))
+            target.update(values)
+    if lanes_light:
+        LANES_LIGHT[:] = list(lanes_light)
+    if lanes_dark:
+        LANES_DARK[:] = list(lanes_dark)
+    _icon_cache.clear()
+    app = QtWidgets.QApplication.instance()
+    if app is None:
+        return
+    sheet = stylesheet()
+    for w in app.allWidgets():
+        if w.objectName() in ("StrataPanel", "StrataStatus"):
+            w.setStyleSheet(sheet)
+            if hasattr(w, "schedule_refresh"):
+                w.schedule_refresh()
+            w.update()
+
+
 def is_dark() -> bool:
     app = QtWidgets.QApplication.instance()
     if app is None:

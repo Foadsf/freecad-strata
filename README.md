@@ -142,6 +142,27 @@ flowchart LR
   print([e.title for e in p.history()[:5]])
   ```
 
+### Embedding Strata in another add-on
+
+Add-ons that bring their own interface (e.g. [freecad-nxstyle](https://github.com/Foadsf/freecad-nxstyle), which uses Strata in place of Teamcenter) can host Strata without patching it:
+
+```python
+import strata.boot as sb
+from strata.ui import theme
+
+sb.configure(host_toolbar=True, panel_area="left")   # before or after start; saved as preferences
+sb.on_ready(lambda: my_ribbon.add_actions(sb.actions().values()))  # QActions created at startup
+theme.set_overrides(light={"accent": "#00838F", "accent_hover": "#006D77"})  # restyles open panels
+```
+
+- `host_toolbar=True`: Strata adds no toolbar or workbench manipulator and never re-activates the current workbench, so the host keeps its own toolbars and shortcuts.
+- `panel_area`: `"left"` or `"right"`. The panel is created there, so nothing is moved after startup.
+- `actions()`: `{command name: QAction}`, enabled and disabled with the active project. You don't depend on FreeCAD's lazily created command actions.
+- `on_ready(callback)`: runs once Strata is up, or immediately if it already is. No polling needed.
+- `theme.set_overrides(light=…, dark=…, lanes_light=…, lanes_dark=…)`: rejects unknown tokens. Token names are in `strata/ui/theme.py`.
+
+`tests/embed_test.py` covers this API in the real GUI.
+
 ## Tour
 
 ### Versions and history
