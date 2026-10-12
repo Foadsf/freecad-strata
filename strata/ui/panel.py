@@ -70,11 +70,22 @@ class TitleBar(QtWidgets.QWidget):
         self.close = theme.make_icon_button("close", "Hide panel", 16)
         for b in (self.compare, self.releases, self.sync, self.more, self.close):
             lay.addWidget(b)
-        self.close.clicked.connect(panel.hide)
+        self.close.clicked.connect(lambda: panel.user_set_visible(False))
 
 
 class Panel(QtWidgets.QDockWidget):
     refreshed = QtCore.Signal()  # after every refresh: the active project may have changed
+    # The user showed or hid the panel on purpose (close button, toggle command, status pill).
+    # Only this is remembered: Qt also hides docks when they become background tabs and while
+    # the main window closes, and those must not count as "the user closed it".
+    user_visibility = QtCore.Signal(bool)
+
+    def user_set_visible(self, visible: bool):
+        self.setVisible(visible)
+        if visible:
+            self.raise_()
+            self.refresh()
+        self.user_visibility.emit(bool(visible))
 
     def __init__(self, mw):
         super().__init__("Versions and history", mw)
@@ -959,5 +970,5 @@ class StatusPill(QtWidgets.QToolButton):
         self.setToolButtonStyle(QtCore.Qt.ToolButtonTextBesideIcon)
         self.setCursor(QtCore.Qt.PointingHandCursor)
         self.setToolTip("Versions and history")
-        self.clicked.connect(lambda: panel.setVisible(not panel.isVisible()))
+        self.clicked.connect(lambda: panel.user_set_visible(not panel.isVisible()))
         self.hide()

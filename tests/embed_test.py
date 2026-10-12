@@ -135,10 +135,13 @@ def live_start():
     check(False in seen, "raising another tab emits visibilityChanged(False) (the trigger is reproduced)")
     check(params.GetBool("PanelVisible", True), "PanelVisible stays true when another tab is raised")
     p.raise_()
-    p.hide()  # what the panel's close button does
-    check(not params.GetBool("PanelVisible", True), "hiding the panel explicitly is remembered")
+    p.hide()  # a host or Qt hiding the dock is not a user decision
+    check(params.GetBool("PanelVisible", True), "programmatic hide() is not remembered")
     p.show()
-    check(params.GetBool("PanelVisible", False), "showing it again is remembered")
+    p.titlebar.close.click()  # the panel's own close button
+    check(not params.GetBool("PanelVisible", True), "closing the panel with its button is remembered")
+    sb._toggle_panel()  # the toolbar / menu command
+    check(params.GetBool("PanelVisible", False) and p.isVisible(), "re-opening it with the command is remembered")
     mw.removeDockWidget(other)
     other.deleteLater()
     later(4500, lambda: live_end(root))
@@ -150,7 +153,23 @@ def live_end(root):
     for p in Project._instances.values():
         p.repo.close()
     shutil.rmtree(root, ignore_errors=True)
-    finish()
+    if FAILS:
+        finish()
+    # End with a real shutdown (not os._exit) so FreeCAD saves user.cfg itself; record what the dock
+    # signals do meanwhile, so the next phase can tell the trigger was reproduced.
+    import strata.boot as sb
+    p = sb.panel()
+    events = open(os.path.join(CFG["out"], "shutdown_events.txt"), "w", encoding="utf-8")
+
+    def rec(kind, v):
+        events.write("%s %s\n" % (kind, v))
+        events.flush()
+    p.toggleViewAction().toggled.connect(lambda v: rec("toggled", v))
+    p.visibilityChanged.connect(lambda v: rec("visibilityChanged", v))
+    check(App.ParamGet(sb.PARAMS).GetBool("PanelVisible", False), "PanelVisible true just before shutdown")
+    LOG.write("RESULT PASS (0 failed) - closing the main window\n")
+    LOG.close()
+    Gui.getMainWindow().close()
 
 
 # ------------------------------------------------------------------ phase prestart
@@ -161,6 +180,12 @@ def prestart():
     check("fallback_toolbar" not in sb._state, "no Strata toolbar was created at startup in host mode")
     check("manipulator" not in sb._state, "no workbench manipulator registered in host mode")
     check(area() == "left", "panel created in the left dock area")
+    ev_path = os.path.join(CFG["out"], "shutdown_events.txt")
+    events = open(ev_path, encoding="utf-8").read().split() if os.path.exists(ev_path) else []
+    check("False" in events, "dock signals fired False during the previous shutdown (trigger reproduced): %s"
+          % " ".join(events))
+    check(App.ParamGet(sb.PARAMS).GetBool("PanelVisible", False), "PanelVisible still true after a normal shutdown")
+    check(sb.panel().isVisible(), "panel visible at startup after a normal shutdown")
     sb.configure(host_toolbar=False, panel_area="right")
     later(2500, prestart_end)
 

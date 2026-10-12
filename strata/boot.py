@@ -104,10 +104,7 @@ class _Manipulator:
 
 def _toggle_panel():
     p = panel()
-    p.setVisible(not p.isVisible())
-    if p.isVisible():
-        p.raise_()
-        p.refresh()
+    p.user_set_visible(not p.isVisible())
 
 
 def _build_actions(parent):
@@ -206,10 +203,10 @@ def install():
     mw.addDockWidget(AREAS.get(area, QtCore.Qt.RightDockWidgetArea), p)
     p.setMinimumWidth(300)
     p.setVisible(params.GetBool("PanelVisible", True))
-    # Remember only explicit show/hide. visibilityChanged(False) also fires when the dock is
-    # tabified and another tab is raised, which would hide the panel at the next start
-    # (reported by freecad-nxstyle). The toggle-view action follows explicit hide/show only.
-    p.toggleViewAction().toggled.connect(lambda on: params.SetBool("PanelVisible", bool(on)))
+    # Remember only what the user does on purpose. Qt signals are not enough: visibilityChanged(False)
+    # fires when the dock becomes a background tab, and both it and the toggle-view action fire
+    # while the main window closes (both reported by freecad-nxstyle).
+    p.user_visibility.connect(lambda on: params.SetBool("PanelVisible", bool(on)))
 
     pill = StatusPill(p)
     mw.statusBar().addPermanentWidget(pill)

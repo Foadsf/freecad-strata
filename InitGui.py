@@ -26,7 +26,7 @@ class StrataWorkbench(FreeCADGui.Workbench):
         import strata.boot
         p = strata.boot.panel()
         if p is not None:
-            p.show()
+            p.user_set_visible(True)
 
     def GetClassName(self):
         return "Gui::PythonWorkbench"
