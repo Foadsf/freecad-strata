@@ -196,6 +196,8 @@ Release documents from a version with part number and revision, optionally throu
 
 **Are my files changed?** Your `.FCStd` files stay ordinary FreeCAD files. Strata only rewrites them when you switch workspace, restore, merge or sync, and the previous state always stays in history.
 
+**Uninstalling through the Addon Manager on Windows says "Failed to remove some files".** This is a known Addon Manager behaviour (seen with FreeCAD 1.1.4): its Git update check can leave FreeCAD's working directory inside the add-on folder, and Windows won't delete a folder in use. The files are removed but an empty `Mod/freecad-strata` folder stays behind. Close FreeCAD and delete that folder. Your projects' history is not affected.
+
 **Fonts, macros, external STEP files?** Strata versions FreeCAD documents. Machine-dependent resources such as system fonts are not captured.
 
 ## Development and tests

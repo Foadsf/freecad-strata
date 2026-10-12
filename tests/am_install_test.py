@@ -78,7 +78,8 @@ def watchdog():
     n = S["modals"]
     text = (w.text() if hasattr(w, "text") else "") or w.windowTitle()
     buttons = [b.text() for b in w.findChildren(QtWidgets.QAbstractButton) if b.isVisible() and b.text()]
-    log("MODAL %d %s %r | %r | buttons=%s" % (n, type(w).__name__, w.windowTitle(), text[:200], buttons))
+    log("MODAL %d %s %r | %r | buttons=%s | cwd=%s" % (n, type(w).__name__, w.windowTitle(), text[:200], buttons,
+                                                      os.getcwd()))
     shot(w, "am_%s_modal_%02d" % (PHASE, n))
     if "restart" in text.lower() and isinstance(w, QtWidgets.QMessageBox):
         later = [b for b in w.buttons() if w.buttonRole(b) in (QtWidgets.QMessageBox.RejectRole,
@@ -163,6 +164,16 @@ def tick_install():
         elif st == "details":
             bar = inst.composite_view.package_details_controller.ui.button_bar
             btn = bar.uninstall if PHASE == "uninstall" else bar.install
+            if PHASE == "uninstall":
+                # a user waits for the Addon Manager's background update check to finish
+                checking = inst.check_worker is not None and inst.check_worker.isRunning()
+                status = str(S["addon"].status())
+                if (checking or "Unchecked" in status) and time.time() - S["t0"] < 180:
+                    if S.get("waiting_note") != status:
+                        S["waiting_note"] = status
+                        log("waiting for update check (status=%s, worker running=%s)" % (status, checking))
+                    return
+                log("status before uninstall: %s; cwd=%s" % (status, os.getcwd()))
             log("%s button visible=%s enabled=%s" % (btn.text(), btn.isVisible(), btn.isEnabled()))
             shot(inst.dialog, "am_details_before_%s" % PHASE)
             if btn.isVisible() and btn.isEnabled():
