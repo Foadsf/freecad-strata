@@ -104,18 +104,28 @@ def open_preview(project: Project, rev: str, rel: str, label: str):
         if os.path.normcase(getattr(d, "FileName", "")) == os.path.normcase(path):
             App.closeDocument(d.Name)
     doc = App.openDocument(path)
-    stem = os.path.splitext(os.path.basename(rel))[0]
-    doc.Label = "%s @ %s" % (stem, label)
+    # label the preview and every linked document it pulled in from the same point in time
+    prefix = os.path.normcase(dest)
+    for d in App.listDocuments().values():
+        fn = getattr(d, "FileName", "") or ""
+        if os.path.normcase(fn).startswith(prefix) and " @ " not in d.Label:
+            d.Label = "%s @ %s" % (os.path.splitext(os.path.basename(fn))[0], label)
+            if Gui is not None and Gui.getDocument(d.Name) is not None:
+                Gui.getDocument(d.Name).Modified = False
     if Gui is not None:
         gd = Gui.getDocument(doc.Name)
-        if gd is not None:
-            gd.Modified = False
-            if gd.ActiveView is not None and hasattr(gd.ActiveView, "fitAll"):
-                gd.ActiveView.fitAll()
+        if gd is not None and gd.ActiveView is not None and hasattr(gd.ActiveView, "fitAll"):
+            gd.ActiveView.fitAll()
     return doc
 
 
+_overlays: set = set()  # names of comparison documents created by compare_overlay
+
+
 def is_preview(doc) -> bool:
+    """Read-only views that belong to a project: version previews and 3D comparisons."""
+    if doc is not None and doc.Name in _overlays:
+        return True
     fn = os.path.normcase(getattr(doc, "FileName", "") or "")
     return (os.sep + ".strata" + os.sep + "previews" + os.sep) in fn
 
@@ -159,6 +169,7 @@ def compare_overlay(project: Project, rev_a: str, rev_b: str, rel: str, label_a:
             App.closeDocument(d.Name)
     stem = os.path.splitext(os.path.basename(rel))[0]
     cmp = App.newDocument("Compare")
+    _overlays.add(cmp.Name)
     cmp.Label = "Compare %s: %s → %s" % (stem, label_a, label_b)
     styles = [("Before", label_a, (0.85, 0.25, 0.22), 70), ("After", label_b, (0.12, 0.44, 0.92), 15)]
     vols = []

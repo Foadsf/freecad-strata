@@ -6,7 +6,10 @@
   <date>2026-10-12</date>
   <maintainer email="f.s.farimani@gmail.com">Foad S. Farimani</maintainer>
   <license file="LICENSE">LGPL-2.1-or-later</license>
-  <url type="website">https://forum.freecad.org/viewtopic.php?t=89249</url>
+  <url type="repository" branch="main">https://github.com/Foadsf/freecad-strata</url>
+  <url type="readme">https://github.com/Foadsf/freecad-strata/blob/main/README.md</url>
+  <url type="bugtracker">https://github.com/Foadsf/freecad-strata/issues</url>
+  <url type="discussion">https://forum.freecad.org/viewtopic.php?t=89249</url>
   <icon>strata/resources/strata.svg</icon>
   <freecadmin>1.0.0</freecadmin>
   <tag>PLM</tag>

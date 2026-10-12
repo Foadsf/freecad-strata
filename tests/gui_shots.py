@@ -1,8 +1,12 @@
 # SPDX-License-Identifier: LGPL-2.1-or-later
-"""GUI smoke test + screenshots. Run inside FreeCAD GUI:  freecad.exe tests/gui_shots.py
+"""GUI smoke test that also produces the README screenshots.
 
-Reads gui_cfg.json next to this file: {"demo": <Gearbox folder>, "out": <screenshot folder>}.
-Exercises the panel, every dialog and a real workspace switch, then exits FreeCAD.
+    freecad tests/gui_shots.py
+
+Reads gui_cfg.json next to this file: {"demo_parent": <folder>, "out": <screenshot folder>}.
+Builds the demo project inside the GUI, drives the panel, every dialog, a 3D compare, a read-only
+preview and a real workspace switch, logs to <out>/gui_log.txt, then exits FreeCAD.
+Any modal dialog is logged, captured and dismissed so an unattended run never hangs.
 """
 
 import json
@@ -11,14 +15,16 @@ import traceback
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 CFG = json.load(open(os.path.join(HERE, "gui_cfg.json"), encoding="utf-8"))
-OUT, DEMO = CFG["out"], CFG["demo"]
+OUT = CFG["out"]
 os.makedirs(OUT, exist_ok=True)
 
 import FreeCAD as App  # noqa: E402
 import FreeCADGui as Gui  # noqa: E402
-from PySide import QtCore, QtWidgets  # noqa: E402
+from PySide import QtCore, QtGui, QtWidgets  # noqa: E402
 
 LOG = open(os.path.join(OUT, "gui_log.txt"), "w", encoding="utf-8")
+S = {}
+steps = []
 
 
 def log(msg):
@@ -27,12 +33,14 @@ def log(msg):
 
 
 def shot(widget, name):
+    if "panel" in S:
+        S["panel"].toast.hide()
+    for dock in S["mw"].findChildren(QtWidgets.QDockWidget) if "mw" in S else []:
+        if dock.windowTitle() == "Tasks":
+            dock.hide()  # a fresh --user-cfg leaves FreeCAD's Tasks panel overlaid on the 3D view
     QtWidgets.QApplication.processEvents()
     ok = widget.grab().save(os.path.join(OUT, name + ".png"))
     log("shot %s %s %dx%d" % (name, "ok" if ok else "FAILED", widget.width(), widget.height()))
-
-
-steps = []
 
 
 def step(fn):
@@ -54,73 +62,20 @@ def run_next():
     QtCore.QTimer.singleShot(int(CFG.get("delay_ms", 900)), run_next)
 
 
-S = {}
-
-
-@step
-def boot():
-    import strata.boot
-    strata.boot.install()
-    mw = Gui.getMainWindow()
-    mw.showNormal()
-    mw.resize(1680, 1000)
-    S["mw"], S["panel"] = mw, strata.boot.panel()
-    log("strata loaded from %s" % os.path.dirname(strata.boot.__file__))
-    log("addWorkbenchManipulator: %s" % hasattr(Gui, "addWorkbenchManipulator"))
-    Gui.activateWorkbench("PartDesignWorkbench")
-
-
-@step
-def toolbars():
-    import strata.boot
-    strata.boot._ensure_toolbar()  # raises here if broken, instead of silently inside a timer
-    found = [(t.objectName(), t.isVisible(), [a.text() for a in t.actions() if "ersion" in a.text()])
-             for t in S["mw"].findChildren(QtWidgets.QToolBar)]
-    log("toolbars holding Strata buttons: %s" % [f for f in found if f[2]])
-
-
-@step
-def open_docs():
-    d = App.openDocument(os.path.join(DEMO, "Parts", "Bracket.FCStd"))
-    App.openDocument(os.path.join(DEMO, "Gearbox.FCStd"))
+def activate(doc_name, iso=True):
     mdi = S["mw"].findChild(QtWidgets.QMdiArea)
     for sw in mdi.subWindowList():
-        if sw.windowTitle().startswith("Bracket"):
+        if sw.windowTitle().startswith(doc_name):
             mdi.setActiveSubWindow(sw)
-    gd = Gui.getDocument(d.Name)
-    gd.getObject("Body").Visibility = True
-    gd.ActiveView.viewIsometric()
-    gd.ActiveView.fitAll()
-    S["panel"].show()
-    S["panel"].refresh()
+    gd = Gui.getDocument(App.getDocument(doc_name).Name) if doc_name in App.listDocuments() else None
+    view = gd.ActiveView if gd else None
+    if view is not None and iso:
+        view.viewIsometric()
+        view.fitAll()
 
 
-@step
-def main_window():
-    log("panel project: %s" % (S["panel"].project.root if S["panel"].project else None))
-    shot(S["mw"], "01_main_window")
-    shot(S["panel"], "02_panel")
-
-
-@step
-def history_card():
-    h = S["panel"].history
-    for r in range(h.count()):
-        if h.item(r).data(QtCore.Qt.UserRole + 2) is not None and h.item(r).data(QtCore.Qt.UserRole + 2).versions:
-            h.setCurrentRow(r)
-            h.item(r).setSelected(True)
-            break
-    shot(S["panel"], "03_history_card")
-
-
-@step
-def version_card():
-    g = S["panel"].graph
-    node = next(n for n in g.nodes if n.versions and n.versions[0] == "LW-1")
-    g.sel = node
-    g.update()
-    S["panel"]._node_selected(node)
-    shot(S["panel"], "04_workspace_version_card")
+def doc_by_label(prefix):
+    return next((d for d in App.listDocuments().values() if d.Label.startswith(prefix)), None)
 
 
 def show_dialog(dlg, name, width=None):
@@ -132,40 +87,58 @@ def show_dialog(dlg, name, width=None):
     dlg.close()
 
 
+def version(name):
+    return next(v for v in S["p"].versions() if v.name == name)
+
+
+# ---------------------------------------------------------------------------- steps
 @step
-def create_version_dialog():
-    from strata.ui import dialogs
-    show_dialog(dialogs.CreateVersionDialog(S["panel"].project, S["panel"]), "05_create_version")
-
-
-@step
-def compare_dialog():
-    from strata.ui import dialogs
-    p = S["panel"].project
-    v1 = next(v for v in p.versions() if v.name == "V1")
-    choices = [("Main (latest)", p.head()), ("Version V1", v1.sha)]
-    dlg = dialogs.CompareDialog(p, choices, v1.sha, p.head(), lambda *a: "", S["panel"])
-    dlg.tree.expandAll()
-    show_dialog(dlg, "06_compare", 760)
-
-
-@step
-def merge_dialog():
-    from strata.ui import dialogs
-    p = S["panel"].project
-    plan = p.merge_plan("Lightweight")
-    log("merge plan: take=%s conflicts=%s" % (plan.take_theirs, plan.conflicts))
-    show_dialog(dialogs.MergeDialog(p, plan, S["panel"]), "07_merge")
+def boot():
+    import strata.boot
+    strata.boot.install()
+    mw = Gui.getMainWindow()
+    mw.showNormal()
+    mw.resize(1680, 1000)
+    S["mw"], S["panel"] = mw, strata.boot.panel()
+    Gui.activateWorkbench("PartDesignWorkbench")
 
 
 @step
-def release_dialog():
-    from strata.ui import dialogs
-    p = S["panel"].project
-    v2 = next(v for v in p.versions() if v.name == "V2")
-    show_dialog(dialogs.ReleaseDialog(p, v2, {"Parts/Bracket.FCStd": "BRK-100", "Parts/Shaft.FCStd": "SFT-200"},
-                                      S["panel"]), "08_release", 700)
-    show_dialog(dialogs.ReleasesDialog(S["panel"].project, None, S["panel"]), "09_releases", 860)
+def build_demo():
+    import sys
+    sys.path.insert(0, HERE)
+    from make_demo import build
+    S["root"] = build(CFG["demo_parent"])
+    log("demo at %s" % S["root"])
+
+
+@step
+def open_project():
+    root = S["root"]
+    b = App.openDocument(os.path.join(root, "Parts", "Bracket.FCStd"))
+    log("bracket volume %.1f" % b.getObject("Body").Shape.Volume)
+    App.openDocument(os.path.join(root, "Gearbox.FCStd"))
+    activate("Gearbox")
+    S["panel"].show()
+    S["panel"].refresh()
+    S["p"] = S["panel"].project
+
+
+@step
+def overview():
+    shot(S["mw"], "01_overview")
+
+
+@step
+def history_entry():
+    h = S["panel"].history
+    for r in range(h.count()):
+        e = h.item(r).data(QtCore.Qt.UserRole + 2)
+        if e is not None and e.versions == ["V2"]:
+            h.setCurrentRow(r)
+            h.item(r).setSelected(True)
+    shot(S["panel"], "02_history_entry")
+    S["panel"]._close_card()
 
 
 @step
@@ -174,39 +147,103 @@ def workspace_menu():
     S["panel"]._fill_ws_menu()
     m.popup(S["panel"].ws_button.mapToGlobal(QtCore.QPoint(0, S["panel"].ws_button.height())))
     QtWidgets.QApplication.processEvents()
-    shot(m, "10_workspace_menu")
+    shot(m, "03_workspace_menu")
     m.hide()
 
 
 @step
-def switch_to_lightweight():
+def create_version_dialog():
+    from strata.ui import dialogs
+    show_dialog(dialogs.CreateVersionDialog(S["p"], S["panel"]), "04_create_version")
+
+
+@step
+def compare_dialog():
+    from strata.ui import dialogs
+    p = S["p"]
+    choices = [("Main (latest)", p.head()), ("Version V1", version("V1").sha), ("Version LW-1", version("LW-1").sha)]
+    dlg = dialogs.CompareDialog(p, choices, version("V1").sha, p.head(), lambda *a: "", S["panel"])
+    dlg.tree.expandAll()
+    show_dialog(dlg, "05_compare", 760)
+
+
+@step
+def compare_3d():
     from strata import fc
-    p = S["panel"].project
-    mods = fc.unsaved(p)
-    log("modified before switch: %s" % [d.Label for d in mods])
-    S["accept_save"] = True  # the watchdog clicks "Save and continue" like a user would
-    S["panel"].switch_workspace("Lightweight")
-    log("modified after switch: %s" % [d.Label for d in fc.unsaved(p)])
-    log("workspace now: %s" % p.current_workspace())
+    stats = fc.compare_overlay(S["p"], version("V2").sha, version("LW-1").sha, "Parts/Bracket.FCStd", "V2", "LW-1")
+    log("overlay: " + stats)
+    gd = Gui.ActiveDocument
+    gd.ActiveView.viewIsometric()
+    gd.ActiveView.fitAll()
+
+
+@step
+def compare_3d_shot():
+    shot(S["mw"], "06_compare_3d")
+    App.closeDocument(App.ActiveDocument.Name)
+    activate("Gearbox")
+
+
+@step
+def preview_v1():
+    S["panel"].view(version("V1").sha, "V1", ["Gearbox.FCStd"])
+    gd = Gui.ActiveDocument
+    gd.ActiveView.viewIsometric()
+    gd.ActiveView.fitAll()
+
+
+@step
+def preview_shot():
+    shot(S["mw"], "07_view_old_version")
     d = App.ActiveDocument
-    log("after switch active=%s pad=%s" % (d.Label if d else None,
-                                            d.getObject("Pad").Length if d and d.getObject("Pad") else None))
+    log("preview label: %s" % d.Label)
+    App.closeDocument(d.Name)
+    activate("Gearbox")
 
 
 @step
-def after_switch():
-    shot(S["mw"], "11_lightweight_workspace")
+def switch_to_lightweight():
+    S["accept_save"] = True
+    S["panel"].switch_workspace("Lightweight")
+    log("workspace now: %s" % S["p"].current_workspace())
+    activate("Bracket")
 
 
 @step
-def back_to_main():
+def lightweight_shot():
+    graph = S["panel"].graph
+    node = next(n for n in graph.nodes if n.versions == ["LW-1"])
+    graph.sel = node
+    S["panel"]._node_selected(node)
+    shot(S["mw"], "08_workspace")
+    S["panel"]._close_card()
+
+
+@step
+def back_to_main_and_merge_dialog():
+    from strata.ui import dialogs
     S["panel"].switch_workspace("main")
+    plan = S["p"].merge_plan("Lightweight")
+    show_dialog(dialogs.MergeDialog(S["p"], plan, S["panel"]), "09_merge")
+
+
+@step
+def release_dialogs():
+    from strata.ui import dialogs
+    show_dialog(dialogs.ReleaseDialog(S["p"], version("V2"), {"Parts/Bracket.FCStd": "BRK-100",
+                                                               "Parts/Shaft.FCStd": "SFT-200"}, S["panel"]),
+                "10_release", 700)
+    show_dialog(dialogs.ReleasesDialog(S["p"], None, S["panel"]), "11_releases", 860)
+
+
+@step
+def share_dialog():
+    from strata.ui import dialogs
+    show_dialog(dialogs.ShareDialog(S["p"], S["panel"]), "12_share")
 
 
 @step
 def dark_panel():
-    """Render a second panel under a dark palette, as FreeCAD's dark theme sets it."""
-    from PySide import QtGui
     from strata.ui.panel import Panel
     app = QtWidgets.QApplication.instance()
     S["light_palette"] = QtGui.QPalette(app.palette())
@@ -218,49 +255,53 @@ def dark_panel():
     app.setPalette(pal)
     d = Panel(S["mw"])
     d.setFloating(True)
-    d.resize(380, 900)
+    d.resize(400, 860)
     d.show()
-    d.project = S["panel"].project
+    d.project = S["p"]
     d.refresh()
     S["dark"] = d
 
 
 @step
 def dark_shot():
-    S["dark"].graph.sel = S["dark"].graph.nodes[1]
-    S["dark"]._node_selected(S["dark"].graph.nodes[1])
-    shot(S["dark"], "13_dark_panel")
+    shot(S["dark"], "13_dark_theme")
     S["dark"].close()
     QtWidgets.QApplication.instance().setPalette(S["light_palette"])
 
 
 @step
-def empty_state():
-    App.newDocument("Unsaved")
+def untracked_doc():
+    folder = os.path.join(CFG["demo_parent"], "Sandbox")
+    os.makedirs(folder, exist_ok=True)
+    d = App.newDocument("Housing")
+    d.addObject("Part::Box", "Box")
+    d.recompute()
+    d.saveAs(os.path.join(folder, "Housing.FCStd"))
     S["panel"].refresh()
 
 
 @step
-def empty_shot():
-    shot(S["panel"], "12_empty_state")
+def onboarding():
+    from strata.ui import dialogs
+    shot(S["panel"], "14_turn_on")
+    show_dialog(dialogs.StartDialog(os.path.join(CFG["demo_parent"], "Sandbox"), "Ada Lovelace", S["panel"]),
+                "15_turn_on_dialog", 560)
 
 
 def watchdog():
-    """An unattended run cannot answer dialogs: record any modal, then dismiss it."""
+    """An unattended run cannot answer dialogs: record any modal, then answer or dismiss it."""
     w = QtWidgets.QApplication.activeModalWidget()
-    if w is not None:
-        n = S.setdefault("modals", 0) + 1
-        S["modals"] = n
-        text = w.text() if hasattr(w, "text") else w.windowTitle()
-        info = w.informativeText() if hasattr(w, "informativeText") else ""
-        log("MODAL %d: %s | %s | %s" % (n, type(w).__name__, text, info))
-        shot(w, "modal_%02d" % n)
-        if S.get("accept_save") and isinstance(w, QtWidgets.QMessageBox) and "Save changes" in text:
-            btn = next(b for b in w.buttons() if w.buttonRole(b) == QtWidgets.QMessageBox.AcceptRole)
-            log("watchdog: clicking %r" % btn.text())
-            btn.click()
-        else:
-            w.reject() if hasattr(w, "reject") else w.close()
+    if w is None:
+        return
+    n = S["modals"] = S.get("modals", 0) + 1
+    text = w.text() if hasattr(w, "text") else w.windowTitle()
+    log("MODAL %d: %s | %s" % (n, type(w).__name__, text))
+    if S.get("accept_save") and isinstance(w, QtWidgets.QMessageBox) and "Save changes" in text:
+        btn = next(b for b in w.buttons() if w.buttonRole(b) == QtWidgets.QMessageBox.AcceptRole)
+        log("watchdog: clicking %r" % btn.text())
+        btn.click()
+    else:
+        w.reject() if hasattr(w, "reject") else w.close()
 
 
 _wd = QtCore.QTimer()

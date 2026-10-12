@@ -235,10 +235,12 @@ def diff_documents(old_xml, new_xml, old_files=None, new_files=None, old_gui=Non
         if o is None or n.type in NOISE_TYPES:
             continue
         ch = ObjChange(name, n.label, n.type)
+        mapmode = n.props.get("MapMode", (None, None, "0"))[2]
+        attached = mapmode not in ("0", "", "Deactivated")  # placement follows the attachment
         if o.label != n.label:
             ch.renamed_from = o.label
         for pname, (ptype, key, disp, el) in n.props.items():
-            if pname == "Label":
+            if pname == "Label" or (attached and pname == "Placement"):
                 continue
             prev = o.props.get(pname)
             if prev is not None and prev[1] == key:

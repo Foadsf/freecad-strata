@@ -397,8 +397,9 @@ class Panel(QtWidgets.QDockWidget):
         self.hist_label.setText("HISTORY · %s" % display_name(cur).upper())
         self.history.set_entries(proj.history())
         if doc is not None and fc.is_preview(doc):
-            self._show_banner("eye", "You are viewing %s. It is read-only: changes here are not part of the project."
-                              % doc.Label, "Close", lambda: self._close_preview(doc))
+            what = ("%s. Red is before, blue is after." % doc.Label) if doc.Name in fc._overlays else \
+                ("%s. It is read-only: changes here are not part of the project." % doc.Label)
+            self._show_banner("eye", "You are viewing " + what, "Close", lambda: self._close_preview(doc))
         else:
             mods = fc.unsaved(proj)
             if mods:
