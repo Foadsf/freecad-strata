@@ -154,6 +154,14 @@ def live_end(root):
     shutil.rmtree(root, ignore_errors=True)
     if FAILS:
         finish()
+    # a host chooses its own keys; they apply from the next start (checked in phase prestart)
+    import strata.boot as sb
+    sb.configure(shortcuts={"Strata_Compare": None, "Strata_Sync": "Ctrl+Alt+Shift+Y"})
+    try:
+        sb.configure(shortcuts={"Strata_NoSuchCommand": "Ctrl+K"})
+        check(False, "configure(shortcuts=) rejects unknown commands")
+    except KeyError:
+        check(True, "configure(shortcuts=) rejects unknown commands")
     # End with a real shutdown (not os._exit) so FreeCAD saves user.cfg itself; record what the dock
     # signals do meanwhile, so the next phase can tell the trigger was reproduced.
     import strata.boot as sb
@@ -184,6 +192,20 @@ def prestart():
           % " ".join(events))
     check(App.ParamGet(sb.PARAMS).GetBool("PanelVisible", False), "PanelVisible still true after a normal shutdown")
     check(sb.panel().isVisible(), "panel visible at startup after a normal shutdown")
+    # host-chosen keys (set in phase live): the host builds the key bindings when it wants
+    sb.activate_commands()
+    from PySide import QtWidgets as QW
+    QW.QApplication.processEvents()
+    get = lambda n: Gui.Command.get(n).getShortcut()  # noqa: E731
+    check(get("Strata_Panel") == "Ctrl+Shift+H", "keys are bound after activate_commands (positive control): %r"
+          % get("Strata_Panel"))
+    check(get("Strata_Compare") == "", "host left Compare without a key: %r" % get("Strata_Compare"))
+    check(Gui.Command.listByShortcut("Ctrl+Shift+D") == [], "Ctrl+Shift+D is free for the host: %s"
+          % Gui.Command.listByShortcut("Ctrl+Shift+D"))
+    check(get("Strata_Sync") == "Ctrl+Alt+Shift+Y", "host moved Sync to Ctrl+Alt+Shift+Y: %r" % get("Strata_Sync"))
+    check(Gui.Command.listByShortcut("Ctrl+Shift+Y") == [], "Ctrl+Shift+Y is free for the host")
+    sb.configure(shortcuts={})
+    check(sb.effective_shortcuts() == sb.SHORTCUTS, "configure(shortcuts={}) returns to the defaults")
     sb.configure(host_toolbar=False, panel_area="right")
     later(2500, prestart_end)
 

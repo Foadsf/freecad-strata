@@ -1,6 +1,11 @@
 = Changelog
 :description: What changed in each Strata release.
 
+== 0.2.1 (2026-10-13)
+
+New::
+* Add-ons that host Strata choose its keys: `configure(shortcuts={...})`, where `None` leaves a command without a key, and `effective_shortcuts()`. freecad-nxstyle needs this because NX uses kbd:[Ctrl+Shift+D] (Drafting) and kbd:[Ctrl+Shift+Y] (Layout).
+
 == 0.2.0 (2026-10-13)
 
 New::

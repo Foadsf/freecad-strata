@@ -169,12 +169,14 @@ Add-ons that bring their own interface (e.g. [freecad-nxstyle](https://github.co
 import strata.boot as sb
 from strata.ui import theme
 
-sb.configure(host_toolbar=True, panel_area="left")   # before or after start; saved as preferences
+sb.configure(host_toolbar=True, panel_area="left",   # from the host's InitGui.py; saved as preferences
+             shortcuts={"Strata_Compare": None})     # keys the host needs: None leaves a command unbound
 sb.on_ready(lambda: my_ribbon.add_actions(sb.actions().values()))  # QActions created at startup
 theme.set_overrides(light={"accent": "#00838F", "accent_hover": "#006D77"})  # restyles open panels
 ```
 
-- `host_toolbar=True`: Strata adds no toolbar or workbench manipulator and never re-activates the current workbench, so the host keeps its own toolbars and shortcuts.
+- `host_toolbar=True`: Strata adds no toolbar and never re-activates the current workbench, so the host keeps its own toolbars and shortcuts. The host calls `sb.activate_commands()` when Strata's Tools-menu entries and keys should appear.
+- `shortcuts={command: keys or None}`: the host chooses Strata's keys (default `Ctrl+Shift+H/V/D/R/Y`); set it before Strata starts.
 - `panel_area`: `"left"` or `"right"`. The panel is created there, so nothing is moved after startup.
 - `actions()`: `{command name: QAction}`, enabled and disabled with the active project. You don't depend on FreeCAD's lazily created command actions.
 - `on_ready(callback)`: runs once Strata is up, or immediately if it already is. No polling needed.

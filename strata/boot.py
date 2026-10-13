@@ -53,9 +53,36 @@ def actions() -> dict:
     return dict(_state.get("actions", {}))
 
 
-def configure(host_toolbar: bool | None = None, panel_area: str | None = None):
-    """Adapt Strata to a host UI. Persisted as preferences, so it also applies at the next start."""
+def effective_shortcuts() -> dict:
+    """{command: keys} in effect: the defaults, with a host's choices from configure(shortcuts=...)
+    applied; '' means unbound. The user's own changes in Tools > Customize still take precedence."""
+    import json
+    keys = dict(SHORTCUTS)
+    try:
+        overrides = json.loads(App.ParamGet(PARAMS).GetString("Shortcuts", "") or "{}")
+    except ValueError:
+        overrides = {}
+    for name, value in overrides.items():
+        if name in keys:
+            keys[name] = value or ""
+    return keys
+
+
+def configure(host_toolbar: bool | None = None, panel_area: str | None = None, shortcuts: dict | None = None):
+    """Adapt Strata to a host UI. Persisted as preferences, so it also applies at the next start.
+
+    shortcuts: {command name: "Ctrl+Alt+K" | None}; None (or "") leaves the command without a key,
+    commands not listed keep Strata's default, {} returns to all defaults. Key bindings are created
+    when Strata registers its commands, so call this before Strata starts (e.g. from the host's
+    InitGui.py); a later call takes effect at the next start.
+    """
     params = App.ParamGet(PARAMS)
+    if shortcuts is not None:
+        import json
+        unknown = set(shortcuts) - set(SHORTCUTS)
+        if unknown:
+            raise KeyError("unknown Strata commands: %s" % ", ".join(sorted(unknown)))
+        params.SetString("Shortcuts", json.dumps({k: (v or "") for k, v in shortcuts.items()}))
     if host_toolbar is not None:
         params.SetBool("HostProvidesToolbar", bool(host_toolbar))
         if is_ready():
@@ -261,8 +288,9 @@ def install():
         "Strata_Sync": _Command("Sync", "Share and sync the project with your team", "sync",
                                 lambda: panel().sync()),
     }
+    keys = effective_shortcuts()
     for name, cmd in cmds.items():
-        cmd.accel = SHORTCUTS.get(name, "")
+        cmd.accel = keys.get(name, "")
         Gui.addCommand(name, cmd)
     _state["commands"] = cmds
     _state["panel"] = p

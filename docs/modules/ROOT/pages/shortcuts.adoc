@@ -49,6 +49,7 @@ Strata's keys are all on kbd:[Ctrl+Shift], where FreeCAD 1.1 itself only uses kb
 All 185 default shortcuts of a running FreeCAD 1.1.4 were checked, and Strata's test suite verifies that each Strata key belongs to Strata alone.
 
 Other add-ons may use the same keys. If two commands share a key, Qt runs neither, so change one of them as described below.
+An add-on that hosts Strata in its own interface can choose Strata's keys itself. For example, an NX-style interface keeps kbd:[Ctrl+Shift+D] and kbd:[Ctrl+Shift+Y] for NX's Drafting and Layout applications. In that case the Tools menu shows the keys that are actually in effect.
 
 == Change a shortcut
 

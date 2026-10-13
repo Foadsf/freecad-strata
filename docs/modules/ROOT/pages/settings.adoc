@@ -41,7 +41,12 @@ You can see them in menu:Tools[Edit parameters...].
 
 | `HostProvidesToolbar` | false
 | For add-ons that host Strata in their own interface. When true, Strata adds no toolbar of its own. See xref:reference/embedding.adoc[Embedding].
+
+| `Shortcuts` | empty
+| Keys chosen by a hosting add-on, as JSON (`{"Strata_Compare": ""}` leaves Compare without a key). Empty means Strata's defaults. To change keys yourself, use menu:Tools[Customize...] instead.
 |===
+
+TIP: If you remove an add-on that hosted Strata and want Strata's own toolbar, keys and panel position back, run this once in FreeCAD's Python console: `import strata.boot as sb; sb.configure(host_toolbar=False, panel_area="right", shortcuts={})`, then restart FreeCAD.
 
 == The Strata workbench
 

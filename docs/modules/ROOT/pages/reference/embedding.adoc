@@ -11,8 +11,10 @@ https://github.com/Foadsf/freecad-nxstyle[freecad-nxstyle], a Siemens NX-style i
 import strata.boot as sb
 from strata.ui import theme
 
-# Before or after Strata starts; stored as preferences, so it also applies at the next start.
-sb.configure(host_toolbar=True, panel_area="left")
+# From the host's InitGui.py, before Strata starts; stored as preferences.
+sb.configure(host_toolbar=True, panel_area="left",
+             shortcuts={"Strata_Compare": None,              # key taken by the host: leave unbound
+                        "Strata_Sync": "Ctrl+Alt+Shift+Y"})  # or move it
 
 def build_plm_tab():
     for action in sb.actions().values():     # QActions owned by Strata
@@ -27,10 +29,16 @@ sb.on_ready(build_plm_tab)                   # runs once Strata is up, or at onc
 
 == API
 
-`strata.boot.configure(host_toolbar=None, panel_area=None)`::
+`strata.boot.configure(host_toolbar=None, panel_area=None, shortcuts=None)`::
 `host_toolbar=True`: Strata creates no toolbar of its own and does not rebuild the current workbench at startup.
 `panel_area="left"` or `"right"`: where the panel docks. When set before Strata starts, the panel is created there, so nothing moves on screen.
-Both are stored as preferences (`HostProvidesToolbar`, `PanelArea`) and also apply live.
+`shortcuts={command: keys or None}`: the host's choice of keys. `None` (or `""`) leaves a command without a key, a key string such as `"Ctrl+Alt+K"` replaces the default, commands not listed keep Strata's default, and `{}` returns to all defaults. Unknown command names raise `KeyError`.
+All three are stored as preferences (`HostProvidesToolbar`, `PanelArea`, `Shortcuts`).
+`host_toolbar` and `panel_area` also apply live. Key bindings are created when Strata registers its commands, so `shortcuts` must be set *before* Strata starts, from the host's `InitGui.py`; a later call takes effect at the next start.
+
+`strata.boot.effective_shortcuts()`::
+`{command: keys}` in effect after the host's choices; `""` means unbound.
+A user's own changes in menu:Tools[Customize...] take precedence over both.
 
 `strata.boot.on_ready(callback)`::
 Calls `callback()` once Strata has started, or immediately if it already has. Use this instead of polling.
@@ -59,6 +67,7 @@ Merge colour tokens into the light and dark themes and restyle Strata's open wid
 
 == Rules that keep both add-ons healthy
 
+* Check Strata's default keys (`strata.boot.SHORTCUTS`) against yours and use `configure(shortcuts=...)` for any clash. Two commands on one key means neither works.
 * Load Strata *once*. If a copy is already installed in FreeCAD's `Mod` folder, use it instead of bundling a second one.
 * Never change the process working directory (`os.chdir`). On Windows a folder that is a working directory cannot be deleted, which breaks uninstalling add-ons.
 * Do not walk `QApplication.allWidgets()` to find Strata's widgets; use `strata.boot.panel()`. A full widget walk has crashed FreeCAD 1.1.4 with a spreadsheet open.
@@ -69,5 +78,5 @@ Merge colour tokens into the light and dark themes and restyle Strata's open wid
 `tests/embed_test.py` checks this API in a running FreeCAD, in three phases with Strata starting on its own:
 
 * *live*: configure, actions and theme;
-* *prestart*: the preferences already set at start, and visibility surviving a real shutdown;
+* *prestart*: the preferences already set at start (including host-chosen and unbound keys), and visibility surviving a real shutdown;
 * *keys*: shortcuts, the Tools menu and panel keys.
