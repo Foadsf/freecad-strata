@@ -182,6 +182,94 @@ class CoreTest(unittest.TestCase):
         self.assertEqual(next_revision(["H"]), "J")  # I is skipped (ASME Y14.35)
         self.assertEqual(next_revision(["Y"]), "AA")
 
+    def test_resubmit_after_rejection(self):
+        v1 = self.p.create_version("V1")
+        r = self.p.release(v1, "Parts/Bracket.FCStd", "BRK-100", approval=True)
+        self.p.set_release_state(r, "Rejected")
+        self.assertEqual(self.p.next_revision("BRK-100"), "A", "a rejected label is free again")
+        r2 = self.p.release(v1, "Parts/Bracket.FCStd", "BRK-100", approval=True)  # same label, second attempt
+        self.assertEqual((r2.revision, r2.state), ("A", "Pending"))
+        self.p.set_release_state(r2, "Released")
+        states = [(x.revision, x.state) for x in self.p.releases() if x.part_number == "BRK-100"]
+        self.assertIn(("A", "Released"), states)
+
+    def test_obsolete_re_releasable(self):
+        v1 = self.p.create_version("V1")
+        r = self.p.release(v1, "Parts/Bracket.FCStd", "BRK-100")
+        self.p.set_release_state(r, "Obsolete")
+        self.assertEqual(self.p.next_revision("BRK-100"), "B", "a plain obsolete keeps its label")
+        r_b = self.p.release(v1, "Parts/Bracket.FCStd", "BRK-200")
+        self.p.set_release_state(r_b, "Obsolete", reusable=True)
+        self.assertEqual(self.p.next_revision("BRK-200"), "A", "re-releasable obsolete frees its label")
+        again = self.p.release(v1, "Parts/Bracket.FCStd", "BRK-200")
+        self.assertEqual((again.revision, again.state), ("A", "Released"))
+
+    def test_numeric_revision_scheme(self):
+        self.p.save_settings({"revision_scheme": "numeric"})
+        v1 = self.p.create_version("V1")
+        r1 = self.p.release(v1, "Parts/Bracket.FCStd", "BRK-100")
+        r2 = self.p.release(v1, "Parts/Bracket.FCStd", "BRK-100")
+        self.assertEqual((r1.revision, r2.revision), ("1", "2"))
+        self.assertEqual(self.p.revision_history("BRK-100")[0].revision, "2", "newest revision first")
+
+    def test_merge_strategies(self):
+        shaft = os.path.join(self.root, "Shaft.FCStd")
+        shutil.copy(self.doc, shaft)
+        self.p.record()
+        self.p.create_workspace("Feature")
+        set_prop(self.doc, "Box", "Length", "30")       # changed only in Feature
+        self.p.record()
+        self.p.switch_workspace("main")
+        set_prop(shaft, "Box", "Length", "40")          # changed only in Main
+        self.p.record()
+        plan = self.p.merge_plan("Feature")
+        self.assertEqual((plan.take_theirs, plan.ours_only), (["Parts/Bracket.FCStd"], ["Shaft.FCStd"]))
+        # Keep Main: nothing changes, but history records the merge
+        self.p.merge(plan, strategy="keep")
+        self.assertEqual(float(get_prop(self.doc, "Box", "Length")), 25)
+        self.assertTrue(self.p.history()[0].title.startswith("Merged Feature into Main"))
+        # Undo the merge (allowed right after it), then Replace with source: both become Feature's
+        self.assertTrue(self.p.can_undo_merge())
+        self.p.undo_merge()
+        self.assertFalse(self.p.history()[0].title.startswith("Merged"), "the merge left history")
+        plan = self.p.merge_plan("Feature")
+        self.p.merge(plan, strategy="replace")
+        self.assertEqual(float(get_prop(self.doc, "Box", "Length")), 30)
+        self.assertEqual(float(get_prop(shaft, "Box", "Length")), 25, "Main's own change replaced by Feature's")
+        # Merge changes with a per-document override: keep Main's Bracket
+        self.p.undo_merge()
+        plan = self.p.merge_plan("Feature")
+        self.p.merge(plan, {"Parts/Bracket.FCStd": "ours"})
+        self.assertEqual(float(get_prop(self.doc, "Box", "Length")), 25)
+        self.assertEqual(float(get_prop(shaft, "Box", "Length")), 40)
+
+    def test_properties_merge_automatically(self):
+        """One side edits only the document's properties, the other the model: no conflict, both kept."""
+        def set_comment(value):
+            ents = entries(self.doc)
+            xml = ents["Document.xml"].decode()
+            p = xml.index('<Property name="Comment"')
+            m = re.compile(r'value="[^"]*"').search(xml, p)
+            ents["Document.xml"] = (xml[:m.start()] + 'value="%s"' % value + xml[m.end():]).encode()
+            write(self.doc, ents)
+
+        self.p.create_workspace("Feature")
+        set_prop(self.doc, "Box", "Length", "30")
+        self.p.record()
+        self.p.switch_workspace("main")
+        set_comment("Bracket, laser cut")
+        self.p.record()
+        plan = self.p.merge_plan("Feature")
+        self.assertEqual((plan.conflicts, plan.auto_merge), ([], {"Parts/Bracket.FCStd": "ours"}))
+        self.p.merge(plan)
+        self.assertEqual(float(get_prop(self.doc, "Box", "Length")), 30)
+        self.assertEqual(self.p.document_properties("Parts/Bracket.FCStd")["Description"], "Bracket, laser cut")
+        # a real conflict stays one
+        self.p.undo_merge()
+        set_prop(self.doc, "Box", "Length", "35")
+        self.p.record()
+        self.assertEqual(self.p.merge_plan("Feature").conflicts, ["Parts/Bracket.FCStd"])
+
     def test_sync_between_two_engineers(self):
         shared = os.path.join(self.tmp, "share")
         self.p.set_remote(shared)
@@ -202,6 +290,21 @@ class CoreTest(unittest.TestCase):
 
 
 class DiffTest(unittest.TestCase):
+    def test_renumbered_side_files_are_not_a_change(self):
+        """FreeCAD renames colour-array side files (LineColorArray3 → LineColorArray1) on every save."""
+        xml = b'<Document><Objects><Object type="Part::Box" name="Box"/></Objects><ObjectData></ObjectData></Document>'
+
+        def gui(f):
+            return ('<Document><ViewProviderData><ViewProvider name="Box"><Properties>'
+                    '<Property name="LineColorArray" type="App::PropertyColorList"><ColorList file="%s"/></Property>'
+                    '</Properties></ViewProvider></ViewProviderData></Document>' % f).encode()
+        same = docdiff.diff_documents(xml, xml, {"LineColorArray3": "h1"}, {"LineColorArray1": "h1"},
+                                      gui("LineColorArray3"), gui("LineColorArray1"))
+        self.assertTrue(same.empty)
+        recoloured = docdiff.diff_documents(xml, xml, {"LineColorArray3": "h1"}, {"LineColorArray1": "h2"},
+                                            gui("LineColorArray3"), gui("LineColorArray1"))
+        self.assertEqual(recoloured.modified[0].appearance, ["LineColorArray"])
+
     def test_external_link_stamp_is_not_a_change(self):
         def doc(stamp, name="Body"):
             return ('<Document><Objects><Object type="App::Link" name="L"/></Objects><ObjectData>'

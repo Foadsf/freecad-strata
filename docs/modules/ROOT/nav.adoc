@@ -12,11 +12,15 @@
 
 .Tutorials
 * xref:tutorials/index.adoc[Overview]
+* xref:tutorials/coming-from-onshape.adoc[Coming from Onshape]
 * xref:tutorials/go-back-in-time.adoc[Go back in time]
 * xref:tutorials/workspaces.adoc[Explore an alternative]
+* xref:tutorials/merging.adoc[Merge workspaces]
 * xref:tutorials/compare.adoc[Compare two designs]
 * xref:tutorials/assemblies.adoc[Assemblies and linked parts]
+* xref:tutorials/properties.adoc[Part numbers and properties]
 * xref:tutorials/releases.adoc[Release a design]
+* xref:tutorials/revision-history.adoc[Revision history and obsolete revisions]
 * xref:tutorials/team.adoc[Work as a team]
 * xref:tutorials/scripting.adoc[Automate with Python]
 

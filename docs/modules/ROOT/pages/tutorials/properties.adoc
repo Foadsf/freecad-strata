@@ -1,0 +1,50 @@
+= Part numbers and properties
+:description: Give every document a part number, a description and your own properties in one table, versioned with the design and used by releases.
+
+*Goal:* give the bracket, the shaft and the assembly part numbers, descriptions and a material, in one go.
+
+*You need:* a project with version control turned on.
+
+This tutorial follows Onshape's advice in https://www.onshape.com/en/resource-center/tech-tips/how-to-keep-your-product-designs-organized[How to keep your product designs organized]: name things consistently and fill in part numbers and properties early, so releases, BOMs and searches have something to work with.
+
+== Open the properties table
+
+[.steps]
+. Click btn:[⋯] in the panel header and choose *Properties...*. The *Strata* menu and toolbar have the same command.
+. Every document of the project is a row, whether it is open or not.
+
+image::screenshots/19_properties.png[The properties table for all documents of a project,role=screenshot,width=820]
+
+== Fill in the table
+
+[cols="1,3"]
+|===
+| Column | Stored in FreeCAD as
+
+| Part number | the document's _Id_ property
+| Description | the document's _Comment_ property
+| Company | the document's _Company_ property
+| your own columns | the document's _Meta_ map, one entry per column
+|===
+
+[.steps]
+. Click a cell and type. Press kbd:[Tab] to move to the next cell.
+. To give several documents the same value, select those cells in one column and type: the value goes into every selected cell.
+. Click btn:[Add property...] to add a column, for example _Material_. Fill it for the documents it applies to.
+. To remove a custom property from a document, clear its cell.
+. Click btn:[Save].
+
+Strata writes the values into the documents (opening closed ones invisibly), saves them, and records *one* history entry for all of them, such as *Edited properties of Bracket, Shaft, Gearbox*.
+Its details read, for example, _Properties: Description Mounting bracket; Material S235_.
+
+== Where the properties are used
+
+* *Releases* pre-fill the part number and description from the properties the document had *at the released version*. See xref:tutorials/releases.adoc[Release a design].
+* *Compare* and *History* list property changes like any other change.
+* *Merge* combines a properties-only edit on one side with a model edit on the other; see xref:tutorials/merging.adoc[Merge workspaces].
+* The values are ordinary FreeCAD document properties, so other workbenches, macros and BOM tools can read them: `doc.Id`, `doc.Comment`, `doc.Meta`.
+
+== Same thing in Python
+
+`fc.set_document_properties(project, {document: {column: value}})` does what btn:[Save] does; `project.document_properties(document)` reads them back, optionally at an earlier point.
+The xref:tutorials/merging.adoc#_same_thing_in_python[merging example] uses both.

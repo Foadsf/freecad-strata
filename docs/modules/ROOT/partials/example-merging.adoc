@@ -1,0 +1,11 @@
+.merging.py: properties, Merge changes with a properties edit on one side, undo, Keep Main
+[source,python]
+----
+include::example$merging.py[]
+----
+
+.Output of `freecadcmd merging.py`
+[source,text]
+----
+include::example$merging.out[]
+----

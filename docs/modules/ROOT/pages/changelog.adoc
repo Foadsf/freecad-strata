@@ -1,6 +1,27 @@
 = Changelog
 :description: What changed in each Strata release.
 
+== 0.3.0 (2026-10-13)
+
+Onshape's PDM and release tutorials, replicated in Strata; see xref:tutorials/coming-from-onshape.adoc[Coming from Onshape].
+
+New::
+* Merge strategies as in Onshape: *Merge changes*, *Keep target*, *Replace with source*, with a choice per document and btn:[Compare with base].
+* A document changed on both sides where one side only edited its properties merges automatically: *Combine both changes*.
+* btn:[Undo merge] right after a merge.
+* The Restore dialog lists the documents that would change; untick the ones to keep.
+* *Properties...*: part number, description, company and custom properties for every document in one table, saved as one history entry. New command `Strata_Properties`.
+* Releases pre-fill the part number and description from the document's properties at the released version.
+* Reject asks for a reason; a rejected revision can be fixed and resubmitted under the same label.
+* Revision history of a part number, *Obsolete...* with *Mark revision as re-releasable*, and btn:[Export...] of a released revision to `.FCStd` and `.step`.
+* Revision schemes: letters (ASME Y14.35) or numbers, in Settings.
+
+Fixed::
+* Releasing a rejected revision again failed with _refs/tags/pending/... changed meanwhile_, and the revision stayed Rejected for good.
+* After Strata saved documents itself, FreeCAD still showed them as modified, so the next workspace switch or merge asked to save them again.
+* Colour arrays that FreeCAD renumbers on every save showed up as appearance changes.
+* A properties-only save was summarised as _Rebuilt ..._ instead of _Properties: ..._.
+
 == 0.2.1 (2026-10-13)
 
 New::

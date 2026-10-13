@@ -1,0 +1,47 @@
+= Revision history and obsolete revisions
+:description: See every revision of one part number, release a new revision, mark the old one obsolete, and export a released revision.
+
+*Goal:* release revision B of the bracket, retire revision A, and send revision B to a supplier.
+
+*You need:* a part number with at least one released revision, see xref:tutorials/releases.adoc[Release a design].
+
+This tutorial follows Onshape's https://cad.onshape.com/help/Content/Release/viewing_revision_history_and_obsoleting_parts.htm[Viewing revision history and obsoleting parts] help page.
+
+== Release the next revision
+
+[.steps]
+. Make the change, for example a thinner base plate, and create a version, here _V3 – Production release_.
+. Release V3 as in xref:tutorials/releases.adoc[Release a design]. The bracket keeps part number *BRK-100*; Strata proposes revision *B*.
+. If approval is required, approve it in *Releases*, with a comment such as _Checked against drawing D-100_.
+
+== Open the revision history
+
+Right-click the version node that carries the *BRK-100* chip and choose *Revision history of BRK-100...*. Or open *Releases* (kbd:[Ctrl+Shift+R]) and choose *BRK-100 (revision history)* under *Show*.
+
+image::screenshots/22_revision_history.png[The revision history of part number BRK-100,role=screenshot,width=860]
+
+Revisions are listed newest first, with their state, the version they were released from, who requested and approved them, and the comment.
+
+== Mark the old revision obsolete
+
+[.steps]
+. Select revision *A* and click btn:[Obsolete...].
+. Enter a reason, for example _Replaced by rev B_.
+. Leave *Mark revision as re-releasable* unticked: revision A stays used. Tick it only if A never reached production and its letter may be given to a later release.
+. Click btn:[Obsolete].
+
+image::screenshots/23_obsolete.png[Marking revision A obsolete,role=screenshot,width=520]
+
+Revision A now reads *Obsolete* with the reason. It stays in the record, and btn:[View] still opens it, but it is no longer valid for manufacturing.
+
+== Export a released revision
+
+[.steps]
+. Select revision *B* and click btn:[Export...].
+. Choose a folder.
+
+Strata writes `BRK-100_revB.FCStd`, the document exactly as released, and `BRK-100_revB.step` with its visible solids, ready for a supplier. Your working documents are not touched.
+
+== Same thing in Python
+
+include::partial$example-revision-history.adoc[]

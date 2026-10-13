@@ -26,7 +26,8 @@ from . import fc
 ICONS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "resources", "icons")
 _state: dict = {}
 PARAMS = "User parameter:BaseApp/Preferences/Mod/Strata"
-COMMAND_NAMES = ["Strata_Panel", "Strata_CreateVersion", "Strata_Compare", "Strata_Releases", "Strata_Sync"]
+COMMAND_NAMES = ["Strata_Panel", "Strata_CreateVersion", "Strata_Compare", "Strata_Releases", "Strata_Sync",
+                 "Strata_Properties"]
 AREAS = {"left": QtCore.Qt.LeftDockWidgetArea, "right": QtCore.Qt.RightDockWidgetArea}
 
 
@@ -287,6 +288,8 @@ def install():
                                     lambda: panel().show_releases()),
         "Strata_Sync": _Command("Sync", "Share and sync the project with your team", "sync",
                                 lambda: panel().sync()),
+        "Strata_Properties": _Command("Properties", "Part numbers, descriptions and custom properties of the "
+                                      "project's documents", "properties", lambda: panel().edit_properties()),
     }
     keys = effective_shortcuts()
     for name, cmd in cmds.items():

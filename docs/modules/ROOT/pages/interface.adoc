@@ -67,7 +67,7 @@ History entry::
 View this point · Compare with latest · Show what changed here · Restore to this point... · Restore only _document_... · Create version here... · Branch from here...
 
 Version or workspace in the graph::
-Switch to _workspace_ · Merge _workspace_ into _current_ · View · Compare with latest · Branch to create workspace... · Release... (versions) or Create version here... · Restore _workspace_ to this point... · Delete workspace...
+Switch to _workspace_ · Merge _workspace_ into _current_ · View · Compare with latest · Branch to create workspace... · Release... (versions) or Create version here... · Revision history of _part number_... (versions with a release) · Restore _workspace_ to this point... · Delete workspace...
 
 == Workspace menu
 
@@ -78,7 +78,7 @@ Below the list: *New workspace...* and *Merge into _current_* with a sub-menu of
 
 == The ⋯ menu
 
-Create version... · New workspace... · Compare... · Releases... · Share project... (or Sync now) · Project settings... · Open a shared project... · Turn on version control... (when the active document's folder is not a project yet).
+Create version... · New workspace... · Compare... · Releases... · Properties... · Share project... (or Sync now) · Project settings... · Open a shared project... · Turn on version control... (when the active document's folder is not a project yet).
 
 == When version control is off
 
@@ -91,7 +91,7 @@ image::screenshots/14_turn_on.png[The panel when version control is off,role=scr
 
 The status bar shows _project · workspace_ on the right, for example _Gearbox · Lightweight_. Click it to show or hide the panel.
 
-The *Strata* toolbar holds Versions and history, Create version, Compare, Releases and Sync.
+The *Strata* toolbar holds Versions and history, Create version, Compare, Releases, Sync and Properties.
 The same commands are at the bottom of the menu:Tools[] menu, with their xref:shortcuts.adoc[keyboard shortcuts].
 
 == Dialogs
@@ -113,13 +113,22 @@ The same commands are at the bottom of the menu:Tools[] menu, with their xref:sh
 | Pick *From* and *To* (latest, workspaces, versions, recent history). Shows a tree of documents and features. btn:[Show in 3D] overlays both states of the selected document.
 
 | Merge
-| Lists documents taken over automatically and, for documents changed on both sides, a choice of *Keep mine*, *Take theirs* or *Keep both (copy)*, with a summary of each side's change.
+| An overall strategy (*Merge changes*, *Keep _target_*, *Replace with _source_*) and one card per document with a summary of each side's change and a choice: *Keep*, *Take*, *Keep both (copy)* or *Combine both changes*. btn:[Compare with base]. See xref:tutorials/merging.adoc[Merge workspaces].
+
+| Restore
+| The documents that differ from the chosen point, each with what restoring would undo. Untick the ones to keep. btn:[Compare changes].
+
+| Properties
+| One row per document: part number, description, company and custom columns. btn:[Add property...]. See xref:tutorials/properties.adoc[Part numbers and properties].
 
 | Release
-| One row per document of the version: tick, part number, revision (next letter suggested), description. *Require approval* turns btn:[Release] into btn:[Submit for approval].
+| One row per document of the version: tick, part number and description (from the document's properties at that version), revision (next one suggested). *Require approval* turns btn:[Release] into btn:[Submit for approval].
 
 | Releases
-| The register of all part numbers and revisions with state, document, version, requester and approver. btn:[Approve], btn:[Reject], btn:[Mark obsolete], btn:[View].
+| The register of all part numbers and revisions with state, document, version, requester, approver and comment, or the revision history of one part number (*Show*). btn:[Approve], btn:[Reject], btn:[Obsolete...], btn:[View], btn:[Export...].
+
+| Obsolete
+| A reason, and *Mark revision as re-releasable*.
 
 | Share project
 | The shared location: a folder (btn:[Browse...]) or a Git server address.
@@ -128,7 +137,7 @@ The same commands are at the bottom of the menu:Tools[] menu, with their xref:sh
 | The shared location and the folder to put your copy in.
 
 | Project settings
-| Your name and email, whether saves are recorded, whether binary attachments are shared.
+| Your name and email, whether saves are recorded, whether binary attachments are shared, the revision scheme.
 |===
 
 Every dialog follows the usual keys: kbd:[Enter] for the blue button, kbd:[Esc] to cancel.

@@ -200,6 +200,83 @@ def compare_overlay(project: Project, rev_a: str, rev_b: str, rel: str, label_a:
         stem, a, b, pct)
 
 
+PROPERTY_FIELDS = {"Part number": "Id", "Description": "Comment", "Company": "Company"}
+_suspended = [0]  # >0 while Strata saves documents itself and records them as one entry
+
+
+def set_document_properties(project: Project, values: dict) -> str | None:
+    """values: {doc: {'Part number': ..., 'Description': ..., 'Company': ..., custom: ...}}.
+    Writes them into the documents (opening closed ones hidden), saves, and records ONE history entry.
+    Custom properties go to the document's Meta map; an empty value removes a custom property."""
+    changed = []
+    _suspended[0] += 1
+    try:
+        for rel, props in values.items():
+            path = project.abspath(rel)
+            doc = next((d for d in App.listDocuments().values()
+                        if os.path.normcase(getattr(d, "FileName", "")) == os.path.normcase(path)), None)
+            opened = doc is None
+            if opened:
+                doc = App.openDocument(path, True)
+            try:
+                meta = dict(doc.Meta)
+                for name, value in props.items():
+                    value = (value or "").strip()
+                    if name in PROPERTY_FIELDS:
+                        setattr(doc, PROPERTY_FIELDS[name], value)
+                    elif value:
+                        meta[name] = value
+                    else:
+                        meta.pop(name, None)
+                doc.Meta = meta
+                doc.save()
+                # a save from Python does not clear the window's "modified" mark
+                if Gui is not None and Gui.getDocument(doc.Name) is not None:
+                    Gui.getDocument(doc.Name).Modified = False
+                changed.append(rel)
+            finally:
+                if opened:
+                    App.closeDocument(doc.Name)
+    finally:
+        _suspended[0] -= 1
+    if not changed:
+        return None
+    names = ", ".join(os.path.splitext(os.path.basename(d))[0] for d in changed[:3])
+    title = "Edited properties of %s" % names + (" +%d" % (len(changed) - 3) if len(changed) > 3 else "")
+    return project.record(changed, title=title if len(changed) > 1 else None)
+
+
+def export_revision(project: Project, rev: str, rel: str, folder: str, basename: str) -> list[str]:
+    """Export a document as recorded at rev: <basename>.FCStd and <basename>.step (visible solids)."""
+    import shutil
+    import tempfile
+    os.makedirs(folder, exist_ok=True)
+    tmp = tempfile.mkdtemp(prefix="strata-export-")
+    out = []
+    try:
+        for d in project.documents(rev):  # all documents, so links resolve
+            project.export_document(rev, d, tmp)
+        src = os.path.join(tmp, *rel.split("/"))
+        fcstd = os.path.join(folder, basename + ".FCStd")
+        shutil.copyfile(src, fcstd)
+        out.append(fcstd)
+        doc = App.openDocument(src, True)
+        try:
+            doc.recompute()
+            solids = [o for o in doc.Objects if not o.InList and hasattr(o, "Shape")
+                      and getattr(o, "Visibility", True) and not o.Shape.isNull() and o.Shape.Solids]
+            if solids:
+                import Import
+                step = os.path.join(folder, basename + ".step")
+                Import.export(solids, step)
+                out.append(step)
+        finally:
+            App.closeDocument(doc.Name)
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+    return out
+
+
 class SaveObserver:
     """Records a history entry after every save of a document inside a project."""
 
@@ -207,6 +284,8 @@ class SaveObserver:
         self.on_change = on_change
 
     def slotFinishSaveDocument(self, doc, filename):
+        if _suspended[0]:
+            return  # Strata is saving several documents and records them together
         from PySide import QtCore
         QtCore.QTimer.singleShot(0, lambda: self._record(filename))
 

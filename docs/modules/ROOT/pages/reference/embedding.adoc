@@ -47,7 +47,7 @@ Calls `callback()` once Strata has started, or immediately if it already has. Us
 `True` once Strata has started.
 
 `strata.boot.actions()`::
-`{command name: QAction}` for `Strata_Panel`, `Strata_CreateVersion`, `Strata_Compare`, `Strata_Releases`, `Strata_Sync`.
+`{command name: QAction}` for `Strata_Panel`, `Strata_CreateVersion`, `Strata_Compare`, `Strata_Releases`, `Strata_Sync`, `Strata_Properties` (new in 0.3.0; it has no default shortcut).
 Strata creates them at startup and enables or disables them with the active project.
 They do not carry key bindings; FreeCAD's own commands do (see below).
 

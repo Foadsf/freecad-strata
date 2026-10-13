@@ -204,6 +204,12 @@ class SettingsDialog(StrataDialog):
         self.body.addWidget(theme.label(
             "By default only the text content of documents (model definition and geometry) is shared, which keeps "
             "history small. Binary attachments are still restored exactly on this computer.", "caption", wrap=True))
+        from ..project import REVISION_SCHEMES
+        self.scheme = QtWidgets.QComboBox()
+        for key, text in REVISION_SCHEMES.items():
+            self.scheme.addItem(text, key)
+        self.scheme.setCurrentIndex(max(0, self.scheme.findData(s.get("revision_scheme", "letters"))))
+        self.field("Revision scheme", self.scheme, "Used for the next revision of every part number in this project.")
         self.set_primary("Save")
 
 
@@ -350,40 +356,75 @@ class CompareDialog(StrataDialog):
 
 
 # ------------------------------------------------------------------ merge
+def _decision_combo(target: str, source: str, allow_both: bool, combine: bool = False) -> QtWidgets.QComboBox:
+    combo = QtWidgets.QComboBox()
+    if combine:
+        combo.addItem("Combine both changes", "merged")
+    combo.addItem("Keep %s" % target, "ours")
+    combo.addItem("Take %s" % source, "theirs")
+    if allow_both:
+        combo.addItem("Keep both (copy)", "both")
+    return combo
+
+
 class MergeDialog(StrataDialog):
-    def __init__(self, project, plan, parent=None):
+    """Onshape-style merge: an overall strategy, a choice per document, and Compare with base."""
+
+    STRATEGIES = [("merge", "Merge changes"), ("keep", "Keep {target}"), ("replace", "Replace with {source}")]
+
+    def __init__(self, project, plan, parent=None, compare_cb=None):
         target = display_name(project.current_workspace())
         super().__init__("Merge %s into %s" % (plan.source_label, target),
-                         "Changes made in %s are brought into %s. Your current work stays in history, so this can "
-                         "always be undone with Restore." % (plan.source_label, target), parent, 600)
-        self.plan = plan
-        self.choices = {}
-        t = theme.tokens()
-        if plan.take_theirs:
-            self.body.addWidget(theme.label("UPDATED AUTOMATICALLY", "field"))
-            for doc in plan.take_theirs:
-                self.body.addWidget(self._row(doc, "check", t["success"], "Only changed in %s" % plan.source_label))
-        if plan.conflicts:
-            self.body.addWidget(theme.label("CHANGED IN BOTH — CHOOSE", "field"))
-            base = plan.base
-            for doc in plan.conflicts:
-                ours = project.diff_doc(project.group_docs(project.files(base)).get(doc),
-                                        project.group_docs(project.files(plan.ours)).get(doc))
-                theirs = project.diff_doc(project.group_docs(project.files(base)).get(doc),
-                                          project.group_docs(project.files(plan.theirs)).get(doc))
-                from ..docdiff import summarize
-                detail = "%s: %s\n%s: %s" % (target, summarize(ours), plan.source_label, summarize(theirs))
-                card = self._row(doc, "warning", t["warning"], detail)
-                combo = QtWidgets.QComboBox()
-                combo.addItem("Keep %s" % target, "ours")
-                combo.addItem("Take %s" % plan.source_label, "theirs")
-                combo.addItem("Keep both (copy)", "both")
-                combo.setCurrentIndex(1)
+                         "Brings the changes made in %s since the two workspaces split into %s. You can undo the merge "
+                         "right afterwards." % (plan.source_label, target), parent, 680)
+        self.project, self.plan, self.target = project, plan, target
+        self.strategy = QtWidgets.QComboBox()
+        for key, text in self.STRATEGIES:
+            self.strategy.addItem(text.format(target=target, source=plan.source_label), key)
+        self.field("Overall merge strategy", self.strategy,
+                   "Merge changes takes what only %s changed, keeps what only %s changed, and asks about documents "
+                   "changed in both. A choice below overrides it for one document." % (plan.source_label, target))
+        self.combos = {}
+        rows = [(d, "theirs-only") for d in plan.take_theirs] + [(d, "both") for d in plan.conflicts] + \
+               [(d, "combine") for d in plan.auto_merge] + [(d, "ours-only") for d in plan.ours_only]
+        if rows:
+            self.body.addWidget(theme.label("DOCUMENTS", "field"))
+            base = project.group_docs(project.files(plan.base))
+            ours = project.group_docs(project.files(plan.ours))
+            theirs = project.group_docs(project.files(plan.theirs))
+            from ..docdiff import summarize
+            t = theme.tokens()
+            for doc, kind in rows:
+                parts = []
+                if kind in ("theirs-only", "both", "combine"):
+                    parts.append("%s: %s" % (plan.source_label, summarize(project.diff_doc(base.get(doc), theirs.get(doc)))))
+                if kind in ("ours-only", "both", "combine"):
+                    parts.append("%s: %s" % (target, summarize(project.diff_doc(base.get(doc), ours.get(doc)))))
+                if kind == "combine":
+                    parts.append("Only the properties changed on one side, so both changes can be kept.")
+                icon, color = {"both": ("warning", t["warning"]), "theirs-only": ("merge", t["accent"]),
+                               "combine": ("merge", t["success"]), "ours-only": ("workspace", t["muted"])}[kind]
+                card = self._row(doc, icon, color, "\n".join(parts))
+                combo = _decision_combo(target, plan.source_label, kind == "both", kind == "combine")
                 card.layout().addWidget(combo)
-                self.choices[doc] = combo
-        if not plan.take_theirs and not plan.conflicts:
+                self.combos[doc] = combo
+                self.body.addWidget(card)
+        else:
             self.body.addWidget(theme.label("No document changes; only history will be combined.", "caption"))
+        self.strategy.currentIndexChanged.connect(self._apply_strategy)
+        self._apply_strategy()
+        if compare_cb:
+            b = theme.make_button("Compare with base", "secondary", "compare")
+            b.setToolTip("Compare the common starting point with %s" % plan.source_label)
+            b.clicked.connect(compare_cb)
+            self.footer_left.addWidget(b)
         self.set_primary("Merge", "merge")
+
+    def _apply_strategy(self):
+        decisions = self.project.merge_decisions(self.plan, self.strategy.currentData())
+        for doc, combo in self.combos.items():
+            choice = decisions.get(doc) or "theirs"
+            combo.setCurrentIndex(max(0, combo.findData(choice)))
 
     def _row(self, doc, icon_name, color, detail):
         card = QtWidgets.QFrame()
@@ -404,8 +445,119 @@ class MergeDialog(StrataDialog):
         lay.addLayout(txt, 1)
         return card
 
+    def chosen_strategy(self) -> str:
+        return self.strategy.currentData()
+
     def resolutions(self) -> dict:
-        return {doc: combo.currentData() for doc, combo in self.choices.items()}
+        return {doc: combo.currentData() for doc, combo in self.combos.items()}
+
+
+# ------------------------------------------------------------------ restore
+class RestoreDialog(StrataDialog):
+    """Onshape-style restore: what changes per document, keep or restore each, compare before confirming."""
+
+    def __init__(self, project, rev, label, only=None, parent=None, compare_cb=None):
+        cur = display_name(project.current_workspace())
+        super().__init__("Restore %s to %s" % (cur, label),
+                         "Brings documents back to how they were at %s. This adds a new history entry; nothing is "
+                         "lost, and the current state stays in history." % label, parent, 620)
+        from ..docdiff import summarize
+        self.checks = {}
+        diffs = project.diff(project.head(), rev)
+        if not diffs:
+            self.body.addWidget(theme.label("Nothing to restore: the documents already match %s." % label, "caption"))
+        else:
+            self.body.addWidget(theme.label("RESTORE THESE DOCUMENTS", "field"))
+        for doc, diff in diffs.items():
+            box = QtWidgets.QCheckBox("%s  ·  %s" % (_stem(doc), summarize(diff)))
+            box.setChecked(only is None or doc in only)
+            self.checks[doc] = box
+            self.body.addWidget(box)
+        if compare_cb:
+            b = theme.make_button("Compare changes", "secondary", "compare")
+            b.clicked.connect(compare_cb)
+            self.footer_left.addWidget(b)
+        self.set_primary("Restore", "restore")
+        self.primary.setEnabled(bool(diffs))
+
+    def documents(self) -> list[str] | None:
+        """None means all documents (a full restore)."""
+        chosen = [d for d, b in self.checks.items() if b.isChecked()]
+        return None if len(chosen) == len(self.checks) else chosen
+
+
+# ------------------------------------------------------------------ properties
+class PropertiesDialog(StrataDialog):
+    """Onshape: Workspace properties. Part number, description, company and custom properties per document."""
+
+    FIXED = ["Part number", "Description", "Company"]
+
+    def __init__(self, project, parent=None):
+        super().__init__("Properties",
+                         "Part numbers, descriptions and your own properties for the documents in %s. They are "
+                         "stored in the documents, versioned with them, and used by releases." % project.name,
+                         parent, 820)
+        self.project = project
+        self.docs = project.documents_on_disk()
+        self.values = {d: project.document_properties(d) for d in self.docs}
+        custom = sorted({k for v in self.values.values() for k in v} - set(self.FIXED))
+        self.columns = self.FIXED + custom
+        self.table = QtWidgets.QTableWidget(len(self.docs), len(self.columns) + 1)
+        self.table.verticalHeader().hide()
+        self.table.setShowGrid(False)
+        self.table.horizontalHeader().setDefaultAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        self.table.horizontalHeader().setStretchLastSection(True)
+        self._fill()
+        self.table.setMinimumHeight(min(380, 70 + 34 * len(self.docs)))
+        self.body.addWidget(self.table)
+        add = theme.make_button("Add property…", "secondary", "plus")
+        add.clicked.connect(self._add_column)
+        self.footer_left.addWidget(add)
+        self.body.addWidget(theme.label("Tip: select several cells in one column and type to give them the same "
+                                        "value. An empty custom value removes that property.", "caption", wrap=True))
+        self.set_primary("Save", "check")
+
+    def _fill(self):
+        self.table.setColumnCount(len(self.columns) + 1)
+        self.table.setHorizontalHeaderLabels(["Document"] + self.columns)
+        for r, doc in enumerate(self.docs):
+            it = QtWidgets.QTableWidgetItem(doc)
+            it.setFlags(QtCore.Qt.ItemIsEnabled)
+            self.table.setItem(r, 0, it)
+            for c, col in enumerate(self.columns, start=1):
+                if self.table.item(r, c) is None:
+                    self.table.setItem(r, c, QtWidgets.QTableWidgetItem(self.values[doc].get(col, "")))
+        self.table.resizeColumnsToContents()
+        self.table.setColumnWidth(0, max(160, self.table.columnWidth(0)))
+
+    def _add_column(self):
+        name, ok = QtWidgets.QInputDialog.getText(self, "Add property", "Property name, e.g. Material or Vendor:")
+        name = (name or "").strip()
+        if ok and name and name not in self.columns and name != "Document":
+            self.columns.append(name)
+            self._fill()
+
+    def keyPressEvent(self, ev):
+        # typing into several selected cells of a column sets them all (like Onshape's multi-select)
+        items = self.table.selectedItems()
+        if len(items) > 1 and ev.text() and ev.text().isprintable() and not self.table.state():
+            text, ok = QtWidgets.QInputDialog.getText(self, "Set value", "Value for %d cells:" % len(items),
+                                                      text=ev.text())
+            if ok:
+                for it in items:
+                    if it.column() > 0:
+                        it.setText(text)
+            return
+        super().keyPressEvent(ev)
+
+    def changes(self) -> dict:
+        out = {}
+        for r, doc in enumerate(self.docs):
+            for c, col in enumerate(self.columns, start=1):
+                new = self.table.item(r, c).text().strip()
+                if new != self.values[doc].get(col, ""):
+                    out.setdefault(doc, {})[col] = new
+        return out
 
 
 # ------------------------------------------------------------------ release
@@ -413,7 +565,7 @@ class ReleaseDialog(StrataDialog):
     def __init__(self, project, version, part_numbers: dict, parent=None):
         super().__init__("Release %s" % version.name,
                          "Releasing makes a version official for manufacturing. Each released document gets a part "
-                         "number and the next revision letter.", parent, 640)
+                         "number and the next revision.", parent, 640)
         self.project = project
         self.table = QtWidgets.QTableWidget(0, 4)
         self.table.setHorizontalHeaderLabels(["Document", "Part number", "Revision", "Description"])
@@ -424,24 +576,31 @@ class ReleaseDialog(StrataDialog):
         self.table.setSelectionMode(QtWidgets.QAbstractItemView.NoSelection)
         docs = project.documents(version.sha)
         for doc in docs:
+            props = project.document_properties(doc, version.sha)
             r = self.table.rowCount()
             self.table.insertRow(r)
             it = QtWidgets.QTableWidgetItem(_stem(doc))
             it.setFlags(QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled)
-            it.setCheckState(QtCore.Qt.Checked if part_numbers.get(doc) or len(docs) == 1 else QtCore.Qt.Unchecked)
+            pn = props.get("Part number") or part_numbers.get(doc) or ""
+            it.setCheckState(QtCore.Qt.Checked if pn or len(docs) == 1 else QtCore.Qt.Unchecked)
             it.setData(QtCore.Qt.UserRole, doc)
             self.table.setItem(r, 0, it)
-            pn = part_numbers.get(doc) or _stem(doc).upper().replace(" ", "-")
+            pn = pn or _stem(doc).upper().replace(" ", "-")
             self.table.setItem(r, 1, QtWidgets.QTableWidgetItem(pn))
             self.table.setItem(r, 2, QtWidgets.QTableWidgetItem(project.next_revision(pn)))
-            self.table.setItem(r, 3, QtWidgets.QTableWidgetItem(version.description.splitlines()[0]
-                                                                if version.description else ""))
+            desc = props.get("Description") or (version.description.splitlines()[0] if version.description else "")
+            self.table.setItem(r, 3, QtWidgets.QTableWidgetItem(desc))
         self.table.itemChanged.connect(self._pn_changed)
         self.table.resizeColumnsToContents()
         self.table.setColumnWidth(0, max(150, self.table.columnWidth(0)))
         self.table.setColumnWidth(1, 140)
         self.table.setMinimumHeight(min(320, 60 + 34 * len(docs)))
         self.body.addWidget(self.table)
+        from ..project import REVISION_SCHEMES
+        self.body.addWidget(theme.label("Revision scheme: %s. Part numbers and descriptions come from the documents' "
+                                        "properties." % REVISION_SCHEMES[project.settings().get("revision_scheme",
+                                                                                                 "letters")],
+                                        "caption", wrap=True))
         self.approval = QtWidgets.QCheckBox("Require approval before it is released")
         self.body.addWidget(self.approval)
         self.approval.toggled.connect(lambda on: self.primary.setText("Submit for approval" if on else "Release"))
@@ -465,18 +624,39 @@ class ReleaseDialog(StrataDialog):
         return out
 
 
+class ObsoleteDialog(StrataDialog):
+    def __init__(self, rel, parent=None):
+        super().__init__("Obsolete %s rev %s" % (rel.part_number, rel.revision),
+                         "An obsolete revision stays in the record but is no longer valid for manufacturing.",
+                         parent, 520)
+        self.reusable = QtWidgets.QCheckBox("Mark revision as re-releasable")
+        self.body.addWidget(self.reusable)
+        self.body.addWidget(theme.label("When checked, the next release of %s may use revision %s again."
+                                        % (rel.part_number, rel.revision), "caption", wrap=True))
+        self.comment = self.field("Reason", QtWidgets.QLineEdit())
+        self.comment.setPlaceholderText("e.g. replaced by rev B, supplier change")
+        self.set_primary("Obsolete", "lock")
+
+
 class ReleasesDialog(StrataDialog):
     STATE_STYLE = {"Released": ("success", "success_soft"), "Pending": ("warning", "warning_soft"),
                    "Rejected": ("danger", "danger_soft"), "Obsolete": ("faint", "hover")}
+    COLUMNS = ["Part number", "Rev", "State", "Document", "Version", "Requested by", "Approved by", "Comment"]
 
-    def __init__(self, project, on_view=None, parent=None):
-        super().__init__("Releases", "Every released revision in %s, its state and who approved it." % project.name,
-                         parent, 820)
-        self.project = project
-        self.on_view = on_view
-        self.table = QtWidgets.QTableWidget(0, 7)
-        self.table.setHorizontalHeaderLabels(["Part number", "Rev", "State", "Document", "Version",
-                                              "Requested by", "Approved by"])
+    def __init__(self, project, on_view=None, parent=None, on_export=None, part_number=None):
+        super().__init__("Releases", "Every release in %s: revisions, their state, who requested and approved them."
+                         % project.name, parent, 900)
+        self.project, self.on_view, self.on_export = project, on_view, on_export
+        self.part = QtWidgets.QComboBox()
+        self.part.addItem("All part numbers", None)
+        for pn in sorted({r.part_number for r in project.releases()}):
+            self.part.addItem("%s  (revision history)" % pn, pn)
+        if part_number:
+            self.part.setCurrentIndex(max(0, self.part.findData(part_number)))
+        self.field("Show", self.part)
+        self.part.currentIndexChanged.connect(self.refresh)
+        self.table = QtWidgets.QTableWidget(0, len(self.COLUMNS))
+        self.table.setHorizontalHeaderLabels(self.COLUMNS)
         self.table.horizontalHeader().setDefaultAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
         self.table.verticalHeader().hide()
         self.table.setShowGrid(False)
@@ -488,27 +668,32 @@ class ReleasesDialog(StrataDialog):
         self.body.addWidget(self.table, 1)
         self.approve = theme.make_button("Approve", "secondary", "check")
         self.reject_btn = theme.make_button("Reject", "danger", "close")
-        self.obsolete = theme.make_button("Mark obsolete", "secondary", "lock")
+        self.obsolete = theme.make_button("Obsolete…", "secondary", "lock")
         self.view = theme.make_button("View", "secondary", "eye")
-        for b in (self.approve, self.reject_btn, self.obsolete, self.view):
+        self.export = theme.make_button("Export…", "secondary", "share")
+        for b in (self.approve, self.reject_btn, self.obsolete, self.view, self.export):
             self.footer_left.addWidget(b)
         self.approve.clicked.connect(lambda: self._state("Released"))
         self.reject_btn.clicked.connect(lambda: self._state("Rejected"))
         self.obsolete.clicked.connect(lambda: self._state("Obsolete"))
         self.view.clicked.connect(self._view)
+        self.export.clicked.connect(self._export)
         self.table.itemSelectionChanged.connect(self._buttons)
         self.cancel_btn.setText("Close")
         self.refresh()
 
     def refresh(self):
         t = theme.tokens()
-        self.rels = self.project.releases()
+        pn = self.part.currentData()
+        self.rels = self.project.revision_history(pn) if pn else self.project.releases()
         self.table.setRowCount(0)
         for rel in self.rels:
             r = self.table.rowCount()
             self.table.insertRow(r)
-            vals = [rel.part_number, rel.revision, rel.state, _stem(rel.document), rel.version, rel.author,
-                    rel.approver if rel.state != "Pending" else "—"]
+            rev = rel.revision + (" (%d)" % rel.attempt if rel.attempt > 1 else "")
+            state = rel.state + (", re-releasable" if rel.reusable else "")
+            vals = [rel.part_number, rev, state, _stem(rel.document), rel.version, rel.author,
+                    rel.approver if rel.state != "Pending" else "—", rel.comment]
             for c, v in enumerate(vals):
                 it = QtWidgets.QTableWidgetItem(v)
                 if c == 2:
@@ -523,7 +708,7 @@ class ReleasesDialog(StrataDialog):
         if not self.rels:
             self.table.setRowCount(1)
             self.table.setItem(0, 0, QtWidgets.QTableWidgetItem("Nothing released yet. Right-click a version → Release."))
-            self.table.setSpan(0, 0, 1, 7)
+            self.table.setSpan(0, 0, 1, len(self.COLUMNS))
         self._buttons()
 
     def current(self):
@@ -538,24 +723,38 @@ class ReleasesDialog(StrataDialog):
         self.reject_btn.setEnabled(bool(rel and rel.state == "Pending"))
         self.obsolete.setEnabled(bool(rel and rel.state == "Released"))
         self.view.setEnabled(bool(rel and self.on_view))
+        self.export.setEnabled(bool(rel and self.on_export and rel.state in ("Released", "Obsolete")))
 
     def _state(self, state):
         rel = self.current()
         if not rel:
             return
+        comment, reusable = "", False
         if state == "Obsolete":
-            ok = QtWidgets.QMessageBox.question(self, "Mark obsolete",
-                                                "Mark %s rev %s as obsolete? It stays visible but is no longer valid "
-                                                "for manufacturing." % (rel.part_number, rel.revision))
-            if ok != QtWidgets.QMessageBox.Yes:
+            dlg = ObsoleteDialog(rel, self)
+            if dlg.exec() != QtWidgets.QDialog.Accepted:
                 return
-        self.project.set_release_state(rel, state)
+            comment, reusable = dlg.comment.text().strip(), dlg.reusable.isChecked()
+        elif state == "Rejected":
+            comment, ok = QtWidgets.QInputDialog.getText(self, "Reject", "Reason for rejecting %s rev %s:"
+                                                         % (rel.part_number, rel.revision))
+            if not ok:
+                return
+        self.project.set_release_state(rel, state, comment.strip(), reusable)
         self.refresh()
 
     def _view(self):
         rel = self.current()
         if rel and self.on_view:
             self.on_view(rel)
+
+    def _export(self):
+        rel = self.current()
+        if rel and self.on_export:
+            folder = QtWidgets.QFileDialog.getExistingDirectory(self, "Export %s rev %s to"
+                                                                % (rel.part_number, rel.revision))
+            if folder:
+                self.on_export(rel, folder)
 
 
 def ask_restore(parent, what: str, target: str) -> bool:

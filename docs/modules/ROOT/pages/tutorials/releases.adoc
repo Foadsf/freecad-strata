@@ -1,7 +1,14 @@
 = Release a design
-:description: Release a version under a part number and revision, use the approval step, and mark old revisions obsolete.
+:description: Release a version under a part number and revision, use the approval step, reject and resubmit, and choose a revision scheme.
 
-*Goal:* release version V2 of the bracket and shaft for manufacturing, then revise the bracket.
+*Goal:* release version V2 of the bracket and shaft for manufacturing, have the release approved, then revise the bracket.
+
+This tutorial follows Onshape's https://cad.onshape.com/help/Content/Release/release_management.htm[Release management] help page: a release candidate is created from a version, goes through *Pending*, and ends *Released* or *Rejected*.
+
+== Before you start: part numbers
+
+Give the documents part numbers first; xref:tutorials/properties.adoc[Part numbers and properties] shows how to do it for all documents at once.
+A release reads them from the document *as it was at the released version*, so set them before you create the version.
 
 == Release a version
 
@@ -13,8 +20,8 @@
 
 image::screenshots/10_release.png[Releasing version V2,role=screenshot,width=700]
 
-Part numbers are pre-filled from the _Id_ property of the open document (select the document in the tree to see its properties), from earlier releases of the same document, or from the document name.
-The revision is the next free letter for that part number: A, then B, C, ...; I, O, Q, S, X and Z are skipped as in ASME Y14.35, and after Y comes AA.
+The part number and description come from the document's properties at that version, else from earlier releases of the same document. A document without a part number starts unticked.
+The revision is the next free one for that part number in the project's revision scheme.
 
 The version's node in the graph now carries a green chip such as *BRK-100 A*.
 
@@ -22,23 +29,51 @@ The version's node in the graph now carries a green chip such as *BRK-100 A*.
 
 Tick *Require approval before it is released*. The button becomes btn:[Submit for approval] and the revision is created as *Pending*, with an amber chip.
 
-An approver then opens *Releases* (kbd:[Ctrl+Shift+R]), selects the row and clicks btn:[Approve] or btn:[Reject]. The approver's name is recorded.
+[.steps]
+. The approver opens *Releases* (kbd:[Ctrl+Shift+R]) and selects the pending row.
+. btn:[Approve] makes it *Released* and records the approver's name.
+. btn:[Reject] asks for a reason, for example _Hole pattern does not match drawing_, and makes it *Rejected*.
+
+== Fix and resubmit a rejected revision
+
+A rejected revision does not use up its letter.
+
+[.steps]
+. Fix the design and create a new version, for example _V2.1_.
+. Release it. Strata proposes the same revision again, here *A*.
+. Submit it for approval as before.
+
+The register keeps both attempts: the rejected one with its reason, and the new pending one. Only the newest attempt counts for the revision's state.
 
 == The release register
 
-*Releases* lists every part number and revision with its state, document, version, who requested it and who approved it.
+*Releases* lists every part number and revision with its state, document, version, who requested and who approved it, and the comment given with the last state change.
 
 image::screenshots/11_releases.png[The release register,role=screenshot,width=860]
 
 [cols="1,3"]
 |===
 | btn:[Approve], btn:[Reject] | for pending revisions
-| btn:[Mark obsolete] | for a released revision that is no longer valid, for example after revision B replaces A
+| btn:[Obsolete...] | for a released revision that is no longer valid; see xref:tutorials/revision-history.adoc[Revision history and obsolete revisions]
 | btn:[View] | opens the released document as a read-only copy
+| btn:[Export...] | writes the released document as `.FCStd` and `.step` into a folder, for a supplier or an archive
 |===
 
-Releases are permanent: each state change is recorded separately, and the furthest state reached counts.
-A rejected revision letter can be reused.
+Releases are permanent: each state change is recorded separately and cannot be edited afterwards.
+
+== Choose a revision scheme
+
+Open btn:[⋯] › *Settings...* and pick a *Revision scheme*:
+
+[cols="1,3"]
+|===
+| A, B, C ... | letters as in ASME Y14.35: I, O, Q, S, X and Z are skipped, and after Y comes AA (default)
+| 1, 2, 3 ... | numbers
+|===
+
+image::screenshots/17_settings.png[Project settings with the revision scheme,role=screenshot,width=560]
+
+The scheme applies to the next revision of every part number in the project; existing revisions keep their labels.
 
 == Same thing in Python
 

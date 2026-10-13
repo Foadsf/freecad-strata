@@ -1,5 +1,5 @@
 = Settings and preferences
-:description: Project settings (your name, recording, binary attachments) and FreeCAD preferences that control the panel.
+:description: Project settings (your name, recording, binary attachments, revision scheme) and FreeCAD preferences that control the panel.
 
 Strata has two kinds of settings: *project settings*, which belong to one project, and *preferences*, which belong to your FreeCAD installation.
 
@@ -21,6 +21,9 @@ Off by default. FreeCAD documents contain a few binary parts: thumbnails, colour
 By default only the text content is shared through history. That is the model definition and the BREP geometry, which FreeCAD writes as text by default.
 Binary parts are kept in a local store, so restores on *your* computer are exact, and your history stays small.
 Turn this on if colleagues should also get the exact thumbnails and colours.
+
+Revision scheme::
+How the next revision of a part number is labelled: *A, B, C ...* (default; ASME Y14.35 letters, skipping I, O, Q, S, X and Z, then AA after Y) or *1, 2, 3 ...*. Existing revisions keep their labels. See xref:tutorials/releases.adoc#_choose_a_revision_scheme[Release a design].
 
 These settings are stored in `<project>/.strata/settings.json`, apart from your name and email, which live in `.strata/repo.git/config`.
 

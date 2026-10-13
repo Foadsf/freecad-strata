@@ -39,14 +39,9 @@ NOTE: Opening an assembly can make FreeCAD mark it as modified, because it refre
 
 image::screenshots/09_merge.png[The merge dialog,role=screenshot,width=600]
 
-Documents changed only in Lightweight are *updated automatically*.
-If a document was changed in *both* workspaces, choose for each one:
-
-Keep Main:: keep your version.
-Take Lightweight:: use the workspace's version.
-Keep both (copy):: keep yours and save the other next to it as `Bracket (Lightweight).FCStd`.
-
-The merge appears in history as *Merged Lightweight into Main*. If it was a mistake, restore the entry just below it.
+Documents changed only in Lightweight are taken, documents changed only in Main are kept, and you choose for documents changed in both.
+The merge appears in history as *Merged Lightweight into Main*, and a banner offers btn:[Undo merge] right afterwards.
+xref:tutorials/merging.adoc[Merge workspaces] covers merge strategies, conflicts and undo step by step.
 
 == Delete a workspace
 

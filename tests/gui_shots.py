@@ -242,6 +242,88 @@ def release_dialogs():
 
 
 @step
+def properties_flow():
+    """Onshape tutorial: How to keep your product designs organized (Workspace properties)."""
+    from strata import fc
+    from strata.ui import dialogs
+    p = S["p"]
+    fc.set_document_properties(p, {
+        "Parts/Bracket.FCStd": {"Part number": "BRK-100", "Description": "Mounting bracket", "Material": "S235"},
+        "Parts/Shaft.FCStd": {"Part number": "SFT-200", "Description": "Drive shaft", "Material": "42CrMo4"},
+        "Gearbox.FCStd": {"Part number": "GBX-001", "Description": "Gearbox assembly"}})
+    log("properties entry: %s" % p.history()[0].title)
+    log("bracket properties: %s" % p.document_properties("Parts/Bracket.FCStd"))
+    S["panel"].refresh()
+    show_dialog(dialogs.PropertiesDialog(p, S["panel"]), "19_properties", 820)
+
+
+@step
+def restore_dialog():
+    """Onshape: Restore with a per-tab strategy and a preview of the changes."""
+    from strata.ui import dialogs
+    p = S["p"]
+    show_dialog(dialogs.RestoreDialog(p, version("V1").sha, "V1", None, S["panel"], compare_cb=lambda: None),
+                "20_restore", 620)
+
+
+@step
+def merge_flow():
+    """Onshape: Merging (strategy, per-tab choice, compare with base, revert link)."""
+    from strata import fc
+    from strata.ui import dialogs
+    p = S["p"]
+    plan = p.merge_plan("Lightweight")
+    log("merge plan: theirs=%s ours_only=%s conflicts=%s combine=%s" % (
+        plan.take_theirs, plan.ours_only, plan.conflicts, plan.auto_merge))
+    log("unsaved before merge: %s" % [d.Label for d in fc.unsaved(p)])
+    show_dialog(dialogs.MergeDialog(p, plan, S["panel"], compare_cb=lambda: None), "09_merge", 680)
+    changed = p.merge(plan, strategy="merge")
+    fc.reload(p, changed)
+    panel = S["panel"]
+    panel._sticky = ("merge", "Merged Lightweight into Main.", "Undo merge", panel.undo_merge)
+    panel.refresh()
+    log("after merge: %s; can undo: %s" % (p.history()[0].title, p.can_undo_merge()))
+
+
+@step
+def merge_banner_shot():
+    if not S["p"].can_undo_merge():
+        raise RuntimeError("no merge to undo")
+    shot(S["panel"], "21_undo_merge")
+    S["panel"].undo_merge()
+    log("after undo: latest entry %r; banner visible: %s" % (S["p"].history()[0].title,
+                                                              S["panel"].banner.isVisible()))
+
+
+@step
+def revision_flow():
+    """Onshape: Release management, Revision history and obsoleting a revision."""
+    from strata.ui import dialogs
+    p = S["p"]
+    v3 = p.create_version("V3", "Production release")
+    rel_b = p.release(v3, "Parts/Bracket.FCStd", "BRK-100", description="Production", approval=True)
+    log("submitted: %s rev %s %s" % (rel_b.part_number, rel_b.revision, rel_b.state))
+    p.set_release_state(rel_b, "Released", "Checked against drawing D-100")
+    rel_a = next(r for r in p.revision_history("BRK-100") if r.revision == "A")
+    show_dialog(dialogs.ObsoleteDialog(rel_a, S["panel"]), "23_obsolete", 520)
+    p.set_release_state(rel_a, "Obsolete", "Replaced by rev B")
+    log("revision history: %s" % [(r.revision, r.state, r.comment) for r in p.revision_history("BRK-100")])
+    S["panel"].refresh()
+    show_dialog(dialogs.ReleasesDialog(p, None, S["panel"], on_export=lambda *a: None, part_number="BRK-100"),
+                "22_revision_history", 900)
+
+
+@step
+def export_flow():
+    from strata import fc
+    p = S["p"]
+    rel_b = next(r for r in p.revision_history("BRK-100") if r.revision == "B")
+    folder = os.path.join(CFG["demo_parent"], "Released")
+    files = fc.export_revision(p, rel_b.sha, rel_b.document, folder, "BRK-100_revB")
+    log("exported: %s" % [os.path.basename(f) for f in files])
+
+
+@step
 def share_dialog():
     from strata.ui import dialogs
     show_dialog(dialogs.ShareDialog(S["p"], S["panel"]), "12_share")

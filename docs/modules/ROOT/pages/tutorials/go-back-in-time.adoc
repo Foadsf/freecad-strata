@@ -36,10 +36,16 @@ See xref:tutorials/compare.adoc[Compare two designs].
 
 [.steps]
 . Hover the entry or version and click the *restore arrow*, or right-click it and choose *Restore to this point...*.
-. Confirm. Strata saves any unsaved changes first, if you agree.
+. Strata saves any unsaved changes first, if you agree, and opens the *Restore* dialog. It lists every document that differs from that point, with what restoring would undo.
+. Untick the documents that should keep their current state. Click btn:[Compare changes] to see the differences first.
+. Click btn:[Restore].
 
-All documents that differ are rewritten on disk and reloaded in FreeCAD. History gains an entry such as *Restored to V1*.
+image::screenshots/20_restore.png[The Restore dialog: choose which documents go back,role=screenshot,width=620]
+
+The ticked documents are rewritten on disk and reloaded in FreeCAD. History gains an entry such as *Restored to V1*.
 The state you left is still there, one entry further down, and you can restore it again.
+
+TIP: This is Onshape's _Restore_ with its per-tab *Keep* / *Replace* choice: a ticked document is replaced by the earlier state, an unticked one is kept. See https://cad.onshape.com/help/Content/Document/versions_and_history.htm[Onshape: Versions and history].
 
 == Restore a single document
 

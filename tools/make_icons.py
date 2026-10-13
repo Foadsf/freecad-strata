@@ -11,7 +11,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 THEME = os.path.join(ROOT, "strata", "ui", "theme.py")
 OUT = os.path.join(ROOT, "strata", "resources", "icons")
 COLOR = "#2F7CF6"
-NAMES = ["history", "version", "compare", "release", "sync", "workspace", "branch", "merge"]
+NAMES = ["history", "version", "compare", "release", "sync", "properties", "workspace", "branch", "merge"]
 
 
 def load_icons():

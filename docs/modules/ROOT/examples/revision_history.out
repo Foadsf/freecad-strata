@@ -1,0 +1,7 @@
+Next revision after a rejection: A
+Revision history of BRK-100:
+  rev B  attempt 1  Released  from V2   
+  rev A  attempt 2  Obsolete  from V1.1 Replaced by rev B
+  rev A  attempt 1  Rejected  from V1   Hole pattern does not match drawing
+First numeric revision of SFT-200: 1
+Exported: BRK-100_revB.FCStd, BRK-100_revB.step

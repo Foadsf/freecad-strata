@@ -93,6 +93,9 @@ class Release:
     author: str
     time: int
     approver: str = ""
+    attempt: int = 1            # a rejected or re-releasable label can be released again
+    reusable: bool = False      # obsoleted with "Mark revision as re-releasable"
+    comment: str = ""           # comment given with the last state change
 
 
 @dataclass
@@ -119,6 +122,10 @@ class MergePlan:
     conflicts: list[str] = field(default_factory=list)
     unchanged: bool = False
     fast_forward: bool = False
+    ours_only: list[str] = field(default_factory=list)  # changed only in the target workspace
+    # documents changed on both sides where one side only edited the document's properties:
+    # doc -> "ours" | "theirs" = the side whose change was properties only; merged automatically
+    auto_merge: dict = field(default_factory=dict)
 
 
 @dataclass
@@ -148,7 +155,14 @@ def display_name(slug: str) -> str:
     return "Main" if slug == "main" else slug.replace("_", " ")
 
 
-def next_revision(existing: list[str]) -> str:
+REVISION_SCHEMES = {"letters": "A, B, C … (ASME Y14.35: no I, O, Q, S, X, Z)", "numeric": "1, 2, 3 …"}
+
+
+def next_revision(existing: list[str], scheme: str = "letters") -> str:
+    if scheme == "numeric":
+        nums = [int(r) for r in existing if r.isdigit()]
+        return str(max(nums + [0]) + 1)
+
     def index(rev: str) -> int:
         n = 0
         for ch in rev:
@@ -156,7 +170,7 @@ def next_revision(existing: list[str]) -> str:
                 return -1
             n = n * len(REVISION_LETTERS) + REVISION_LETTERS.index(ch) + 1
         return n
-    top = max([index(r) for r in existing] + [0])
+    top = max([index(r) for r in existing if not r.isdigit()] + [0])
     n, out = top + 1, ""
     while n:
         n, r = divmod(n - 1, len(REVISION_LETTERS))
@@ -447,13 +461,35 @@ class Project:
                                     docs, c.parents, vmap.get(sha, [])))
         return out
 
+    # ------------------------------------------------ properties
+    def document_properties(self, doc: str, rev: str | None = None) -> dict:
+        """Part number, description, company and custom properties of a document, from the file on
+        disk (rev None) or as recorded at rev. Writing them needs FreeCAD: see strata.fc."""
+        if rev is None:
+            import zipfile
+            try:
+                with zipfile.ZipFile(self.abspath(doc)) as z:
+                    xml = z.read("Document.xml")
+            except (OSError, KeyError, zipfile.BadZipFile):
+                xml = None
+        else:
+            entries = self.group_docs(self.files(rev)).get(doc, {})
+            xml = self.repo.blob(entries["Document.xml"]) if "Document.xml" in entries else None
+        return docdiff.read_document_properties(xml)
+
     # ------------------------------------------------ comparison
     def diff_doc(self, a: dict[str, str] | None, b: dict[str, str] | None) -> docdiff.DocDiff:
         def xml(entries, name):
             return self.repo.blob(entries[name]) if entries and name in entries else None
+
+        def hashes(entries):  # text entries by git id, binary side files by their content hash
+            if not entries or MANIFEST not in entries:
+                return entries
+            binary = json.loads(self.repo.blob(entries[MANIFEST])).get("binary", {})
+            return {**binary, **entries}
         return docdiff.diff_documents(
             xml(a, "Document.xml") if a else None, xml(b, "Document.xml") if b else None,
-            a, b, xml(a, "GuiDocument.xml"), xml(b, "GuiDocument.xml"))
+            hashes(a), hashes(b), xml(a, "GuiDocument.xml"), xml(b, "GuiDocument.xml"))
 
     def diff(self, rev_a: str | None, rev_b: str | None) -> dict[str, docdiff.DocDiff]:
         a, b = self.group_docs(self.files(rev_a)), self.group_docs(self.files(rev_b))
@@ -621,20 +657,78 @@ class Project:
         t = self.group_docs(self.files(theirs))
         for doc in sorted(set(b) | set(o) | set(t)):
             bo, oo, to = b.get(doc), o.get(doc), t.get(doc)
-            if oo == to or to == bo:
+            if oo == to:
+                continue
+            if to == bo:
+                plan.ours_only.append(doc)
                 continue
             if oo == bo:
                 plan.take_theirs.append(doc)
+            elif bo is not None and oo is not None and to is not None and self._properties_only(bo, oo):
+                plan.auto_merge[doc] = "ours"
+            elif bo is not None and oo is not None and to is not None and self._properties_only(bo, to):
+                plan.auto_merge[doc] = "theirs"
             else:
                 plan.conflicts.append(doc)
         return plan
 
-    def merge(self, plan: MergePlan, resolutions: dict[str, str] | None = None) -> list[str]:
-        """resolutions: doc -> 'ours' | 'theirs' | 'both'. Returns documents changed on disk."""
+    def _properties_only(self, base: dict[str, str], side: dict[str, str]) -> bool:
+        """True if a document changed from base only in its own properties (part number, description,
+        custom properties). Saving recomputes shapes, so rebuilt geometry without a parameter, name or
+        appearance change counts as unchanged: the other side's model regenerates it."""
+        d = self.diff_doc(base, side)
+        return bool(d.document_props) and not (d.added or d.removed) and \
+            not any(ch.props or ch.renamed_from or ch.appearance for ch in d.modified)
+
+    @staticmethod
+    def _doc_properties_block(xml: bytes) -> tuple[int, int]:
+        """Byte range of the document-level <Properties> block (it precedes <Objects>)."""
+        start = xml.find(b"<Properties", xml.find(b"<Document"))
+        end = xml.find(b"</Properties>", start) + len(b"</Properties>")
+        if start < 0 or end < len(b"</Properties>") or start > xml.find(b"<Objects"):
+            raise StrataError("Unexpected Document.xml layout")
+        return start, end
+
+    def _merged_properties(self, model: dict[str, str], props: dict[str, str]) -> dict[str, str]:
+        """Entries of `model` with the document properties block taken from `props`."""
+        mx, px = self.repo.blob(model["Document.xml"]), self.repo.blob(props["Document.xml"])
+        ms, me = self._doc_properties_block(mx)
+        ps, pe = self._doc_properties_block(px)
+        out = dict(model)
+        out["Document.xml"] = self.repo.write_object("blob", mx[:ms] + px[ps:pe] + mx[me:])
+        return out
+
+    def merge_decisions(self, plan: MergePlan, strategy: str = "merge",
+                        resolutions: dict[str, str] | None = None) -> dict[str, str]:
+        """What happens to each differing document: 'ours' | 'theirs' | 'both' | None (must be chosen).
+
+        strategy, as in Onshape's merge dialog: 'merge' (Merge changes: take what only the source
+        changed, keep what only the target changed, conflicts need a choice), 'keep' (Keep target)
+        or 'replace' (Replace with source). resolutions override per document.
+        """
+        if strategy not in ("merge", "keep", "replace"):
+            raise StrataError("Unknown merge strategy: %s" % strategy)
+        out = {}
+        for doc in plan.take_theirs:
+            out[doc] = "ours" if strategy == "keep" else "theirs"
+        for doc in plan.ours_only:
+            out[doc] = "theirs" if strategy == "replace" else "ours"
+        for doc in plan.conflicts:
+            out[doc] = {"keep": "ours", "replace": "theirs"}.get(strategy)
+        for doc in plan.auto_merge:
+            out[doc] = {"keep": "ours", "replace": "theirs"}.get(strategy, "merged")
+        for doc, choice in (resolutions or {}).items():
+            if doc in out:
+                out[doc] = choice
+        return out
+
+    def merge(self, plan: MergePlan, resolutions: dict[str, str] | None = None,
+              strategy: str = "merge") -> list[str]:
+        """Merge plan.source into the current workspace. Returns documents changed on disk."""
         if plan.unchanged:
             return []
-        resolutions = resolutions or {}
-        missing = [d for d in plan.conflicts if d not in resolutions]
+        decisions = self.merge_decisions(plan, strategy, resolutions)
+        missing = [d for d, c in decisions.items() if c is None]
         if missing:
             raise StrataError("Choose how to resolve: %s" % ", ".join(missing))
         files = self.files(plan.ours)
@@ -649,72 +743,140 @@ class Project:
                 if sp and sp[0] == doc:
                     files[(as_doc or doc) + "/" + sp[1]] = s
 
-        for doc in plan.take_theirs:
-            take(doc)
-        for doc in plan.conflicts:
-            choice = resolutions[doc]
+        ours_docs = self.group_docs(files)
+        theirs_docs = self.group_docs(theirs)
+        for doc, choice in decisions.items():
             if choice == "theirs":
                 take(doc)
+            elif choice == "merged":  # model from one side, document properties from the other
+                props_side = plan.auto_merge[doc]
+                model, props = (theirs_docs[doc], ours_docs[doc]) if props_side == "ours" else \
+                    (ours_docs[doc], theirs_docs[doc])
+                merged = self._merged_properties(model, props)
+                files = {p: s for p, s in files.items() if (split_doc(p) or ("",))[0] != doc}
+                files.update({doc + "/" + name: sha for name, sha in merged.items()})
             elif choice == "both":
                 stem, ext = os.path.splitext(doc)
                 take(doc, "%s (%s)%s" % (stem, ref_slug(plan.source_label), ext))
         tree = self.repo.build_tree(files)
-        title = "Merged %s into %s" % (plan.source_label, display_name(self.current_workspace()))
+        target = display_name(self.current_workspace())
+        title = "Merged %s into %s" % (plan.source_label, target)
+        title += {"keep": " (kept %s)" % target, "replace": " (replaced with %s)" % plan.source_label}.get(strategy, "")
         _, changed_docs, body = self.describe(self.files(plan.ours), files)
         sha = self.repo.write_commit(tree, [plan.ours, plan.theirs],
                                      self._message(title, body, "merge", changed_docs))
         self.repo.update_ref(self.repo.head_ref(), sha, plan.ours, "strata: merge")
         return self.materialize(plan.ours, sha)
 
+    def can_undo_merge(self) -> bool:
+        """True right after a merge: it is the workspace's latest entry and has not been synced."""
+        head = self.head()
+        if not head:
+            return False
+        c = self.repo.read_commit(head)
+        if c.trailers.get("kind") != "merge" or len(c.parents) < 2:
+            return False
+        remote = self.repo.rev_parse("refs/remotes/%s/%s" % (REMOTE, self.current_workspace()))
+        return not (remote and self.repo.is_ancestor(head, remote))
+
+    def undo_merge(self) -> list[str]:
+        """Take back the merge just made (Onshape's revert): the workspace returns to its state before
+        the merge and the merge leaves history, so the source can be merged again later.
+        Use Restore instead once other changes followed or the merge was synced."""
+        if not self.can_undo_merge():
+            raise StrataError("Only the latest merge can be undone, and only before it is synced")
+        head = self.head()
+        before = self.repo.read_commit(head).parents[0]
+        self.repo.update_ref(self.repo.head_ref(), before, head, "strata: undo merge")
+        return self.materialize(head, before)
+
     # ------------------------------------------------ releases
     def releases(self) -> list[Release]:
-        # Each state change is an immutable tag; the record's state is the furthest one reached.
+        """Every release attempt. Each state change is an immutable tag
+        <state>/<part>/<rev>[@<attempt>]; an attempt's state is the furthest one it reached."""
         rank = {"Pending": 0, "Rejected": 1, "Released": 2, "Obsolete": 3}
-        records: dict[tuple[str, str], Release] = {}
+        records: dict[tuple[str, str, int], Release] = {}
         for prefix, state in ((PENDING_REFS, "Pending"), (RELEASE_REFS, "Released"),
                               (REJECTED_REFS, "Rejected"), (OBSOLETE_REFS, "Obsolete")):
             for ref, obj, commit in self.repo.refs(prefix):
-                pn, _, rev = ref[len(prefix):].rpartition("/")
+                pn, _, revpart = ref[len(prefix):].rpartition("/")
+                rev, _, att = revpart.partition("@")
                 info = self.repo.read_tag(obj)
                 try:
                     meta = json.loads(info["message"])
                 except ValueError:
                     meta = {}
-                key = (meta.get("part_number", pn), meta.get("revision", rev))
+                attempt = int(meta.get("attempt") or att or 1)
+                key = (meta.get("part_number", pn), meta.get("revision", rev), attempt)
                 rec = records.get(key)
                 if rec is None:
                     rec = records[key] = Release(key[0], key[1], meta.get("description", ""), state, commit,
                                                  meta.get("version", ""), meta.get("document", ""),
-                                                 meta.get("requested_by", info["tagger"]), info["time"])
+                                                 meta.get("requested_by", info["tagger"]), info["time"],
+                                                 attempt=attempt)
                 if rank[state] >= rank[rec.state]:
                     rec.state = state
+                    rec.comment = meta.get("comment", rec.comment)
+                    rec.reusable = bool(meta.get("reusable")) if state == "Obsolete" else rec.reusable
                 if state in ("Released", "Rejected"):
                     rec.approver = info["tagger"]
-        return sorted(records.values(), key=lambda r: (r.part_number, len(r.revision), r.revision))
+        return sorted(records.values(), key=lambda r: (r.part_number, len(r.revision), r.revision, r.attempt))
+
+    def revision_history(self, part_number: str) -> list[Release]:
+        """All release attempts of one part number, newest first (Onshape's Revision history)."""
+        def order(r):
+            rev = (int(r.revision), "") if r.revision.isdigit() else (len(r.revision), r.revision)
+            return (r.time, rev, r.attempt)
+        return sorted((r for r in self.releases() if r.part_number == part_number), key=order, reverse=True)
+
+    def _label_taken(self, rel: Release) -> bool:
+        """Whether a release attempt keeps its revision label from being used again."""
+        if rel.state == "Rejected":
+            return False
+        return not (rel.state == "Obsolete" and rel.reusable)
+
+    def _latest_attempts(self, part_number: str) -> dict[str, Release]:
+        latest: dict[str, Release] = {}
+        for r in self.releases():
+            if r.part_number == part_number and (r.revision not in latest or r.attempt > latest[r.revision].attempt):
+                latest[r.revision] = r
+        return latest
 
     def next_revision(self, part_number: str) -> str:
-        return next_revision([r.revision for r in self.releases()
-                              if r.part_number == part_number and r.state != "Rejected"])
+        taken = [rev for rev, r in self._latest_attempts(part_number).items() if self._label_taken(r)]
+        return next_revision(taken, self.settings().get("revision_scheme", "letters"))
 
     def release(self, version: Version, document: str, part_number: str, revision: str | None = None,
                 description: str = "", approval: bool = False) -> Release:
         """Release one document of a version. With approval=True it is submitted as Pending."""
-        pn = ref_slug(part_number)
+        ref_slug(part_number)  # validates the part number
         revision = revision or self.next_revision(part_number)
-        for r in self.releases():
-            if r.part_number == part_number and r.revision == revision and r.state != "Rejected":
-                raise StrataError("%s rev %s already exists" % (part_number, revision))
+        previous = self._latest_attempts(part_number).get(revision)
+        if previous is not None and self._label_taken(previous):
+            raise StrataError("%s rev %s already exists" % (part_number, revision))
+        attempt = previous.attempt + 1 if previous is not None else 1
         meta = {"part_number": part_number, "revision": revision, "description": description,
-                "version": version.name, "document": document, "requested_by": self.repo.identity()[0]}
+                "version": version.name, "document": document, "requested_by": self.repo.identity()[0],
+                "attempt": attempt}
         prefix = PENDING_REFS if approval else RELEASE_REFS
-        self.repo.tag("%s%s/%s" % (prefix, pn, ref_slug(revision)), version.sha, json.dumps(meta, ensure_ascii=False))
-        return next(r for r in self.releases() if r.part_number == part_number and r.revision == revision)
+        self.repo.tag(self._release_ref(prefix, part_number, revision, attempt), version.sha,
+                      json.dumps(meta, ensure_ascii=False))
+        return next(r for r in self.releases()
+                    if (r.part_number, r.revision, r.attempt) == (part_number, revision, attempt))
 
-    def set_release_state(self, rel: Release, state: str, comment: str = ""):
+    @staticmethod
+    def _release_ref(prefix: str, part_number: str, revision: str, attempt: int) -> str:
+        suffix = "" if attempt == 1 else "@%d" % attempt
+        return "%s%s/%s%s" % (prefix, ref_slug(part_number), ref_slug(revision), suffix)
+
+    def set_release_state(self, rel: Release, state: str, comment: str = "", reusable: bool = False):
+        """Approve ('Released'), reject ('Rejected') or obsolete ('Obsolete') a release attempt.
+        reusable=True with 'Obsolete' marks the revision as re-releasable: its label can be used again."""
         prefix = {"Released": RELEASE_REFS, "Rejected": REJECTED_REFS, "Obsolete": OBSOLETE_REFS}[state]
         meta = {"part_number": rel.part_number, "revision": rel.revision, "description": rel.description,
-                "version": rel.version, "document": rel.document, "requested_by": rel.author, "comment": comment}
-        self.repo.tag("%s%s/%s" % (prefix, ref_slug(rel.part_number), ref_slug(rel.revision)), rel.sha,
+                "version": rel.version, "document": rel.document, "requested_by": rel.author, "comment": comment,
+                "attempt": rel.attempt, "reusable": bool(reusable and state == "Obsolete")}
+        self.repo.tag(self._release_ref(prefix, rel.part_number, rel.revision, rel.attempt), rel.sha,
                       json.dumps(meta, ensure_ascii=False))
 
     # ------------------------------------------------ graph

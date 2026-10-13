@@ -18,7 +18,8 @@ class StrataWorkbench(FreeCADGui.Workbench):
         self.__class__.Icon = os.path.join(os.path.dirname(strata.__file__), "resources", "strata.svg")
 
     def Initialize(self):
-        commands = ["Strata_Panel", "Strata_CreateVersion", "Strata_Compare", "Strata_Releases", "Strata_Sync"]
+        commands = ["Strata_Panel", "Strata_CreateVersion", "Strata_Compare", "Strata_Releases", "Strata_Sync",
+                    "Strata_Properties"]
         self.appendToolbar("Strata", commands)
         self.appendMenu("&Strata", commands)
 

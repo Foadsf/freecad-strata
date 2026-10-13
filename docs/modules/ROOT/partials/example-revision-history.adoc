@@ -1,0 +1,11 @@
+.revision_history.py: reject and resubmit, revision history, obsolete, numeric revisions, export
+[source,python]
+----
+include::example$revision_history.py[]
+----
+
+.Output of `freecadcmd revision_history.py`
+[source,text]
+----
+include::example$revision_history.out[]
+----

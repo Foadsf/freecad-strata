@@ -60,8 +60,9 @@ The same commands are at the bottom of the **Tools** menu. More in the [shortcut
 | **Workspaces** | Separate lines of work for design alternatives. Main stays untouched until you merge. |
 | **Go back in time** | Open any version or history entry as a read-only copy, or **Restore** it. A restore adds a new history entry, so nothing is ever lost. |
 | **Compare** | Added, deleted and edited features with old → new values, plus a **3D before/after overlay** with the volume change. |
-| **Merge** | Documents changed in only one workspace are taken over automatically. For documents changed in both you choose *Keep mine*, *Take theirs* or *Keep both*. |
-| **Releases** | Part number plus revision letter (A, B, … skipping I, O, Q, S, X, Z per ASME Y14.35), optional approval step, *Obsolete* state. |
+| **Merge** | Onshape's merge strategies (*Merge changes*, *Keep target*, *Replace with source*) with a choice per document, *Compare with base*, and *Undo merge*. A properties-only edit on one side combines with a model edit on the other automatically. |
+| **Properties** | Part numbers, descriptions and custom properties for every document in one table, versioned with the design and used by releases. |
+| **Releases** | Part number plus revision (letters per ASME Y14.35, or numbers), optional approval, reject with a reason and resubmit, revision history per part number, *Obsolete* (optionally re-releasable), export of a released revision to FCStd + STEP. |
 | **Team sync** | Share through a network folder, a synced drive (OneDrive, Nextcloud, Dropbox) or any Git server. Works offline; sync when you're back. |
 | **Assemblies** | All documents in a project folder are versioned together, so links between assemblies and parts always match. |
 | **Everywhere** | One panel and toolbar available in every workbench, a workspace indicator in the status bar, light and dark themes. |
@@ -224,6 +225,8 @@ Release documents from a version with part number and revision, optionally throu
 
 <img src="docs/modules/ROOT/images/screenshots/11_releases.png" width="700" alt="Release management">
 
+Coming from Onshape? The documentation's [Coming from Onshape](https://foadsf.github.io/freecad-strata/strata/tutorials/coming-from-onshape.html) page maps Onshape's PDM and release tutorials to Strata, step by step.
+
 ### Share with your team, and dark theme
 
 <img src="docs/modules/ROOT/images/screenshots/12_share.png" width="520" alt="Share dialog"> <img src="docs/modules/ROOT/images/screenshots/13_dark_theme.png" width="300" alt="Dark theme">
@@ -279,7 +282,7 @@ The Addon Manager test installs Strata from this GitHub repository through the r
 
 - Merge inside a single document (feature-level) instead of per document.
 - File locking / check-out for teams that want it.
-- Release packages: automatic STEP/PDF export when a revision is released.
+- Release packages: automatic STEP/PDF export when a revision is released (manual export exists since 0.3.0).
 - Roles and approvers, BOM view, where-used.
 - Connectors to commercial PDM/PLM systems through the engine API.
 - Submission to the official FreeCAD add-on index.

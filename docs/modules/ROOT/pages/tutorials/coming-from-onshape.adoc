@@ -1,0 +1,74 @@
+= Coming from Onshape
+:description: Onshape's PDM, release management and document tutorials, mapped to Strata step by step.
+
+Strata's panel follows Onshape's _Versions and history_ panel, and its release workflow follows Onshape's release management.
+This page maps each Onshape help topic to the Strata tutorial that walks through the same steps in FreeCAD.
+
+== Tutorials, side by side
+
+[cols="2,2,3"]
+|===
+| Onshape help topic | Strata tutorial | What you do
+
+| https://cad.onshape.com/help/Content/Document/versions_and_history.htm[Versions and history]
+| xref:tutorials/go-back-in-time.adoc[Go back in time]
+| view an earlier state, create versions, restore all or some documents
+
+| https://cad.onshape.com/help/Content/Document/merging.htm[Merging workspaces and versions]
+| xref:tutorials/merging.adoc[Merge workspaces]
+| merge strategy, choice per document, compare with base, undo the merge
+
+| Branching and workspaces
+| xref:tutorials/workspaces.adoc[Explore an alternative]
+| branch to create a workspace, switch, delete
+
+| Compare
+| xref:tutorials/compare.adoc[Compare two designs]
+| feature and parameter differences, 3D overlay
+
+| https://cad.onshape.com/help/Content/Release/release_management.htm[Release management]
+| xref:tutorials/releases.adoc[Release a design]
+| release candidate, approval, reject and resubmit, revision scheme
+
+| https://cad.onshape.com/help/Content/Release/viewing_revision_history_and_obsoleting_parts.htm[Revision history and obsoleting]
+| xref:tutorials/revision-history.adoc[Revision history and obsolete revisions]
+| revision table of a part number, obsolete, re-releasable, export
+
+| https://www.onshape.com/en/resource-center/tech-tips/how-to-keep-your-product-designs-organized[Keeping designs organized] (tech tip)
+| xref:tutorials/properties.adoc[Part numbers and properties]
+| part numbers, descriptions and custom properties for all documents in one table
+
+| Share and collaborate
+| xref:tutorials/team.adoc[Work as a team]
+| share a project, join, sync
+|===
+
+== Words
+
+[cols="1,1,3"]
+|===
+| Onshape | Strata | Note
+
+| Document | Project | a folder of FreeCAD documents with version control turned on
+| Tab (Part Studio, Assembly) | Document | one `.FCStd` file
+| Workspace | Workspace | Main is the default one
+| Version | Version | a named, permanent point in history
+| Microversion | History entry | recorded on every save
+| Release candidate | Release | Pending, Released, Rejected, Obsolete
+| Revision | Revision | per part number; letters or numbers
+| Merge strategy | Merge strategy | Merge changes, Keep target, Replace with source
+| Restore with Keep/Replace per tab | Restore dialog | tick the documents to bring back
+| Properties panel | Properties table | part number, description, company, custom properties
+|===
+
+== What works differently
+
+Strata keeps your files on your disk and works without a server. That changes a few things:
+
+* *Merging is per document.* Onshape merges feature by feature inside a Part Studio. Strata decides per document: take, keep, keep both, or combine when one side only changed properties.
+* *Approvals are by name, not by role.* Anyone who opens *Releases* can approve. There are no approver lists, release workflows with several steps, or notifications.
+* *Sharing goes through a folder.* A network share, a synced folder or a Git server holds the shared history. There is no browser, no live co-editing, and no follow mode.
+* *The Documents page is your file manager.* Strata has no labels, Onshape-style folders or search across projects.
+* *No BOM table yet.* Part numbers and properties are stored in the documents, so FreeCAD's BOM tools and macros can read them.
+
+These are the gaps against Onshape today. The xref:changelog.adoc[changelog] lists what each release added.

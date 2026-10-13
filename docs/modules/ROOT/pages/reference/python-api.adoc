@@ -70,19 +70,26 @@ Attributes: `root` (folder), `name` (folder name), `dir` (the `.strata` folder),
 |===
 | `restore(rev, docs=None)` | Bring the current workspace back to `rev`, completely or only `docs`, as a new history entry. Returns the documents rewritten on disk.
 | `diff(rev_a, rev_b)` | `{doc: DocDiff}` for every document that differs (see <<docdiff>>).
-| `merge_plan(source)` | Analyse merging workspace `source` (or a full ref) into the current one: `MergePlan(take_theirs, conflicts, unchanged, fast_forward, ...)`.
-| `merge(plan, resolutions=None)` | Perform it. `resolutions` maps each conflicting document to `"ours"`, `"theirs"` or `"both"`. Returns the documents rewritten on disk.
+| `merge_plan(source)` | Analyse merging workspace `source` (or a full ref) into the current one: `MergePlan(take_theirs, ours_only, conflicts, auto_merge, unchanged, fast_forward, ...)`. `take_theirs`: changed only in the source; `ours_only`: changed only in the target; `conflicts`: changed in both; `auto_merge`: `{doc: side}` changed in both where `side` (`"ours"` or `"theirs"`) only edited the document's properties.
+| `merge_decisions(plan, strategy="merge", resolutions=None)` | What `merge` would do: `{doc: "ours" \| "theirs" \| "both" \| "merged" \| None}`; `None` means a choice is needed.
+| `merge(plan, resolutions=None, strategy="merge")` | Perform it. `strategy` is `"merge"` (Merge changes), `"keep"` (Keep target) or `"replace"` (Replace with source). `resolutions` overrides per document with `"ours"`, `"theirs"`, `"both"` (keep a copy) or `"merged"` (combine model and properties). Raises `StrataError` if a conflict is left without a choice. Returns the documents rewritten on disk.
+| `can_undo_merge()` | `True` if the latest entry is a merge that has not been synced.
+| `undo_merge()` | Return to the state before that merge; the merge leaves history. Returns the documents rewritten on disk.
+| `document_properties(doc, rev=None)` | `{"Part number", "Description", "Company", custom...}` of a document, on disk or at `rev`.
 |===
 
 == Releases
 
 [cols="2,3"]
 |===
-| `release(version, document, part_number, revision=None, description="", approval=False)` | Release one document of a `Version`. The revision defaults to the next free letter. With `approval=True` the release is created as *Pending*.
-| `set_release_state(release, state, comment="")` | `"Released"` (approve), `"Rejected"` or `"Obsolete"`.
-| `releases()` | `Release(part_number, revision, description, state, sha, version, document, author, time, approver)` list.
-| `next_revision(part_number)` | The next free revision letter.
+| `release(version, document, part_number, revision=None, description="", approval=False)` | Release one document of a `Version`. The revision defaults to the next free one. With `approval=True` the release is created as *Pending*. A rejected revision, or an obsolete one marked re-releasable, can be released again as a new attempt.
+| `set_release_state(release, state, comment="", reusable=False)` | `"Released"` (approve), `"Rejected"` or `"Obsolete"`, with a comment. `reusable=True` with `"Obsolete"` marks the revision as re-releasable.
+| `releases()` | `Release(part_number, revision, description, state, sha, version, document, author, time, approver, attempt, reusable, comment)` list, one per release attempt; for a revision released more than once, the attempt with the highest number counts.
+| `revision_history(part_number)` | Every attempt of every revision of a part number, newest first.
+| `next_revision(part_number)` | The next free revision in the project's revision scheme.
 |===
+
+`strata.project.next_revision(existing, scheme="letters")` computes the same from a list of labels; `REVISION_SCHEMES` lists the schemes (`"letters"`, `"numeric"`).
 
 == Sharing
 
@@ -95,7 +102,7 @@ Attributes: `root` (folder), `name` (folder name), `dir` (the `.strata` folder),
 
 == Settings
 
-`settings()` returns the project settings (`record_on_save`, `track_binary`); `save_settings({...})` updates them. `project.repo.set_identity(name, email)` sets your name and email for this project.
+`settings()` returns the project settings (`record_on_save`, `track_binary`, `revision_scheme`); `save_settings({...})` updates them. `project.repo.set_identity(name, email)` sets your name and email for this project.
 
 [#docdiff]
 == strata.docdiff
@@ -121,6 +128,8 @@ Attributes: `root` (folder), `name` (folder name), `dir` (the `.strata` folder),
 | `fc.open_preview(project, rev, doc, label)` | Open a read-only copy of `doc` at `rev`, labelled `Name @ label`.
 | `fc.compare_overlay(project, rev_a, rev_b, doc, label_a, label_b)` | Create the 3D comparison document and return the volume summary.
 | `fc.reload(project, docs)` | Re-open documents after their files changed on disk.
+| `fc.set_document_properties(project, {doc: {column: value}})` | Write part number, description, company and custom properties into documents, save them and record one history entry. An empty custom value removes that property.
+| `fc.export_revision(project, rev, doc, folder, basename)` | Write `doc` as recorded at `rev` to `<basename>.FCStd` and, if it has solids, `<basename>.step`. Returns the paths.
 |===
 
 == Errors

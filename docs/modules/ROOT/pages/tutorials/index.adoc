@@ -4,17 +4,25 @@
 Each tutorial takes a few minutes and builds on the xref:quickstart.adoc[quick start].
 The screenshots use a small example project, _Gearbox_: a bracket, a shaft and an assembly that links them.
 
+Coming from Onshape? xref:tutorials/coming-from-onshape.adoc[Coming from Onshape] maps each Onshape PDM and release tutorial to its Strata counterpart.
+
 [.cards]
 * *xref:tutorials/go-back-in-time.adoc[Go back in time]* +
-View earlier states read-only, restore the whole project or a single document.
+View earlier states read-only, restore the whole project or chosen documents.
 * *xref:tutorials/workspaces.adoc[Explore an alternative]* +
-Create a workspace, switch between designs and merge the winner into Main.
+Create a workspace and switch between designs.
+* *xref:tutorials/merging.adoc[Merge workspaces]* +
+Merge strategies, a choice per document, compare with base, undo.
 * *xref:tutorials/compare.adoc[Compare two designs]* +
 See which features and parameters changed, and overlay both in 3D.
 * *xref:tutorials/assemblies.adoc[Assemblies and linked parts]* +
 How projects keep an assembly and its parts consistent.
+* *xref:tutorials/properties.adoc[Part numbers and properties]* +
+Part numbers, descriptions and custom properties for all documents in one table.
 * *xref:tutorials/releases.adoc[Release a design]* +
-Part numbers, revision letters, approvals and obsolete revisions.
+Release candidates, approval, reject and resubmit, revision schemes.
+* *xref:tutorials/revision-history.adoc[Revision history]* +
+All revisions of a part number, obsolete revisions, export for a supplier.
 * *xref:tutorials/team.adoc[Work as a team]* +
 Share a project, open a colleague's, sync and resolve a merge.
 * *xref:tutorials/scripting.adoc[Automate with Python]* +

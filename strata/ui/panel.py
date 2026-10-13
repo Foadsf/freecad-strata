@@ -474,7 +474,12 @@ class Panel(QtWidgets.QDockWidget):
             self._show_banner("eye", "You are viewing " + what, "Close", lambda: self._close_preview(doc))
         else:
             mods = fc.unsaved(proj)
-            if mods:
+            sticky = getattr(self, "_sticky", None)
+            if sticky and sticky[0] == "merge" and not proj.can_undo_merge():
+                sticky = self._sticky = None  # a new entry or a sync followed: undo no longer applies
+            if sticky:
+                self._show_banner("merge", sticky[1], sticky[2], sticky[3])
+            elif mods:
                 self._show_banner("save", "Unsaved changes in %s. Save to record them in history."
                                   % ", ".join(d.Label for d in mods[:3]), "Save", lambda: self._save(mods))
             else:
@@ -674,22 +679,29 @@ class Panel(QtWidgets.QDockWidget):
             self.schedule_refresh()
 
     def restore(self, rev: str, label: str, docs: list[str] | None = None):
-        if self.project is None:
+        """Onshape-style restore: per-document choice, with Compare changes before confirming."""
+        if self.project is None or not self.ensure_saved():
             return
-        what = ", ".join(_stem(d) for d in docs) if docs else display_name(self.project.current_workspace())
-        if not dialogs.ask_restore(self, what, label) or not self.ensure_saved():
+        p = self.project
+        p.record()
+        dlg = dialogs.RestoreDialog(p, rev, label, docs, self,
+                                    compare_cb=lambda: self.compare(p.head(), rev,
+                                                                    [("Latest (now)", p.head()), (label, rev)]))
+        if dlg.exec() != QtWidgets.QDialog.Accepted:
             return
-        changed = self._run(self.project.restore, rev, docs)
+        chosen = dlg.documents()
+        changed = self._run(p.restore, rev, chosen)
         if changed is not None:
-            fc.reload(self.project, changed)
+            fc.reload(p, changed)
+            what = ", ".join(_stem(d) for d in chosen) if chosen else display_name(p.current_workspace())
             self.toast.show_text("Restored %s to %s" % (what, label), "success")
             self.refresh()
 
-    def compare(self, a: str | None = None, b: str | None = None):
+    def compare(self, a: str | None = None, b: str | None = None, extra: list | None = None):
         if self.project is None:
             return
         p = self.project
-        choices = []
+        choices = list(extra or [])
         head = p.head()
         cur = display_name(p.current_workspace())
         choices.append(("%s (latest)" % cur, head))
@@ -720,14 +732,62 @@ class Panel(QtWidgets.QDockWidget):
         if plan.unchanged:
             self.toast.show_text("Nothing to merge: %s has no new changes" % plan.source_label, "info")
             return
-        dlg = dialogs.MergeDialog(p, plan, self)
+        target = display_name(p.current_workspace())
+        dlg = dialogs.MergeDialog(p, plan, self, compare_cb=lambda: self.compare(
+            plan.base, plan.theirs, [("Common base", plan.base), (plan.source_label, plan.theirs),
+                                     ("%s (latest)" % target, plan.ours)]))
         if dlg.exec() != QtWidgets.QDialog.Accepted:
             return
-        changed = self._run(p.merge, plan, dlg.resolutions())
+        changed = self._run(p.merge, plan, dlg.resolutions(), dlg.chosen_strategy())
         if changed is not None:
             fc.reload(p, changed)
-            self.toast.show_text("Merged %s" % plan.source_label, "success")
+            # Onshape shows a message after a merge with a revert link; ours stays until the merge
+            # can no longer be undone (a new history entry or a sync)
+            self._sticky = ("merge", "Merged %s into %s." % (plan.source_label, target), "Undo merge",
+                            self.undo_merge)
             self.refresh()
+
+    def undo_merge(self):
+        p = self.project
+        if p is None:
+            return
+        mods = fc.unsaved(p)
+        if mods:
+            ok = QtWidgets.QMessageBox.question(
+                self, "Undo merge", "Undoing the merge discards the unsaved changes in %s. Continue?"
+                % ", ".join(d.Label for d in mods))
+            if ok != QtWidgets.QMessageBox.Yes:
+                return
+        changed = self._run(p.undo_merge)
+        self._sticky = None
+        if changed is not None:
+            fc.reload(p, changed)
+            self.toast.show_text("Merge undone", "success")
+            self.refresh()
+
+    def edit_properties(self):
+        p = self.project
+        if p is None or not self.ensure_saved():
+            return
+        dlg = dialogs.PropertiesDialog(p, self)
+        if dlg.exec() != QtWidgets.QDialog.Accepted:
+            return
+        changes = dlg.changes()
+        if not changes:
+            return
+        # _run returns None after reporting an error, so return True on success
+        if self._run(lambda: fc.set_document_properties(p, changes) or True):
+            self.toast.show_text("Properties saved for %d document%s" % (len(changes), "" if len(changes) == 1
+                                                                         else "s"), "success")
+            self.refresh()
+
+    def _export_release(self, rel, folder):
+        p = self.project
+        name = "%s_rev%s" % (rel.part_number, rel.revision)
+        files = self._run(fc.export_revision, p, rel.sha, rel.document, folder, name)
+        if files:
+            self.toast.show_text("Exported %s to %s" % (", ".join(os.path.basename(f) for f in files), folder),
+                                 "success")
 
     def release(self, version_name: str):
         p = self.project
@@ -754,12 +814,13 @@ class Panel(QtWidgets.QDockWidget):
             self.toast.show_text("%s %s" % ("Submitted" if approval else "Released",
                                             ", ".join("%s %s" % (r.part_number, r.revision) for r in rels)), "success")
 
-    def show_releases(self):
+    def show_releases(self, part_number: str | None = None):
         if self.project is None:
             return
         p = self.project
         dialogs.ReleasesDialog(p, lambda rel: self.view(rel.sha, "%s rev %s" % (rel.part_number, rel.revision),
-                                                        [rel.document]), self).exec()
+                                                        [rel.document]), self,
+                               on_export=self._export_release, part_number=part_number).exec()
         self.refresh()
 
     def sync(self):
@@ -801,7 +862,8 @@ class Panel(QtWidgets.QDockWidget):
         dlg = dialogs.SettingsDialog(p, self)
         if dlg.exec() == QtWidgets.QDialog.Accepted:
             p.repo.set_identity(dlg.user.text().strip() or "engineer", dlg.email.text().strip() or "unknown@localhost")
-            p.save_settings({"record_on_save": dlg.record.isChecked(), "track_binary": dlg.binary.isChecked()})
+            p.save_settings({"record_on_save": dlg.record.isChecked(), "track_binary": dlg.binary.isChecked(),
+                             "revision_scheme": dlg.scheme.currentData()})
             self.toast.show_text("Settings saved", "success")
 
     # ================================================================ menus
@@ -835,7 +897,8 @@ class Panel(QtWidgets.QDockWidget):
             m.addAction(theme.icon("version"), "Create version…", lambda: self.create_version())
             m.addAction(theme.icon("branch"), "New workspace…", lambda: self.new_workspace())
             m.addAction(theme.icon("compare"), "Compare…", lambda: self.compare())
-            m.addAction(theme.icon("release"), "Releases…", self.show_releases)
+            m.addAction(theme.icon("release"), "Releases…", lambda: self.show_releases())
+            m.addAction(theme.icon("properties"), "Properties…", self.edit_properties)
             m.addSeparator()
             m.addAction(theme.icon("share"), "Share project…" if not p.remote_url() else "Sync now", self.sync)
             m.addAction(theme.icon("settings"), "Project settings…", self.settings)
@@ -860,6 +923,9 @@ class Panel(QtWidgets.QDockWidget):
         m.addAction(theme.icon("branch"), "Branch to create workspace…", lambda: self.new_workspace(n.sha, label))
         if n.versions:
             m.addAction(theme.icon("release"), "Release %s…" % label, lambda: self.release(n.versions[0]))
+            for pn in sorted({r.part_number for r in self.project.releases() if r.version in n.versions}):
+                m.addAction(theme.icon("history"), "Revision history of %s…" % pn,
+                            lambda pn=pn: self.show_releases(pn))
         else:
             m.addAction(theme.icon("version"), "Create version here…", lambda: self.create_version(n.sha))
         m.addSeparator()

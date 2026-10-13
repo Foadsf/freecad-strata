@@ -1,0 +1,5 @@
+Latest entry: Properties: Description Mounting bracket; Part number BRK-100; Material S235
+Conflicts: [] | combined automatically: {'Bracket.FCStd': 'ours'}
+After Merge changes: Height 6.0 mm, part number BRK-100, material S235
+After undo: Height 12.0 mm, part number BRK-100, material S235 | latest entry: Properties: Description Mounting bracket; Part number BRK-100; Material S235
+After Keep Main: Height 12.0 mm, part number BRK-100, material S235 | latest entry: Merged Lightweight into Main (kept Main)

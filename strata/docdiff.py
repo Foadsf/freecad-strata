@@ -16,7 +16,28 @@ UNITS = {
     "App::PropertyAngle": "°", "App::PropertyArea": "mm²", "App::PropertyVolume": "mm³",
     "App::PropertyForce": "N", "App::PropertyPressure": "MPa", "App::PropertySpeed": "mm/s",
 }
-VOLATILE_DOC_PROPS = {"LastModifiedDate", "LastModifiedBy", "FileName", "TransientDir", "CreationDate", "Uid"}
+# FreeCAD document properties under the names engineers use (Onshape: Workspace properties)
+DOC_PROPERTY_LABELS = {"Id": "Part number", "Comment": "Description", "Company": "Company", "Meta": "Custom"}
+
+
+def read_document_properties(xml: bytes | None) -> dict:
+    """{'Part number', 'Description', 'Company', and each custom (Meta) key: value} from Document.xml."""
+    out = {"Part number": "", "Description": "", "Company": ""}
+    if not xml:
+        return out
+    root = ET.fromstring(xml)
+    for p in root.findall("./Properties/Property"):
+        name = p.get("name")
+        if name in ("Id", "Comment", "Company"):
+            s = p.find("String")
+            out[DOC_PROPERTY_LABELS[name]] = s.get("value", "") if s is not None else ""
+        elif name == "Meta":
+            for item in p.findall("./Map/Item"):
+                out[item.get("key", "")] = item.get("value", "")
+    return out
+
+
+VOLATILE_DOC_PROPS ={"LastModifiedDate", "LastModifiedBy", "FileName", "TransientDir", "CreationDate", "Uid"}
 # Bookkeeping FreeCAD rewrites on its own; showing it would bury the real edit.
 IGNORED_PROPS = {"_ElementMapVersion", "AttacherEngine", "AttacherType", "Proxy", "TipName", "_LinkTouched",
                  "_LinkOwner", "_Version", "Version"}
@@ -92,6 +113,9 @@ def _value(prop: ET.Element, ptype: str, file_hashes: dict | None) -> tuple[str,
         subs = [s.get("value", "") for s in c]
         disp = target + c.get("name", "") + ("[%s]" % ", ".join(subs) if subs else "")
         return "xlink:%s|%s|%s" % (f, c.get("name", ""), ",".join(subs)), disp
+    if c.get("file") is not None and file_hashes:  # stored in a side file (colour arrays, …): FreeCAD
+        f = c.get("file")                          # renumbers those on every save, so compare content
+        return "file:" + file_hashes.get(f, f), "…"
     raw = b"".join(ET.tostring(k) for k in kids)
     key = hashlib.sha1(raw).hexdigest()
     if tag in ("Float", "Integer"):
@@ -118,7 +142,8 @@ def _value(prop: ET.Element, ptype: str, file_hashes: dict | None) -> tuple[str,
     if tag in ("ConstraintList", "GeometryList"):
         return key, "%s %s" % (c.get("count", len(list(c))), "constraints" if tag == "ConstraintList" else "elements")
     if tag == "Map":
-        return key, "%s entries" % c.get("count", len(list(c)))
+        items = ["%s: %s" % (i.get("key", ""), i.get("value", "")) for i in c.findall("Item")]
+        return key, "; ".join(items) if items else "(empty)"
     if tag == "PropertyColor":
         try:
             v = int(c.get("value", "0"))
@@ -189,7 +214,7 @@ def parse_document(xml: bytes | None, file_hashes: dict | None = None) -> tuple[
     return objects, doc_props
 
 
-def parse_gui(xml: bytes | None) -> dict[str, dict[str, tuple[str, str]]]:
+def parse_gui(xml: bytes | None, file_hashes: dict | None = None) -> dict[str, dict[str, tuple[str, str]]]:
     if not xml:
         return {}
     root = ET.fromstring(xml)
@@ -199,7 +224,7 @@ def parse_gui(xml: bytes | None) -> dict[str, dict[str, tuple[str, str]]]:
         for p in vp.findall("./Properties/Property"):
             if p.get("name") in GUI_IGNORED_PROPS:
                 continue
-            props[p.get("name")] = _value(p, p.get("type", ""), None)
+            props[p.get("name")] = _value(p, p.get("type", ""), file_hashes)
         out[vp.get("name")] = props
     return out
 
@@ -229,7 +254,7 @@ def diff_documents(old_xml, new_xml, old_files=None, new_files=None, old_gui=Non
         if name not in new:
             o = old[name]
             d.removed.append((name, o.label, o.type))
-    gold, gnew = parse_gui(old_gui), parse_gui(new_gui)
+    gold, gnew = parse_gui(old_gui, old_files), parse_gui(new_gui, new_files)
     for name, n in new.items():
         o = old.get(name)
         if o is None or n.type in NOISE_TYPES:
@@ -261,7 +286,9 @@ def diff_documents(old_xml, new_xml, old_files=None, new_files=None, old_gui=Non
                 ch.props.append(PropChange(pname, o.props[pname][2], "—"))
         gp_old, gp_new = gold.get(name, {}), gnew.get(name, {})
         for pname, (key, _disp) in gp_new.items():
-            if gp_old.get(pname, (None,))[0] != key and gp_old:
+            # a property only on the new side was added by FreeCAD on save (first save with the GUI,
+            # newer version), not by the user
+            if pname in gp_old and gp_old[pname][0] != key:
                 ch.appearance.append(pname)
         if not ch.empty:
             d.modified.append(ch)
@@ -272,6 +299,28 @@ def diff_documents(old_xml, new_xml, old_files=None, new_files=None, old_gui=Non
     if d.status == "modified" and d.empty:
         d.status = "unchanged"
     return d
+
+
+def _map_items(display: str) -> dict:
+    if display in ("", "—", "(empty)"):
+        return {}
+    return dict(part.split(": ", 1) for part in display.split("; ") if ": " in part)
+
+
+def _property_phrases(changes: list[PropChange]) -> list[str]:
+    """'Part number BRK-100', 'Material S235', 'removed Material' for document property changes."""
+    out = []
+    for p in changes:
+        if p.name == "Meta":  # custom properties: report key by key
+            old, new = _map_items(p.old), _map_items(p.new)
+            for k in sorted(set(old) | set(new)):
+                if k not in new:
+                    out.append("removed %s" % k)
+                elif old.get(k) != new[k]:
+                    out.append("%s %s" % (k, new[k]))
+        else:
+            out.append("%s %s" % (DOC_PROPERTY_LABELS.get(p.name, p.name), p.new or "(cleared)"))
+    return out
 
 
 def _has_unit(p: PropChange) -> bool:
@@ -309,11 +358,11 @@ def summarize(diff: DocDiff, max_items: int = 3) -> str:
             consequences.append(("Changed appearance of %s" if ch.appearance else "Updated %s") % ch.label)
     items = [("Added %s" % label) for _, label, _ in diff.added] + \
         [("Deleted %s" % label) for _, label, _ in diff.removed] + items
+    if not items and diff.document_props:  # a recompute on save is not news next to a property edit
+        return "Properties: " + "; ".join(_property_phrases(diff.document_props)[:3])
     if not items:  # knock-on effects only when nothing more meaningful happened
         items = consequences
     if not items:
-        if diff.document_props:
-            return "Edited document properties"
         return "Saved (no model changes)"
     text = " · ".join(items[:max_items])
     if len(items) > max_items:

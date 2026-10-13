@@ -158,6 +158,31 @@ def main():
         part = App.openDocument(part_path)
         check(abs(part.getObject("Pad").Shape.Volume - 300) < 1e-6, "merged design opens in FreeCAD")
         close_all()
+
+        # properties (Onshape: Workspace properties), written into closed documents, one history entry
+        n_before = len(p.history())
+        fc.set_document_properties(p, {
+            "Parts/Bracket.FCStd": {"Part number": "BRK-100", "Description": "Bracket", "Material": "S235"},
+            "Gearbox.FCStd": {"Part number": "GBX-001", "Description": "Gearbox assembly"}})
+        props = p.document_properties("Parts/Bracket.FCStd")
+        check((props["Part number"], props["Description"], props.get("Material")) == ("BRK-100", "Bracket", "S235"),
+              "properties read back from the file: %s" % props)
+        check(len(p.history()) == n_before + 1, "two documents' properties recorded as one entry")
+        lines.append("INFO properties entry: " + p.history()[0].title)
+        fc.set_document_properties(p, {"Parts/Bracket.FCStd": {"Material": ""}})
+        check("Material" not in p.document_properties("Parts/Bracket.FCStd"), "empty value removes a custom property")
+        lines.append("INFO single-document entry: " + p.history()[0].title)
+
+        # export a released revision (Onshape: Revision history > Export)
+        rel = p.release(p.create_version("V2", "for export"), "Parts/Bracket.FCStd", "BRK-100")
+        out_dir = os.path.join(tmp, "export")
+        files = fc.export_revision(p, rel.sha, rel.document, out_dir, "BRK-100_A")
+        check(sorted(os.path.basename(f) for f in files) == ["BRK-100_A.FCStd", "BRK-100_A.step"],
+              "export writes FCStd and STEP: %s" % files)
+        step_shape = Part.read(os.path.join(out_dir, "BRK-100_A.step"))
+        check(abs(step_shape.Volume - 300) < 1e-3, "exported STEP has the released geometry (volume %.3f)"
+              % step_shape.Volume)
+        close_all()
         lines.append("ALL PASSED")
         return 0
     except Exception:
