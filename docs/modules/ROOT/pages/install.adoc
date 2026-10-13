@@ -9,7 +9,7 @@ Strata installs like any other FreeCAD add-on. It takes about two minutes.
 |===
 | FreeCAD | Version 1.0 or newer. Developed and tested on FreeCAD 1.1.4 on Windows 11.
 | Git | Any recent version. Strata uses Git to store history; you never use it yourself.
-| Operating system | Windows is tested. Linux and macOS should work (Strata is pure Python, Qt and Git) but have not been tested yet. Reports are welcome.
+| Operating system | Windows is fully tested. On Linux the engine's test suite passes on every change; the FreeCAD interface has not been tested there yet. macOS has not been tested. Reports are welcome.
 |===
 
 === Installing Git

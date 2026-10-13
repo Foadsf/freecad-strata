@@ -70,7 +70,7 @@ The same commands are at the bottom of the **Tools** menu. More in the [shortcut
 
 ### Requirements
 
-- **FreeCAD 1.0 or newer.** Developed and tested on FreeCAD 1.1.4 on Windows 11. Linux and macOS should work (pure Python + Qt + Git) but have not been tested yet; reports are welcome.
+- **FreeCAD 1.0 or newer.** Developed and fully tested on FreeCAD 1.1.4 on Windows 11. On Linux the engine's test suite passes in CI on every change; the FreeCAD interface has not been tested there yet, and macOS not at all. Reports are welcome.
 - **Git** installed, any recent version: [git-scm.com](https://git-scm.com/downloads). On Linux use your package manager (`sudo apt install git`); on macOS run `xcode-select --install`. Strata finds Git on the `PATH` and in the default Git for Windows and GitHub Desktop locations. Engineers never use Git directly.
 
 ### Option A: FreeCAD Addon Manager (recommended)
