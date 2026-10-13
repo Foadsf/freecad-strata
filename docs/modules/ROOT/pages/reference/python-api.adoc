@@ -1,0 +1,130 @@
+= Python API
+:description: Reference for strata.project (the engine), strata.docdiff (the semantic comparison) and strata.fc (FreeCAD helpers).
+
+Strata's engine lives in `strata.project` and has no FreeCAD or Qt dependency: it can run in FreeCAD's Python console, in `freecadcmd`, or in plain Python (it needs Git).
+The examples in xref:tutorials/scripting.adoc[Automate with Python] are tested and are the best place to start.
+
+[source,python]
+----
+from strata.project import Project
+
+project = Project.locate("C:/cad/Gearbox/Gearbox.FCStd")   # None if not in a project
+project.create_version("V3", "Released for tooling")
+for entry in project.history()[:5]:
+    print(entry.author, entry.title)
+----
+
+Revision arguments (`rev`, `rev_a`, `rev_b`, `from_rev`) are commit ids such as `entry.sha` or `version.sha`.
+For the latest state of a workspace use `project.repo.rev_parse("refs/heads/<workspace>")`; `project.head()` is the latest state of the current one.
+`merge_plan` is the exception: it takes a workspace name.
+Document paths (`doc`, `docs`) are relative to the project folder with forward slashes, for example `Parts/Bracket.FCStd`; `project.rel(path)` converts an absolute path.
+
+== Opening and creating projects
+
+[cols="2,3"]
+|===
+| `Project.locate(path)` | The project containing `path` (a file or folder), searching upwards; `None` if there is none.
+| `Project.open(root)` | The project at `root` (cached per folder).
+| `Project.create(root, user=None, email=None)` | Turn on version control for `root` and record *Start*. Returns the existing project if there already is one.
+| `Project.join(url, root, user=None, email=None)` | Copy a shared project from `url` into `root` (new or empty) with its full history and write out its documents.
+|===
+
+Attributes: `root` (folder), `name` (folder name), `dir` (the `.strata` folder), `repo` (low-level `strata.gitcore.Repo`).
+
+== Recording and history
+
+[cols="2,3"]
+|===
+| `record(docs=None, kind="save", title=None, body="")` | Record the files on disk as a history entry of the current workspace. `docs` limits it to some documents (default: all in the folder). The title is generated from the changes unless given. Returns the commit id, or `None` if nothing changed.
+| `history(workspace=None, limit=500)` | `HistoryEntry` list for a workspace (default: current), newest first.
+| `documents(rev=None)` | Documents in the project at `rev` (default: latest).
+| `documents_on_disk()` | `.FCStd` files currently in the folder.
+| `export_document(rev, doc, dest_dir=None)` | Write `doc` as it was at `rev` to `dest_dir` (default `.strata/previews/...`) and return its path.
+|===
+
+`HistoryEntry`: `sha`, `title`, `body`, `kind` (`start`, `save`, `workspace`, `restore`, `merge`), `author`, `time` (Unix time), `docs`, `parents`, `versions` (names of versions at this entry).
+
+== Versions
+
+[cols="2,3"]
+|===
+| `versions()` | All versions, newest first, as `Version(name, description, sha, ref, author, time, workspace)`.
+| `suggest_version_name()` | The next free `Vn`.
+| `create_version(name, description="", rev=None)` | Create a version of `rev`, or of the current state (recorded first) if `rev` is `None`. Names must be unique.
+|===
+
+== Workspaces
+
+[cols="2,3"]
+|===
+| `current_workspace()` | Name of the current workspace (`main` for Main).
+| `workspaces()` | `Workspace(name, head, current, remote_only)` list; `.display` is the readable name.
+| `create_workspace(name, from_rev=None, description="", switch=True)` | Create a workspace from `from_rev` (default: latest) and switch to it. Returns `(name, changed_docs)`.
+| `switch_workspace(name)` | Record, then switch. Returns the documents rewritten on disk.
+| `delete_workspace(name)` | Delete a workspace other than Main and the current one. Versions are kept.
+|===
+
+== Restore, compare and merge
+
+[cols="2,3"]
+|===
+| `restore(rev, docs=None)` | Bring the current workspace back to `rev`, completely or only `docs`, as a new history entry. Returns the documents rewritten on disk.
+| `diff(rev_a, rev_b)` | `{doc: DocDiff}` for every document that differs (see <<docdiff>>).
+| `merge_plan(source)` | Analyse merging workspace `source` (or a full ref) into the current one: `MergePlan(take_theirs, conflicts, unchanged, fast_forward, ...)`.
+| `merge(plan, resolutions=None)` | Perform it. `resolutions` maps each conflicting document to `"ours"`, `"theirs"` or `"both"`. Returns the documents rewritten on disk.
+|===
+
+== Releases
+
+[cols="2,3"]
+|===
+| `release(version, document, part_number, revision=None, description="", approval=False)` | Release one document of a `Version`. The revision defaults to the next free letter. With `approval=True` the release is created as *Pending*.
+| `set_release_state(release, state, comment="")` | `"Released"` (approve), `"Rejected"` or `"Obsolete"`.
+| `releases()` | `Release(part_number, revision, description, state, sha, version, document, author, time, approver)` list.
+| `next_revision(part_number)` | The next free revision letter.
+|===
+
+== Sharing
+
+[cols="2,3"]
+|===
+| `remote_url()` | The shared location, or `None`.
+| `set_remote(url)` | Set the shared location. A local or network folder is prepared automatically.
+| `sync()` | Record, fetch, fast-forward or merge, and push. Returns `SyncResult(pushed, pulled, merged, needs_merge, changed_docs)`. Workspaces in `needs_merge` changed on both sides in the same documents; merge them with `merge_plan("refs/remotes/origin/<name>")`.
+|===
+
+== Settings
+
+`settings()` returns the project settings (`record_on_save`, `track_binary`); `save_settings({...})` updates them. `project.repo.set_identity(name, email)` sets your name and email for this project.
+
+[#docdiff]
+== strata.docdiff
+
+`DocDiff` describes how one document changed:
+
+[cols="1,3"]
+|===
+| `status` | `"added"`, `"removed"`, `"modified"` or `"unchanged"`
+| `added`, `removed` | lists of `(name, label, type)`
+| `modified` | list of `ObjChange(name, label, type, props, geometry, appearance, renamed_from)`; `props` is a list of `PropChange(name, old, new)` with readable values such as `"12 mm"`
+| `document_props` | changes to the document's own properties
+|===
+
+`docdiff.summarize(diff)` returns the one-line description used for history titles.
+`docdiff.diff_documents(old_xml, new_xml, ...)` compares two `Document.xml` contents directly.
+
+== strata.fc (inside FreeCAD)
+
+[cols="2,3"]
+|===
+| `fc.project_for(doc)`, `fc.active_project()` | The project of a FreeCAD document, or of the active one.
+| `fc.open_preview(project, rev, doc, label)` | Open a read-only copy of `doc` at `rev`, labelled `Name @ label`.
+| `fc.compare_overlay(project, rev_a, rev_b, doc, label_a, label_b)` | Create the 3D comparison document and return the volume summary.
+| `fc.reload(project, docs)` | Re-open documents after their files changed on disk.
+|===
+
+== Errors
+
+`strata.project.StrataError`:: a request that cannot be done, with a message meant for users, for example _A version named 'V1' already exists_.
+`strata.gitcore.GitError`:: Git reported an error, for example an unreachable shared location.
+`strata.gitcore.GitMissing`:: Git is not installed.

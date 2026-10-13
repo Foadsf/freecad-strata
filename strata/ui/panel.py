@@ -50,6 +50,23 @@ class Toast(QtWidgets.QLabel):
         self.timer.start(3800)
 
 
+class _EscFilter(QtCore.QObject):
+    def __init__(self, panel):
+        super().__init__(panel)
+        self.panel = panel
+
+    def eventFilter(self, obj, ev):
+        t = ev.type()
+        if t in (QtCore.QEvent.ShortcutOverride, QtCore.QEvent.KeyPress) and \
+                ev.key() == QtCore.Qt.Key_Escape and self.panel.wants_escape():
+            if t == QtCore.QEvent.ShortcutOverride:
+                ev.accept()  # deliver Esc to us as a key press instead of FreeCAD's shortcut
+            else:
+                self.panel.escape()
+            return True
+        return False
+
+
 class TitleBar(QtWidgets.QWidget):
     def __init__(self, panel):
         super().__init__(panel)
@@ -114,6 +131,41 @@ class Panel(QtWidgets.QDockWidget):
         self.timer.setSingleShot(True)
         self.timer.timeout.connect(self.refresh)
         self.status = None
+
+        # keys that work while the panel (or anything inside it) has focus
+        ctx = QtCore.Qt.WidgetWithChildrenShortcut
+        find = QtGui.QShortcut(QtGui.QKeySequence("Ctrl+F"), body, self.focus_search)
+        find.setContext(ctx)
+        self._shortcuts = [find]
+        # Esc cannot be a QShortcut here: FreeCAD has its own window-wide Esc, and two shortcuts on one
+        # key cancel each other. Claiming it through ShortcutOverride on our own widgets wins instead.
+        self._esc = _EscFilter(self)
+        for w in (self.search, self.history, self.graph):
+            w.installEventFilter(self._esc)
+
+    def wants_escape(self) -> bool:
+        return self.stack.currentIndex() == 1 and (self.search.isVisible() or self.card.isVisible())
+
+    def focus_search(self):
+        if self.stack.currentIndex() != 1:
+            return
+        self.search_btn.setChecked(True)
+        self.search.setFocus()
+        self.search.selectAll()
+
+    def escape(self):
+        """Esc in the search box: clear it, then close it. Elsewhere: close the details card, then the search."""
+        if self.search.hasFocus():
+            if self.search.text():
+                self.search.clear()
+            else:
+                self.search_btn.setChecked(False)
+                self.history.setFocus()
+        elif self.card.isVisible():
+            self._close_card()
+        elif self.search.isVisible():
+            self.search_btn.setChecked(False)
+            self.history.setFocus()
 
     def changeEvent(self, ev):
         # follow FreeCAD's light/dark theme when it changes the application palette

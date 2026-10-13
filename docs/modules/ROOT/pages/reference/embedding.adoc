@@ -1,0 +1,73 @@
+= Embedding Strata in an add-on
+:description: The API for add-ons that host Strata in their own interface: configure, on_ready, actions, activate_commands and theme overrides.
+
+Add-ons that bring their own interface can host Strata without changing it.
+https://github.com/Foadsf/freecad-nxstyle[freecad-nxstyle], a Siemens NX-style interface for FreeCAD, uses this API to put Strata in place of Teamcenter: the panel sits behind the Part Navigator, the commands are on a PLM ribbon tab, and the colours follow the NX theme.
+
+== Quick example
+
+[source,python]
+----
+import strata.boot as sb
+from strata.ui import theme
+
+# Before or after Strata starts; stored as preferences, so it also applies at the next start.
+sb.configure(host_toolbar=True, panel_area="left")
+
+def build_plm_tab():
+    for action in sb.actions().values():     # QActions owned by Strata
+        my_ribbon.add(action)
+    theme.set_overrides(light={"accent": "#00838F", "accent_hover": "#006D77"},
+                        lanes_light=["#00838F", "#8250DF", "#BF5B04"])
+    sb.activate_commands()                   # build Strata's menu entries and key bindings now
+    my_ui.reapply_my_shortcuts()
+
+sb.on_ready(build_plm_tab)                   # runs once Strata is up, or at once if it already is
+----
+
+== API
+
+`strata.boot.configure(host_toolbar=None, panel_area=None)`::
+`host_toolbar=True`: Strata creates no toolbar of its own and does not rebuild the current workbench at startup.
+`panel_area="left"` or `"right"`: where the panel docks. When set before Strata starts, the panel is created there, so nothing moves on screen.
+Both are stored as preferences (`HostProvidesToolbar`, `PanelArea`) and also apply live.
+
+`strata.boot.on_ready(callback)`::
+Calls `callback()` once Strata has started, or immediately if it already has. Use this instead of polling.
+
+`strata.boot.is_ready()`::
+`True` once Strata has started.
+
+`strata.boot.actions()`::
+`{command name: QAction}` for `Strata_Panel`, `Strata_CreateVersion`, `Strata_Compare`, `Strata_Releases`, `Strata_Sync`.
+Strata creates them at startup and enables or disables them with the active project.
+They do not carry key bindings; FreeCAD's own commands do (see below).
+
+`strata.boot.activate_commands()`::
+Rebuilds the active workbench so FreeCAD creates Strata's menu entries and, with them, the keyboard shortcuts.
+Strata calls it at startup unless `host_toolbar` is set, because rebuilding the workbench can reset a host's own shortcuts. Hosts call it when it suits them.
+
+`strata.boot.panel()`::
+The panel (a `QDockWidget`). `panel().user_set_visible(True)` shows it as if the user did; plain `show()` and `hide()` do not change the remembered visibility.
+
+`strata.boot.SHORTCUTS`::
+The default shortcut of each command.
+
+`strata.ui.theme.set_overrides(light=None, dark=None, lanes_light=None, lanes_dark=None)`::
+Merge colour tokens into the light and dark themes and restyle Strata's open widgets. Unknown token names raise `KeyError`; the token names are in `strata/ui/theme.py` (`accent`, `accent_hover`, `accent_soft`, `selected`, `panel`, `surface`, `text`, `muted`, ...).
+`lanes_light[0]` is the colour of Main's lane in the version graph.
+
+== Rules that keep both add-ons healthy
+
+* Load Strata *once*. If a copy is already installed in FreeCAD's `Mod` folder, use it instead of bundling a second one.
+* Never change the process working directory (`os.chdir`). On Windows a folder that is a working directory cannot be deleted, which breaks uninstalling add-ons.
+* Do not walk `QApplication.allWidgets()` to find Strata's widgets; use `strata.boot.panel()`. A full widget walk has crashed FreeCAD 1.1.4 with a spreadsheet open.
+* Remember that the user owns the panel's visibility: use `user_set_visible` only in response to a user action.
+
+== Tested
+
+`tests/embed_test.py` checks this API in a running FreeCAD, in three phases with Strata starting on its own:
+
+* *live*: configure, actions and theme;
+* *prestart*: the preferences already set at start, and visibility surviving a real shutdown;
+* *keys*: shortcuts, the Tools menu and panel keys.

@@ -1,0 +1,57 @@
+name: Documentation
+
+# Builds the AsciiDoc documentation in docs/ with Antora and publishes the HTML site to the
+# gh-pages branch, which GitHub Pages serves at https://foadsf.github.io/freecad-strata/
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/**'
+      - 'antora-playbook.yml'
+      - '.github/workflows/docs.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: docs
+  cancel-in-progress: true
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: docs/package-lock.json
+
+      - name: Install Antora
+        run: npm ci --prefix docs
+
+      - name: Build the site
+        run: npx --prefix docs antora --stacktrace antora-playbook.yml
+
+      - name: Publish to the gh-pages branch
+        env:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+        run: |
+          cd build/site
+          # Antora puts its UI assets in "_/"; without .nojekyll GitHub Pages would hide them.
+          touch .nojekyll
+          git init -q -b gh-pages
+          git add -A
+          git -c user.name="github-actions[bot]" \
+              -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+              commit -q -m "Documentation built from ${GITHUB_SHA::7}"
+          git push -q --force "https://x-access-token:${TOKEN}@github.com/${REPO}.git" gh-pages

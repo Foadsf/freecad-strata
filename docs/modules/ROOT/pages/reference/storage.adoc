@@ -1,0 +1,67 @@
+= How history is stored
+:description: The .strata folder, how .FCStd archives are split into text and binary entries, how documents are rebuilt, and why history does not live inside the files.
+
+== Why not inside the .FCStd file?
+
+The original proposal suggested a Git repository *inside* each `.FCStd` archive.
+On FreeCAD 1.1.4 that cannot work: FreeCAD writes the whole archive anew on every save and silently drops entries it does not know.
+A repository placed inside the file would be erased by the next save.
+History therefore lives beside the documents, in the project folder's hidden `.strata` folder.
+
+== The .strata folder
+
+----
+Gearbox/
+├── Gearbox.FCStd
+├── Parts/...
+└── .strata/                 hidden; do not edit
+    ├── repo.git/            the history: a bare Git repository
+    ├── blobs/               binary entries, this computer only
+    ├── previews/            read-only copies opened with View (safe to delete)
+    ├── trash/               documents removed by a restore or switch
+    ├── settings.json        project settings
+    └── README.txt
+----
+
+== What is recorded
+
+An `.FCStd` file is a zip archive. For each document Strata stores its entries under the document's path:
+
+----
+Parts/Bracket.FCStd/Document.xml          the model: objects, parameters, expressions
+Parts/Bracket.FCStd/GuiDocument.xml       visibility, colours, camera
+Parts/Bracket.FCStd/Pad.Shape.brp         geometry as OpenCASCADE BREP text
+Parts/Bracket.FCStd/Pad.Shape.Map.txt     topological naming element maps
+Parts/Bracket.FCStd/.strata.json          manifest: entry order, binary entries and their hashes
+----
+
+An entry is *text* if it contains no NUL byte and is valid UTF-8. Text entries go into Git. Binary entries go to `.strata/blobs`, a content-addressed store, unless *Also share binary attachments* is on.
+Because the BREP geometry is text by default, imported, non-parametric solids such as STEP imports are restored exactly, without a recompute.
+
+== Rebuilding a document
+
+To restore or view a document, Strata writes a new archive from the recorded entries in their original order, with `Document.xml` first.
+Each binary entry comes from the local blob store, or, if it is not there (for example, a colleague's thumbnail), from the same entry of the file currently on disk.
+Files are written to a temporary name and then renamed, so a document is never half-written.
+
+== The plain-language descriptions
+
+History titles and Compare come from `strata.docdiff`, which reads `Document.xml` and `GuiDocument.xml` and compares objects and properties:
+
+* values are shown with units (`Length 10 mm → 12 mm`, angles in degrees, placements as position and angle);
+* sketch constraints are compared one by one, so a dimension change is reported with its old and new value;
+* external links are compared by target document and object, not by their save time stamp;
+* FreeCAD bookkeeping is left out: origin features, attachment internals, placements that follow an attachment, values equal at display precision;
+* when a feature is added, the resulting change of its body's feature list is not repeated in the title.
+
+== Performance
+
+Writing objects and references and reading history are done in Python, without starting Git. Starting a program costs about 0.1 s on a typical Windows laptop, so this keeps saves fast.
+Git itself is only started to create projects, to fetch and push, and to read packed objects received from colleagues.
+Recording a save of the test parts took about 0.1 s.
+
+== Using Git directly
+
+`.strata/repo.git` is an ordinary bare repository, so read-only Git tools work, for example `git --git-dir .strata/repo.git log --oneline`.
+Do not commit, rebase or reset in it by hand: Strata expects to be the only writer.
+If the project folder is itself inside another Git repository, add `.strata/` to that repository's `.gitignore`.

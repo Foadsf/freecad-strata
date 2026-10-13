@@ -1,0 +1,62 @@
+= Quick start in five minutes
+:description: Turn on version control for a folder, let Strata record your saves, create a version and go back in time.
+
+This page takes you from an ordinary FreeCAD folder to your first restored version.
+You need Strata xref:install.adoc[installed] and any FreeCAD part.
+
+== 1. Put your documents in a project folder
+
+A Strata *project* is simply a folder. Save the part you want to work on into a folder of its own, for example `Documents\CAD\Bracket\Bracket.FCStd`.
+Assemblies and their parts belong in the same folder or its sub-folders; Strata versions them together.
+
+== 2. Turn on version control
+
+Open a document from that folder. The *Versions and history* panel shows that version control is off.
+
+[.steps]
+. Click btn:[Turn on version control].
+. Check the project folder and your name. Your name appears next to your changes.
+. Click btn:[Turn on].
+
+image::screenshots/15_turn_on_dialog.png[The Turn on version control dialog,role=screenshot,width=560]
+
+Strata records the current state as *Start*. From now on every save is recorded.
+
+== 3. Work and save as usual
+
+Change something, for example the length of a pad, and save with kbd:[Ctrl+S].
+A new entry appears at the top of *History*, written in plain language:
+
+image::screenshots/02_history_entry.png[History entries and the details card,role=screenshot,width=380]
+
+Click an entry to see exactly what changed, who changed it and when.
+
+== 4. Create a version
+
+When you reach a milestone, for example a design you are about to send out, click btn:[Create version] or press kbd:[Ctrl+Shift+V].
+Strata suggests the next name (`V1`, `V2`, ...). Add a short description and click btn:[Create version].
+
+image::screenshots/04_create_version.png[The Create version dialog,role=screenshot,width=460]
+
+A version is a permanent snapshot of *every* document in the project. It appears as a solid node in the *Versions* graph.
+
+== 5. Go back in time
+
+Keep working and save a few times. Then, in *History* or in the *Versions* graph:
+
+* hover an entry and click the *eye* to open that point as a *read-only copy*, or press kbd:[Enter] on it;
+* hover an entry and click the *restore arrow* to bring your project back to that point.
+
+Restoring adds a new history entry, _Restored to V1_, so the state you left is still in history and you can return to it any time.
+
+== Next steps
+
+[.cards]
+* *xref:concepts.adoc[Key concepts]* +
+Understand projects, versions, workspaces and releases.
+* *xref:tutorials/workspaces.adoc[Explore an alternative]* +
+Try an idea in a workspace and merge it back.
+* *xref:tutorials/team.adoc[Work as a team]* +
+Share the project and sync with colleagues.
+* *xref:shortcuts.adoc[Keyboard shortcuts]* +
+Work faster with the keyboard.

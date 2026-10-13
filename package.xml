@@ -2,8 +2,8 @@
 <package format="1" xmlns="https://wiki.freecad.org/Package_Metadata">
   <name>Strata</name>
   <description>Versions, workspaces, history, compare and releases for FreeCAD documents, with an Onshape-style interface. Engineers never see Git: every save is recorded, milestones become versions, ideas live in workspaces.</description>
-  <version>0.1.0</version>
-  <date>2026-10-12</date>
+  <version>0.2.0</version>
+  <date>2026-10-13</date>
   <maintainer email="f.s.farimani@gmail.com">Foad S. Farimani</maintainer>
   <license file="LICENSE">LGPL-2.1-or-later</license>
   <url type="repository" branch="main">https://github.com/Foadsf/freecad-strata</url>

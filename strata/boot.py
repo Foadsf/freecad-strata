@@ -76,13 +76,26 @@ def host_provides_toolbar() -> bool:
 
 
 # ------------------------------------------------------------------ commands
+# Default shortcuts. Chosen so that none clashes with FreeCAD 1.1's own defaults (all 185 were
+# listed from a running FreeCAD); users can change them under Tools > Customize > Keyboard.
+SHORTCUTS = {
+    "Strata_Panel": "Ctrl+Shift+H",          # History
+    "Strata_CreateVersion": "Ctrl+Shift+V",  # Version
+    "Strata_Compare": "Ctrl+Shift+D",        # Diff
+    "Strata_Releases": "Ctrl+Shift+R",       # Releases
+    "Strata_Sync": "Ctrl+Shift+Y",           # sYnc
+}
+
+
 class _Command:
-    def __init__(self, text, tip, icon, fn, needs_project=True, checkable=False):
+    def __init__(self, text, tip, icon, fn, needs_project=True, checkable=False, accel=""):
         self.text, self.tip, self.icon, self.fn = text, tip, icon, fn
-        self.needs_project, self.checkable = needs_project, checkable
+        self.needs_project, self.checkable, self.accel = needs_project, checkable, accel
 
     def GetResources(self):
         res = {"Pixmap": os.path.join(ICONS, self.icon + ".svg"), "MenuText": self.text, "ToolTip": self.tip}
+        if self.accel:
+            res["Accel"] = self.accel
         return res
 
     def Activated(self, *_):
@@ -94,12 +107,38 @@ class _Command:
 
 
 class _Manipulator:
-    """Puts the two everyday buttons next to Save, in every workbench (same pattern as FreeCAD's BIM)."""
-    COMMANDS = ["Strata_Panel", "Strata_CreateVersion"]
-    ALL = COMMAND_NAMES
+    """Adds Strata's commands to the Tools menu of every workbench.
 
-    def modifyToolBars(self):
-        return [{"append": c, "toolBar": "File"} for c in self.COMMANDS]
+    Besides making them easy to find, this is what makes the keyboard shortcuts work: FreeCAD only
+    creates a command's action, and with it the key binding, once a menu or toolbar holds it
+    (measured: no action and an empty shortcut before, Ctrl+Shift+H working after).
+    """
+
+    def modifyMenuBar(self):
+        # Tools > ... Customize, ---, Versions and history, Create version, Compare, Releases, Sync
+        items = [{"append": COMMAND_NAMES[0], "menuItem": "Std_DlgCustomize"}]
+        items += [{"append": COMMAND_NAMES[i], "menuItem": COMMAND_NAMES[i - 1]}
+                  for i in range(1, len(COMMAND_NAMES))]
+        items.append({"insert": "Separator", "menuItem": COMMAND_NAMES[0]})
+        return items
+
+
+def activate_commands():
+    """Re-activate the current workbench so FreeCAD builds Strata's menu entries and key bindings now
+    rather than at the next workbench switch. Called automatically unless a host provides the toolbar
+    (re-activation can reset a host's own shortcuts, so hosts choose the moment)."""
+    wb = Gui.activeWorkbench()
+    if wb is None:
+        return
+    try:
+        wb.reloadActive()  # rebuilds menus/toolbars of the active workbench, manipulators included
+    except Exception:
+        try:  # older FreeCAD: activating the same workbench again is a no-op, so switch away and back
+            name = wb.name()
+            Gui.activateWorkbench("NoneWorkbench")
+            Gui.activateWorkbench(name)
+        except Exception:
+            pass
 
 
 def _toggle_panel():
@@ -114,7 +153,11 @@ def _build_actions(parent):
         cmd = _state["commands"][name]
         act = QtGui.QAction(QtGui.QIcon(os.path.join(ICONS, cmd.icon + ".svg")), cmd.text, parent)
         act.setObjectName(name)
-        act.setToolTip(cmd.tip)
+        if cmd.accel:
+            # shown in menus/tooltips only: FreeCAD's own command owns the key binding
+            act.setToolTip("%s (%s)" % (cmd.tip, cmd.accel))
+        else:
+            act.setToolTip(cmd.tip)
         act.setStatusTip(cmd.tip)
         act.triggered.connect(lambda _=False, c=cmd: c.fn())
         acts[name] = act
@@ -158,20 +201,7 @@ def _apply_toolbar_mode(host: bool):
             timer.stop()
         if _state.get("fallback_toolbar") is not None:
             _state["fallback_toolbar"].hide()
-        m = _state.pop("manipulator", None)
-        if m is not None and hasattr(Gui, "removeWorkbenchManipulator"):
-            Gui.removeWorkbenchManipulator(m)
         return
-    if hasattr(Gui, "addWorkbenchManipulator") and "manipulator" not in _state:
-        m = _Manipulator()
-        Gui.addWorkbenchManipulator(m)
-        _state["manipulator"] = m
-        try:  # rebuild the toolbars of the workbench that is already active
-            wb = Gui.activeWorkbench()
-            if wb is not None:
-                Gui.activateWorkbench(wb.name())
-        except Exception:
-            pass
     # FreeCAD's toolbar manager rebuilds toolbars on every workbench switch, and Gui::MainWindow's
     # workbenchActivated signal is not exposed to Python, so check after switches with a light timer.
     if timer is None:
@@ -232,12 +262,20 @@ def install():
                                 lambda: panel().sync()),
     }
     for name, cmd in cmds.items():
+        cmd.accel = SHORTCUTS.get(name, "")
         Gui.addCommand(name, cmd)
     _state["commands"] = cmds
     _state["panel"] = p
     _build_actions(mw)
     p.refreshed.connect(_update_actions)
-    _apply_toolbar_mode(params.GetBool("HostProvidesToolbar", False))
+    host = params.GetBool("HostProvidesToolbar", False)
+    if hasattr(Gui, "addWorkbenchManipulator"):
+        m = _Manipulator()
+        Gui.addWorkbenchManipulator(m)
+        _state["manipulator"] = m
+        if not host:
+            activate_commands()  # menu entries and shortcuts now, not at the next workbench switch
+    _apply_toolbar_mode(host)
     p.refresh()
     App.Console.PrintLog("Strata: ready\n")
     for cb in _state.pop("ready_callbacks", []):

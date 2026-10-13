@@ -1,0 +1,32 @@
+name: Tests
+
+# The engine tests need only Python and Git, so they run on every push on Linux and Windows.
+# FreeCAD-based tests (tests/fc_engine_test.py, tests/docs_examples_test.py and the GUI tests)
+# are run locally; see docs/modules/ROOT/pages/contributing.adoc.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  core:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Lint
+        run: |
+          pip install ruff
+          ruff check --select F,E9 .
+      - name: Core tests
+        run: python tests/test_core.py -v

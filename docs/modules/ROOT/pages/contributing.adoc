@@ -1,0 +1,94 @@
+= Contributing and testing
+:description: Set up a development copy, the code layout, the test suites and building this documentation.
+
+Strata is developed on GitHub at {repo}. Issues and pull requests are welcome.
+
+== Development setup
+
+Clone the repository and make FreeCAD load it from your working copy:
+
+.Windows (PowerShell), FreeCAD 1.1: a directory junction
+[source,powershell]
+----
+git clone https://github.com/Foadsf/freecad-strata.git C:\dev\freecad-strata
+New-Item -ItemType Junction -Path "$env:APPDATA\FreeCAD\v1-1\Mod\Strata" -Target C:\dev\freecad-strata
+----
+
+.Linux, FreeCAD 1.1: a symbolic link
+[source,bash]
+----
+git clone https://github.com/Foadsf/freecad-strata.git ~/dev/freecad-strata
+ln -s ~/dev/freecad-strata ~/.local/share/FreeCAD/v1-1/Mod/Strata
+----
+
+Restart FreeCAD after changing Python files.
+
+== Code layout
+
+[cols="1,3"]
+|===
+| `InitGui.py` | Registers the Strata workbench and starts Strata when FreeCAD's window is up.
+| `strata/gitcore.py` | Dependency-free Git plumbing: loose objects, references, history walks.
+| `strata/fcstd.py` | Splitting `.FCStd` archives into entries and rebuilding them; the local binary store.
+| `strata/docdiff.py` | Semantic comparison of FreeCAD documents and plain-language summaries.
+| `strata/project.py` | The engine: record, versions, workspaces, restore, merge, releases, sync.
+| `strata/fc.py` | FreeCAD glue: save observer, reloading, previews, the 3D comparison.
+| `strata/boot.py` | Installs the panel, commands, menu entries, toolbar and the embedding API.
+| `strata/ui/` | Theme and icons, version graph, history list, panel and dialogs.
+| `docs/` | This documentation (Antora); `docs/modules/ROOT/examples` holds the tested examples.
+| `tests/` | The test suites below.
+|===
+
+== Tests
+
+[cols="2,3"]
+|===
+| Command | What it checks
+
+| `python tests/test_core.py`
+| The engine without FreeCAD: recording, versions, workspaces, restore, merge, releases, sync between two people, and survival of `git gc`.
+
+| `freecadcmd tests/fc_engine_test.py`
+| The engine inside FreeCAD: restored geometry volumes, assembly links, workspace isolation, merge, read-only views, the 3D overlay.
+
+| `freecadcmd tests/docs_examples_test.py`
+| Runs every documentation example and compares its output with the `.out` file shown in the docs.
+
+| `python tests/run_gui_hidden.py <work> <shots>`
+| Drives the real FreeCAD window through every dialog, a workspace switch and a 3D comparison, and makes the screenshots in this documentation. Fails if Strata did not start on its own.
+
+| `python tests/run_phases.py embed_test.py <out> live prestart keys`
+| The embedding API, remembered panel visibility across a real shutdown, keyboard shortcuts, the Tools menu and panel keys.
+
+| `python tests/run_phases.py am_install_test.py <out> install verify uninstall --set repo=<url> --set branch=main`
+| Installs from a repository through the real Addon Manager window, restarts FreeCAD to verify, then uninstalls.
+|===
+
+The GUI tests use a throwaway FreeCAD preferences file and never touch yours.
+On Windows they can run on a hidden desktop with a memory limit when `STRATA_SURFACEKIT` points to a folder containing `surfacekit.py`; otherwise they open a normal window.
+
+TIP: A GUI test must never start Strata itself. It must check that FreeCAD started it. A test that called `install()` once hid a startup error through several passing runs.
+
+== Building this documentation
+
+The documentation is written in AsciiDoc in `docs/` and built with https://antora.org[Antora].
+
+[source,bash]
+----
+npm ci --prefix docs
+npx --prefix docs antora antora-playbook.yml
+----
+
+Open `build/site/index.html`. On every push to `main`, the *Documentation* workflow builds the site and publishes it to the `gh-pages` branch, which GitHub Pages serves.
+
+Conventions:
+
+* one sentence per line in `.adoc` files, which makes reviews easier;
+* screenshots come from `tests/run_gui_hidden.py`, not from hand-made captures, so they always match the code;
+* every runnable example has an `.out` file produced by `tests/docs_examples_test.py --update`. Review the diff before committing it.
+
+== Coding style
+
+Python 3.10+ with type hints where practical, four-space indentation, `snake_case` functions and `PascalCase` classes.
+Check with `ruff check --select F,E9 .`.
+All files carry an SPDX licence header: `LGPL-2.1-or-later`.

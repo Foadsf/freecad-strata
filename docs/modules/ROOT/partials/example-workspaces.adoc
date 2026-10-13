@@ -1,0 +1,11 @@
+.workspaces.py: an alternative in a workspace, compared and merged
+[source,python]
+----
+include::example$workspaces.py[]
+----
+
+.Output of `freecadcmd workspaces.py`
+[source,text]
+----
+include::example$workspaces.out[]
+----

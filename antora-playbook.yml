@@ -1,0 +1,40 @@
+# Antora playbook for the Strata documentation site.
+# Local build:  npm ci --prefix docs  &&  npx --prefix docs antora antora-playbook.yml
+# The site is written to build/site; CI publishes it to the gh-pages branch (.github/workflows/docs.yml).
+site:
+  title: Strata for FreeCAD
+  url: https://foadsf.github.io/freecad-strata
+  start_page: strata::index.adoc
+  robots: allow
+  keys:
+    repo_url: https://github.com/Foadsf/freecad-strata
+content:
+  sources:
+  - url: .
+    branches: HEAD
+    start_path: docs
+    edit_url: https://github.com/Foadsf/freecad-strata/edit/main/{path}
+ui:
+  bundle:
+    url: https://gitlab.com/antora/antora-ui-default/-/jobs/artifacts/HEAD/raw/build/ui-bundle.zip?job=bundle-stable
+    snapshot: true
+  supplemental_files: ./docs/supplemental-ui
+antora:
+  extensions:
+  - require: '@antora/lunr-extension'
+    index_latest_only: true
+asciidoc:
+  attributes:
+    experimental: ''
+    idprefix: ''
+    idseparator: '-'
+    page-pagination: ''
+    hide-uri-scheme: ''
+    repo: https://github.com/Foadsf/freecad-strata
+    forum: https://forum.freecad.org/viewtopic.php?t=89249
+runtime:
+  cache_dir: ./build/.antora-cache
+  log:
+    failure_level: warn
+output:
+  dir: ./build/site

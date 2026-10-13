@@ -1,0 +1,49 @@
+= Settings and preferences
+:description: Project settings (your name, recording, binary attachments) and FreeCAD preferences that control the panel.
+
+Strata has two kinds of settings: *project settings*, which belong to one project, and *preferences*, which belong to your FreeCAD installation.
+
+== Project settings
+
+Open the btn:[⋯] menu in the panel and choose *Project settings...*.
+
+image::screenshots/17_settings.png[Project settings,role=screenshot,width=520]
+
+Your name, Email::
+Shown next to your changes, versions and releases. Stored in the project's history configuration, so each project can carry a different identity, for example a work email.
+
+Record a history entry every time a document is saved::
+On by default. Turn it off to record only when you create versions, restore, merge or sync.
+Each of those first records whatever you saved since the last entry, so nothing is lost.
+
+Also share binary attachments::
+Off by default. FreeCAD documents contain a few binary parts: thumbnails, colour tables and, if you enabled it in FreeCAD, binary BREP geometry.
+By default only the text content is shared through history. That is the model definition and the BREP geometry, which FreeCAD writes as text by default.
+Binary parts are kept in a local store, so restores on *your* computer are exact, and your history stays small.
+Turn this on if colleagues should also get the exact thumbnails and colours.
+
+These settings are stored in `<project>/.strata/settings.json`, apart from your name and email, which live in `.strata/repo.git/config`.
+
+== FreeCAD preferences
+
+Strata keeps a few preferences in FreeCAD's parameter store under `BaseApp/Preferences/Mod/Strata`.
+You can see them in menu:Tools[Edit parameters...].
+
+[cols="1,1,3"]
+|===
+| Parameter | Default | Meaning
+
+| `PanelVisible` | true
+| Whether the panel is shown when FreeCAD starts. Changes only when *you* close or reopen the panel (with its btn:[×], kbd:[Ctrl+Shift+H], the toolbar button, the status-bar indicator or the Strata workbench). Background tabs and closing FreeCAD do not change it.
+
+| `PanelArea` | `right`
+| Where the panel docks when FreeCAD starts: `left` or `right`. You can drag it elsewhere during a session.
+
+| `HostProvidesToolbar` | false
+| For add-ons that host Strata in their own interface. When true, Strata adds no toolbar of its own. See xref:reference/embedding.adoc[Embedding].
+|===
+
+== The Strata workbench
+
+Strata adds a small *Strata* workbench to the workbench selector. It is not needed for normal use: the panel, toolbar, menu entries and shortcuts work in every workbench.
+Switching to it shows the panel and puts the commands in a *Strata* menu and toolbar.

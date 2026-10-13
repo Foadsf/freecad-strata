@@ -1,0 +1,13 @@
+{
+  "name": "strata-docs",
+  "private": true,
+  "description": "Builds the Strata documentation site with Antora (see antora-playbook.yml at the repository root).",
+  "scripts": {
+    "build": "antora --stacktrace ../antora-playbook.yml"
+  },
+  "devDependencies": {
+    "@antora/cli": "3.1.10",
+    "@antora/lunr-extension": "1.0.0-alpha.10",
+    "@antora/site-generator": "3.1.10"
+  }
+}

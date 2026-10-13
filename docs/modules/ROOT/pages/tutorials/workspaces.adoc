@@ -1,0 +1,57 @@
+= Explore an alternative
+:description: Create a workspace for a design alternative, switch between workspaces, and merge the result into Main.
+
+*Goal:* try a lighter bracket without disturbing the main design, then adopt it.
+
+*You need:* a project with at least one version.
+
+== Create a workspace
+
+[.steps]
+. Click the workspace pill btn:[Main ▾] and choose *New workspace...*. To start from an earlier point instead, right-click a version or history entry and choose *Branch to create workspace...*.
+. Give it a name, for example _Lightweight_, and optionally a description.
+. Click btn:[Create workspace].
+
+You are now in *Lightweight*. The pill, the status bar and the history header all say so, and the graph has a new lane.
+
+image::screenshots/03_workspace_menu.png[The workspace menu,role=screenshot,width=220]
+
+== Work in the workspace
+
+Edit and save as usual, for example make the base plate 6 mm instead of 12 mm. Create versions here too, for example _LW-1 – Lightweight option for review_.
+
+image::screenshots/08_workspace.png[Working in the Lightweight workspace,role=screenshot]
+
+== Switch between workspaces
+
+Choose another workspace from the pill's menu, or right-click its node in the graph and choose *Switch to ...*.
+Strata saves your work first if you agree, rewrites the documents that differ and reloads them in FreeCAD.
+Main still has the 12 mm plate; Lightweight has the 6 mm one.
+
+NOTE: Opening an assembly can make FreeCAD mark it as modified, because it refreshes external links. Strata then asks whether to save first. After a switch, Strata clears that flag for documents you did not edit.
+
+== Merge the alternative into Main
+
+[.steps]
+. Switch to *Main*.
+. Open the pill's menu and choose *Merge into Main > Lightweight*. Or right-click the Lightweight node and choose *Merge Lightweight into Main*.
+. Review the merge dialog, then click btn:[Merge].
+
+image::screenshots/09_merge.png[The merge dialog,role=screenshot,width=600]
+
+Documents changed only in Lightweight are *updated automatically*.
+If a document was changed in *both* workspaces, choose for each one:
+
+Keep Main:: keep your version.
+Take Lightweight:: use the workspace's version.
+Keep both (copy):: keep yours and save the other next to it as `Bracket (Lightweight).FCStd`.
+
+The merge appears in history as *Merged Lightweight into Main*. If it was a mistake, restore the entry just below it.
+
+== Delete a workspace
+
+Right-click the workspace's node in the graph and choose *Delete workspace...*. Its versions are kept. Main cannot be deleted, and you cannot delete the workspace you are in.
+
+== Same thing in Python
+
+include::partial$example-workspaces.adoc[]

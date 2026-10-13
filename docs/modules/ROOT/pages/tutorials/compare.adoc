@@ -1,0 +1,42 @@
+= Compare two designs
+:description: Compare any two points in time feature by feature, and overlay both states in 3D with the volume change.
+
+*Goal:* find out exactly what differs between version V1 and the latest design, and see it in 3D.
+
+== Open Compare
+
+Click the *Compare* button in the panel's title bar, or press kbd:[Ctrl+Shift+D].
+You can also right-click any version or history entry and choose *Compare with latest*.
+
+== Choose what to compare
+
+Pick *From* and *To*. The lists contain the latest state of your workspace, the other workspaces, all versions and recent history entries.
+
+image::screenshots/05_compare.png[Comparing version V1 with the latest state,role=screenshot,width=760]
+
+The tree shows one branch per changed document:
+
+* *Added* and *Deleted* features with their type, in green and red;
+* edited features in amber, with every changed parameter and its old → new value;
+* a *Rebuilt* group for features that were only recomputed because of the edits above them.
+
+The summary below the tree counts the documents and feature changes.
+
+== Overlay in 3D
+
+[.steps]
+. Select a document, or any feature inside it, in the tree.
+. Click btn:[Show in 3D].
+
+Strata opens a new document, _Compare Bracket: V2 → LW-1_, with both states of the part: the earlier one in translucent red and the later one in blue.
+The summary reports the volume change, for example _Volume Bracket: 27350.8 mm³ → 13675.4 mm³ (-50.0%)_.
+
+image::screenshots/06_compare_3d.png[A 3D overlay of two versions of the bracket,role=screenshot]
+
+The comparison document is temporary. Close it with the banner's btn:[Close], or close its tab.
+
+== Tips
+
+* Comparing a history entry with the entry just before it is the same as *Show what changed here*.
+* To compare two workspaces, choose their latest states as From and To.
+* The comparison reads the FreeCAD model itself, so renamed features are reported as renamed rather than deleted and added.

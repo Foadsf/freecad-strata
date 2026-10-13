@@ -1,0 +1,56 @@
+= Go back in time
+:description: View any earlier state of your project as a read-only copy, compare it, and restore the whole project or one document.
+
+*Goal:* look at an earlier state of a design, then bring it back.
+
+*You need:* a project with a few saves and at least one version (see the xref:quickstart.adoc[quick start]).
+
+== View an earlier state
+
+Viewing never changes your project. It opens a *read-only copy* of a document as it was at that point.
+
+[.steps]
+. In *History*, hover the entry you want and click the *eye*. Or select it and press kbd:[Enter], or double-click it.
+. For a version, double-click its node in the *Versions* graph, or right-click it and choose *View V1*.
+. If the point contains several documents, Strata opens the one you are working on; otherwise it asks which one.
+
+The copy opens in a new tab labelled, for example, *Gearbox @ V1*. Linked parts are opened from the same point in time, so an assembly shows the parts exactly as they were.
+A blue banner reminds you that the copy is read-only; click btn:[Close] when you are done.
+
+image::screenshots/07_view_old_version.png[An assembly viewed as it was at version V1,role=screenshot]
+
+TIP: You may edit and even save the copy, for example to measure something, but those changes never become part of the project. Copies live in `.strata/previews` and can be deleted at any time.
+
+== See what changed at a point
+
+Select a history entry. The details card lists each change:
+
+* `+` a feature was added, `−` deleted,
+* `~` edited, with old and new values, for example _Base plate · Length 10 mm → 12 mm_,
+* a muted _Rebuilt ..._ line for features that were only recomputed as a consequence.
+
+Right-click the entry and choose *Show what changed here* for the full comparison, or *Compare with latest* to compare that point with now.
+See xref:tutorials/compare.adoc[Compare two designs].
+
+== Restore the whole project
+
+[.steps]
+. Hover the entry or version and click the *restore arrow*, or right-click it and choose *Restore to this point...*.
+. Confirm. Strata saves any unsaved changes first, if you agree.
+
+All documents that differ are rewritten on disk and reloaded in FreeCAD. History gains an entry such as *Restored to V1*.
+The state you left is still there, one entry further down, and you can restore it again.
+
+== Restore a single document
+
+Sometimes only one part should go back, for example the bracket, while the shaft keeps its latest changes.
+
+[.steps]
+. Right-click the history entry.
+. Choose *Restore only Bracket...*. These entries are offered for the documents that changed in that entry.
+
+Only that document is brought back; the history entry reads *Restored Bracket to ...*.
+
+== Same thing in Python
+
+include::partial$example-first-project.adoc[]

@@ -1,0 +1,55 @@
+= Work as a team
+:description: Share a project through a network folder, synced drive or Git server, open a colleague's project, sync and resolve concurrent changes.
+
+*Goal:* Ada shares the Gearbox project; Bob opens it, both work and sync.
+
+== Choose a shared location
+
+Any of these works:
+
+Network folder:: for example `\\server\cad\Gearbox` or a mounted share.
+Synced drive:: a folder in OneDrive, Nextcloud, Dropbox or similar.
+Git server:: an address such as `https://git.example.com/cad/Gearbox.git` on GitHub, GitLab, Gitea or your company's server. Git's normal sign-in applies; on Windows the Git Credential Manager asks once.
+
+For a folder, Strata prepares it the first time. If the folder already contains other files, Strata creates a sub-folder `Gearbox.strata` in it.
+
+== Share a project
+
+[.steps]
+. Click btn:[Share...] in the panel footer, or press kbd:[Ctrl+Shift+Y].
+. Enter or browse to the shared location.
+. Click btn:[Share and sync].
+
+image::screenshots/12_share.png[The Share project dialog,role=screenshot,width=520]
+
+The footer now reads _Shared · synced just now_.
+
+== Open a colleague's project
+
+[.steps]
+. Open the panel's btn:[⋯] menu and choose *Open a shared project...*.
+. Enter the shared location, and an empty folder for your copy.
+. Click btn:[Open project].
+
+image::screenshots/18_join.png[The Open shared project dialog,role=screenshot,width=560]
+
+Strata copies the project with its complete history, versions and releases, and opens its documents.
+
+== Sync
+
+Click btn:[Sync now] in the footer, or press kbd:[Ctrl+Shift+Y], whenever you want to exchange work:
+
+* your new history, versions, releases and workspaces are sent;
+* your colleagues' are fetched. If only they changed your current workspace, your documents are updated and reloaded;
+* if you both changed it, Strata merges automatically as long as you changed *different* documents;
+* if you both changed the *same* document, Strata asks whether to review and merge now, and opens the merge dialog. See xref:tutorials/workspaces.adoc#merge-the-alternative-into-main[Merge].
+
+Colleagues' new workspaces appear in the workspace menu marked _(from team)_.
+
+== Good habits
+
+* Sync before you start and when you finish a piece of work.
+* Agree who works on which document at a time. Strata has no file locking yet, so two people editing the same document leads to a merge choice.
+* Use workspaces for longer experiments, so Main stays clean for everybody.
+
+NOTE: History stays on your computer until you sync. If you never share, nothing leaves your computer.

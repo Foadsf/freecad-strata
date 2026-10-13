@@ -248,6 +248,24 @@ def share_dialog():
 
 
 @step
+def tools_menu():
+    mw = S["mw"]
+    tools = next(a for a in mw.menuBar().actions() if a.text().replace("&", "") == "Tools")
+    m = tools.menu()
+    m.popup(mw.mapToGlobal(QtCore.QPoint(200, 30)))
+    QtWidgets.QApplication.processEvents()
+    shot(m, "16_tools_menu")
+    m.hide()
+
+
+@step
+def settings_and_join():
+    from strata.ui import dialogs
+    show_dialog(dialogs.SettingsDialog(S["p"], S["panel"]), "17_settings", 520)
+    show_dialog(dialogs.JoinDialog(S["panel"]), "18_join", 560)
+
+
+@step
 def dark_panel():
     from strata.ui.panel import Panel
     app = QtWidgets.QApplication.instance()

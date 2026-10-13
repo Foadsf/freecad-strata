@@ -6,3 +6,7 @@ tests/am_cfg.json
 tests/embed_cfg.json
 tests/demo/
 *.FCBak
+build/
+docs/node_modules/
+docs/modules/ROOT/images/screenshots/*.txt
+tests/docs_examples_result.txt

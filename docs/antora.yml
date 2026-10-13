@@ -1,0 +1,11 @@
+name: strata
+title: Strata
+version: ~
+start_page: index.adoc
+nav:
+- modules/ROOT/nav.adoc
+asciidoc:
+  attributes:
+    product: Strata
+    strata-version: '0.2.0'
+    freecad-min: '1.0'

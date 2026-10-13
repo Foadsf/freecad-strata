@@ -1,0 +1,26 @@
+= Tutorials
+:description: Step-by-step guides for every Strata task, with screenshots and runnable Python examples.
+
+Each tutorial takes a few minutes and builds on the xref:quickstart.adoc[quick start].
+The screenshots use a small example project, _Gearbox_: a bracket, a shaft and an assembly that links them.
+
+[.cards]
+* *xref:tutorials/go-back-in-time.adoc[Go back in time]* +
+View earlier states read-only, restore the whole project or a single document.
+* *xref:tutorials/workspaces.adoc[Explore an alternative]* +
+Create a workspace, switch between designs and merge the winner into Main.
+* *xref:tutorials/compare.adoc[Compare two designs]* +
+See which features and parameters changed, and overlay both in 3D.
+* *xref:tutorials/assemblies.adoc[Assemblies and linked parts]* +
+How projects keep an assembly and its parts consistent.
+* *xref:tutorials/releases.adoc[Release a design]* +
+Part numbers, revision letters, approvals and obsolete revisions.
+* *xref:tutorials/team.adoc[Work as a team]* +
+Share a project, open a colleague's, sync and resolve a merge.
+* *xref:tutorials/scripting.adoc[Automate with Python]* +
+Runnable minimal examples for scripts and batch jobs.
+
+== The examples are tested
+
+Every Python example in these pages is run inside FreeCAD by Strata's test suite (`tests/docs_examples_test.py`), and the output shown under each example is the output of that run.
+If an example and Strata ever disagree, the test fails before the documentation is published.

@@ -373,12 +373,13 @@ class HistoryList(QtWidgets.QListWidget):
         self.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
         self.setFrameShape(QtWidgets.QFrame.NoFrame)
-        self.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.setFocusPolicy(QtCore.Qt.StrongFocus)  # arrow keys move through history, Enter views
         self.delegate = HistoryDelegate(self)
         self.setItemDelegate(self.delegate)
         self.delegate.action.connect(self.entry_action)
         self.itemSelectionChanged.connect(self._sel)
-        self.itemDoubleClicked.connect(lambda it: it.data(ENTRY_ROLE) and self.entry_activated.emit(it.data(ENTRY_ROLE)))
+        # itemActivated covers double-click and Enter (platform-dependent), so double-click is not connected
+        self.itemActivated.connect(lambda it: it.data(ENTRY_ROLE) and self.entry_activated.emit(it.data(ENTRY_ROLE)))
         self.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.customContextMenuRequested.connect(self._ctx)
         self.entries = []

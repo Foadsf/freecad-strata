@@ -1,0 +1,63 @@
+= Keyboard shortcuts
+:description: All Strata keyboard shortcuts, how they were chosen and how to change them.
+
+== Commands
+
+These work in every workbench while FreeCAD's main window has focus.
+
+[cols="1,2,3"]
+|===
+| Keys | Command | What it does
+
+| kbd:[Ctrl+Shift+H] | Versions and history | Show or hide the panel. *H* for history.
+| kbd:[Ctrl+Shift+V] | Create version | Name a snapshot of the whole project. *V* for version.
+| kbd:[Ctrl+Shift+D] | Compare | Compare two points in time. *D* for diff.
+| kbd:[Ctrl+Shift+R] | Releases | Open the release register. *R* for releases.
+| kbd:[Ctrl+Shift+Y] | Sync | Share or sync with your team. s**Y**nc.
+|===
+
+The same commands are at the bottom of the menu:Tools[] menu, which shows the keys next to each entry.
+
+image::screenshots/16_tools_menu.png[Strata commands and their keys in the Tools menu,role=screenshot,width=320]
+
+== In the panel
+
+These work when the *Versions and history* panel has focus, for example after clicking an entry.
+
+[cols="1,3"]
+|===
+| Keys | What it does
+
+| kbd:[↑] kbd:[↓] | Move through history entries.
+| kbd:[Enter] | View the selected entry as a read-only copy (same as double-click).
+| kbd:[Ctrl+F] | Open the history search and put the cursor in it.
+| kbd:[Esc] | In the search box: clear it, then close it. Elsewhere: close the details card, then the search.
+|===
+
+== In dialogs
+
+[cols="1,3"]
+|===
+| kbd:[Enter] | The dialog's blue button (Create version, Merge, Release, ...).
+| kbd:[Esc] | Cancel.
+| kbd:[Tab] | Move to the next field.
+|===
+
+== How the keys were chosen
+
+Strata's keys are all on kbd:[Ctrl+Shift], where FreeCAD 1.1 itself only uses kbd:[Ctrl+Shift+I], kbd:[Ctrl+Shift+P], kbd:[Ctrl+Shift+S] and kbd:[Ctrl+Shift+Tab].
+All 185 default shortcuts of a running FreeCAD 1.1.4 were checked, and Strata's test suite verifies that each Strata key belongs to Strata alone.
+
+Other add-ons may use the same keys. If two commands share a key, Qt runs neither, so change one of them as described below.
+
+== Change a shortcut
+
+[.steps]
+. Open menu:Tools[Customize...] and the *Keyboard* tab.
+. Find the command, for example by typing *Versions and history* into the search field.
+. Click into *Shortcut*, press the new keys and click btn:[Assign].
+
+FreeCAD remembers your choice; Strata never overrides it.
+
+NOTE: The shortcuts become active once FreeCAD has built Strata's menu entries, which Strata asks for as soon as it starts.
+If an add-on such as an alternative user interface hosts Strata (see xref:reference/embedding.adoc[Embedding]), that add-on decides when this happens.

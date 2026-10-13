@@ -14,11 +14,30 @@
   <img alt="FreeCAD 1.0+" src="https://img.shields.io/badge/FreeCAD-1.0%2B-red">
   <img alt="Python 3.10+" src="https://img.shields.io/badge/python-3.10%2B-informational">
   <img alt="Status: alpha" src="https://img.shields.io/badge/status-alpha-orange">
+  <a href="https://foadsf.github.io/freecad-strata/"><img alt="Documentation" src="https://img.shields.io/badge/docs-foadsf.github.io-1f6feb"></a>
+  <a href="https://github.com/Foadsf/freecad-strata/actions/workflows/tests.yml"><img alt="Tests" src="https://github.com/Foadsf/freecad-strata/actions/workflows/tests.yml/badge.svg"></a>
 </p>
 
-![Strata in FreeCAD: the Versions and history panel next to an assembly](docs/screenshots/01_overview.png)
+<p align="center">
+  <b>📖 Full documentation: <a href="https://foadsf.github.io/freecad-strata/">foadsf.github.io/freecad-strata</a></b><br>
+  installation · quick start · tutorials with runnable examples · keyboard shortcuts · Python API
+</p>
+
+![Strata in FreeCAD: the Versions and history panel next to an assembly](docs/modules/ROOT/images/screenshots/01_overview.png)
 
 Strata is a free, open-source add-on for FreeCAD that adds the product data management engineers expect from modern CAD. It implements the proposal discussed in the FreeCAD forum thread [*Proposal for Integrated Version Control in FreeCAD for PLM/PDM Functionality*](https://forum.freecad.org/viewtopic.php?t=89249). Git stores everything underneath, but the interface only speaks in engineering terms: versions, workspaces, restore, compare and release.
+
+## Keyboard shortcuts
+
+| Keys | Command |
+|---|---|
+| <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>H</kbd> | Versions and history panel |
+| <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>V</kbd> | Create version |
+| <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>D</kbd> | Compare |
+| <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd> | Releases |
+| <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Y</kbd> | Sync |
+
+The same commands are at the bottom of the **Tools** menu. More in the [shortcuts reference](https://foadsf.github.io/freecad-strata/strata/shortcuts.html).
 
 ## Contents
 
@@ -94,7 +113,7 @@ Restart FreeCAD. The **Versions and history** panel appears on the right, and a 
 1. **Save** your FreeCAD documents into one project folder (sub-folders are fine).
 2. In the **Versions and history** panel click **Turn on version control** and confirm the folder and your name.
 
-   <img src="docs/screenshots/14_turn_on.png" width="260" alt="Turn on version control"> <img src="docs/screenshots/15_turn_on_dialog.png" width="520" alt="Turn on dialog">
+   <img src="docs/modules/ROOT/images/screenshots/14_turn_on.png" width="260" alt="Turn on version control"> <img src="docs/modules/ROOT/images/screenshots/15_turn_on_dialog.png" width="520" alt="Turn on dialog">
 
 3. **Work and save as usual.** Every save appears in *History*.
 4. **Create version** when you reach a milestone.
@@ -169,43 +188,43 @@ theme.set_overrides(light={"accent": "#00838F", "accent_hover": "#006D77"})  # r
 
 The version graph shows each workspace in its own lane: versions are solid nodes, workspaces are open nodes, and release badges sit on the versions they belong to. Selecting a history entry shows exactly what changed, with **View**, **Restore** and **Compare** at hand.
 
-<img src="docs/screenshots/02_history_entry.png" width="360" alt="History entry details"> <img src="docs/screenshots/03_workspace_menu.png" width="200" alt="Workspace menu"> <img src="docs/screenshots/04_create_version.png" width="420" alt="Create version dialog">
+<img src="docs/modules/ROOT/images/screenshots/02_history_entry.png" width="360" alt="History entry details"> <img src="docs/modules/ROOT/images/screenshots/03_workspace_menu.png" width="200" alt="Workspace menu"> <img src="docs/modules/ROOT/images/screenshots/04_create_version.png" width="420" alt="Create version dialog">
 
 ### Workspaces
 
 Explore a lighter design without touching Main. Switching workspaces updates the documents on disk and reloads them in FreeCAD.
 
-![Lightweight workspace](docs/screenshots/08_workspace.png)
+![Lightweight workspace](docs/modules/ROOT/images/screenshots/08_workspace.png)
 
 ### Go back in time
 
 Open any version or history entry as a read-only copy, linked parts included. A banner reminds you that it isn't part of the project.
 
-![Viewing version V1](docs/screenshots/07_view_old_version.png)
+![Viewing version V1](docs/modules/ROOT/images/screenshots/07_view_old_version.png)
 
 ### Compare
 
 See every feature and parameter that changed, then overlay both states in 3D: before in translucent red, after in blue, with the volume change.
 
-<img src="docs/screenshots/05_compare.png" width="560" alt="Compare dialog">
+<img src="docs/modules/ROOT/images/screenshots/05_compare.png" width="560" alt="Compare dialog">
 
-![3D compare overlay](docs/screenshots/06_compare_3d.png)
+![3D compare overlay](docs/modules/ROOT/images/screenshots/06_compare_3d.png)
 
 ### Merge
 
-<img src="docs/screenshots/09_merge.png" width="560" alt="Merge dialog">
+<img src="docs/modules/ROOT/images/screenshots/09_merge.png" width="560" alt="Merge dialog">
 
 ### Releases
 
 Release documents from a version with part number and revision, optionally through an approval step, and track every revision's state.
 
-<img src="docs/screenshots/10_release.png" width="560" alt="Release dialog">
+<img src="docs/modules/ROOT/images/screenshots/10_release.png" width="560" alt="Release dialog">
 
-<img src="docs/screenshots/11_releases.png" width="700" alt="Release management">
+<img src="docs/modules/ROOT/images/screenshots/11_releases.png" width="700" alt="Release management">
 
 ### Share with your team, and dark theme
 
-<img src="docs/screenshots/12_share.png" width="520" alt="Share dialog"> <img src="docs/screenshots/13_dark_theme.png" width="300" alt="Dark theme">
+<img src="docs/modules/ROOT/images/screenshots/12_share.png" width="520" alt="Share dialog"> <img src="docs/modules/ROOT/images/screenshots/13_dark_theme.png" width="300" alt="Dark theme">
 
 ## FAQ
 

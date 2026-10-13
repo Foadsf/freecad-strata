@@ -1,0 +1,20 @@
+= Changelog
+:description: What changed in each Strata release.
+
+== 0.2.0 (2026-10-13)
+
+New::
+* Keyboard shortcuts: kbd:[Ctrl+Shift+H] Versions and history, kbd:[Ctrl+Shift+V] Create version, kbd:[Ctrl+Shift+D] Compare, kbd:[Ctrl+Shift+R] Releases, kbd:[Ctrl+Shift+Y] Sync. None of them clashes with FreeCAD's defaults.
+* Strata's commands at the bottom of the menu:Tools[] menu in every workbench.
+* Panel keys: arrow keys and kbd:[Enter] in History, kbd:[Ctrl+F] to search, kbd:[Esc] to clear or close.
+* An embedding API for add-ons that host Strata in their own interface: `configure`, `on_ready`, `actions`, `activate_commands`, `theme.set_overrides`. Used by https://github.com/Foadsf/freecad-nxstyle[freecad-nxstyle].
+* This documentation site.
+
+Fixed::
+* Strata did not start in a normal FreeCAD session: `InitGui.py` raised `NameError`, and the package was not declared as a workbench.
+* The panel could start hidden after it had been a background tab, or after FreeCAD closed. Only your own show and hide actions are remembered now.
+* Changing the theme no longer scans all of FreeCAD's widgets, which could crash FreeCAD 1.1.4 with a spreadsheet open.
+
+== 0.1.0 (2026-10-12)
+
+First public release: automatic history in plain language, versions, workspaces, read-only views, restore of a project or a single document, comparison with a 3D overlay, per-document merge, releases with approval, and sync through a shared folder or Git server.

@@ -1,0 +1,11 @@
+.releases.py: release, approve a new revision, obsolete the old one
+[source,python]
+----
+include::example$releases.py[]
+----
+
+.Output of `freecadcmd releases.py`
+[source,text]
+----
+include::example$releases.out[]
+----

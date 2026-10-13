@@ -1,0 +1,32 @@
+= Assemblies and linked parts
+:description: How Strata keeps assemblies and the parts they link to consistent across versions, workspaces and restores.
+
+*Goal:* understand how Strata handles an assembly that links to parts in other documents.
+
+== One project, many documents
+
+Put the assembly and its parts in one project folder, for example:
+
+----
+Gearbox/
+├── Gearbox.FCStd          assembly, links to the parts
+└── Parts/
+    ├── Bracket.FCStd
+    └── Shaft.FCStd
+----
+
+Strata versions all three together. A version, a restore or a workspace switch always gives you an assembly *and* parts from the same moment, so links never point at a part from a different design state.
+
+== What happens on each operation
+
+Save:: only the saved document is recorded, and the entry names it, for example _Edited Shaft: Radius 6 mm → 6.5 mm · Shaft_.
+Create version:: all documents in the folder are included.
+View:: the chosen document and every other document of that point are written to a temporary folder, so the assembly's links resolve to the parts of the same point.
+Restore and switch:: only documents that differ are rewritten and reloaded. An open assembly whose parts were reloaded is not marked as modified by Strata.
+Merge:: decided per document: the assembly can come from one workspace while a part comes from the other.
+
+== Tips
+
+* Keep everything an assembly links to inside the project folder. Links to files outside it work in FreeCAD, but those files are not versioned.
+* Link paths are stored relative to the assembly, so moving the whole project folder keeps them working.
+* Only the saved document is read when a save is recorded; for the test parts this took about a tenth of a second.

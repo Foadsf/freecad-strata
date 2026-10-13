@@ -1,0 +1,90 @@
+= FAQ and troubleshooting
+:description: Answers to common questions and fixes for common problems.
+
+== General
+
+=== Do I need to know Git?
+
+No. Strata never shows Git terms and never asks for commit messages. If you do know Git, see xref:reference/storage.adoc#using-git-directly[Using Git directly].
+
+=== Does Strata need a server or internet access?
+
+No. Everything works offline on one computer. A server, network folder or synced drive is only needed to share a project, and only while syncing.
+
+=== Are my FreeCAD files changed?
+
+They stay ordinary FreeCAD files that open without Strata. Strata rewrites a file only when you switch workspace, restore, merge or receive a colleague's change by syncing. The previous state is always in history.
+
+=== Which files are versioned?
+
+Every `.FCStd` file in the project folder and its sub-folders, except hidden folders (names starting with a dot). Other files, such as STEP exports, drawings as PDF or spreadsheets, are not versioned.
+
+=== How big does the history get?
+
+Strata stores only what changed, compressed. Text-only history of the example project with a dozen saves takes a few hundred kilobytes.
+
+=== Can I move, copy or back up a project?
+
+Yes. Move or copy the whole folder, including the hidden `.strata` folder. Backing up the folder backs up the history.
+
+=== How do I turn version control off?
+
+Close FreeCAD and delete the project's `.strata` folder. This deletes the project's history permanently; the documents themselves stay.
+
+=== Does it work with linked documents and assemblies?
+
+Yes. See xref:tutorials/assemblies.adoc[Assemblies and linked parts].
+
+=== What about imported STEP or IGES parts?
+
+They are versioned and restored exactly: their geometry is stored as BREP text inside the document, and Strata records it.
+
+=== Fonts, macros and other add-ons?
+
+Strata versions documents. Things that live outside them, such as system fonts used by text features, macros or other add-ons, are not captured.
+
+== Troubleshooting
+
+[#strata-does-not-appear]
+=== Strata does not appear
+
+* Press kbd:[Ctrl+Shift+H], or choose menu:Tools[Versions and history]. The panel may simply be hidden.
+* If the Tools menu has no Strata entries, open menu:View[Panels > Report view] and look for `Strata failed to start` with a description of the problem.
+* Check that the add-on is in the right `Mod` folder for your FreeCAD version (see xref:install.adoc#option-b-install-by-hand[Install by hand]); FreeCAD 1.1 uses a `v1-1` sub-folder.
+* Make sure Strata is installed only once.
+
+=== "Strata needs Git to store history"
+
+Git is not installed or not found. Install it (see xref:install.adoc#installing-git[Installing Git]) and restart FreeCAD.
+
+=== The panel starts hidden every time
+
+Strata remembers whether *you* closed the panel. If it starts hidden, show it once with kbd:[Ctrl+Shift+H]; from then on it stays visible.
+(Versions before 0.2.0 could wrongly remember "hidden" when the panel was a background tab or when FreeCAD closed.)
+
+=== "Save changes to ... first?" right after opening an assembly
+
+FreeCAD marks an assembly as modified when it refreshes external links on opening. Strata asks before switching workspace or restoring, so nothing unsaved is lost. Saving is harmless.
+
+=== A keyboard shortcut does nothing
+
+Another add-on may use the same keys. When two commands share a key, Qt runs neither. Change one of them in menu:Tools[Customize... > Keyboard]; see xref:shortcuts.adoc#change-a-shortcut[Change a shortcut].
+
+=== Sync fails
+
+* For a network folder: check that it is reachable and that you may write to it.
+* For a Git server: check the address and your sign-in. Git's own credential helper handles passwords and tokens; Strata never sees them.
+* Strata reports Git's message. Your work stays safe on your computer, so try again later.
+
+=== Uninstalling with the Addon Manager says "Failed to remove some files"
+
+See the note in xref:install.adoc#uninstall[Uninstall]. Close FreeCAD and delete the empty `freecad-strata` folder.
+
+=== The previews folder is large
+
+`.strata/previews` holds the read-only copies opened with *View*. Close them in FreeCAD and delete the folder's contents at any time.
+
+== Getting help
+
+* Ask in the {forum}[FreeCAD forum thread].
+* Report bugs on {repo}/issues[GitHub]. Include your FreeCAD version (menu:Help[About FreeCAD > Copy to clipboard]) and the Report view's messages.

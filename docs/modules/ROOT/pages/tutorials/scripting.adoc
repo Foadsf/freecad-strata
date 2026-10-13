@@ -1,0 +1,35 @@
+= Automate with Python
+:description: Runnable minimal examples that use Strata from FreeCAD's Python console or freecadcmd.
+
+Strata's engine is a plain Python module, `strata.project`, so everything the panel does can be scripted: in FreeCAD's Python console, in macros, or headless with `freecadcmd`.
+
+== Run the examples
+
+With Strata installed, FreeCAD finds the `strata` package by itself. Save an example to a file and run it with FreeCAD's console executable:
+
+[source,bash]
+----
+freecadcmd first_project.py
+----
+
+On Windows, `freecadcmd.exe` is next to `freecad.exe`, for example in `%LOCALAPPDATA%\Programs\FreeCAD 1.1\bin`.
+Each example works in a new temporary folder unless you pass an empty folder as argument.
+
+TIP: In a script, call `project.record()` after saving. In the FreeCAD window Strata records every save by itself.
+
+== Example 1: version control for one part
+
+include::partial$example-first-project.adoc[]
+
+== Example 2: an alternative in a workspace
+
+include::partial$example-workspaces.adoc[]
+
+== Example 3: releases
+
+include::partial$example-releases.adoc[]
+
+== More
+
+The xref:reference/python-api.adoc[Python API reference] documents every class and method.
+To build Strata into your own add-on, see xref:reference/embedding.adoc[Embedding Strata in an add-on].

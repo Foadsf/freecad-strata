@@ -1,0 +1,118 @@
+= Installation
+:description: Requirements, installing Strata with the FreeCAD Addon Manager or by hand, checking the installation, updating and uninstalling.
+
+Strata installs like any other FreeCAD add-on. It takes about two minutes.
+
+== Requirements
+
+[cols="1,3"]
+|===
+| FreeCAD | Version 1.0 or newer. Developed and tested on FreeCAD 1.1.4 on Windows 11.
+| Git | Any recent version. Strata uses Git to store history; you never use it yourself.
+| Operating system | Windows is tested. Linux and macOS should work (Strata is pure Python, Qt and Git) but have not been tested yet. Reports are welcome.
+|===
+
+=== Installing Git
+
+Windows::
+Download and run the installer from https://git-scm.com/downloads[git-scm.com]. The default options are fine.
+Strata also finds the Git that comes with GitHub Desktop.
+
+Linux::
+Install the `git` package, for example `sudo apt install git` on Debian or Ubuntu, `sudo dnf install git` on Fedora.
+
+macOS::
+Run `xcode-select --install`, or install Git with Homebrew: `brew install git`.
+
+TIP: Strata looks for Git on the `PATH` and, on Windows, in the default Git for Windows and GitHub Desktop locations.
+If it cannot find Git, it tells you when you first turn on version control.
+
+== Option A: the Addon Manager (recommended)
+
+Strata is not yet in FreeCAD's official add-on list, so you add its repository once:
+
+[.steps]
+. In FreeCAD open menu:Edit[Preferences > Addon Manager].
+. Under *Custom repositories* click btn:[+] and enter
++
+[cols="1,3"]
+|===
+| Repository URL | `https://github.com/Foadsf/freecad-strata`
+| Branch | `main`
+|===
+. Click btn:[OK] and open menu:Tools[Addon manager].
+. Type `strata` in the search box. The entry is called *freecad-strata*, after its repository.
+. Select it, click btn:[Install] and restart FreeCAD when asked.
+
+The Addon Manager installs Strata into a folder named `freecad-strata` inside FreeCAD's `Mod` folder, and offers updates when new versions are published.
+
+== Option B: install by hand
+
+Copy or clone the repository into FreeCAD's user `Mod` folder, as a folder named `Strata`:
+
+[cols="1,2,2,2"]
+|===
+| FreeCAD | Windows | Linux | macOS
+
+| 1.1
+| `%APPDATA%\FreeCAD\v1-1\Mod\Strata`
+| `~/.local/share/FreeCAD/v1-1/Mod/Strata`
+| `~/Library/Application Support/FreeCAD/v1-1/Mod/Strata`
+
+| 1.0
+| `%APPDATA%\FreeCAD\Mod\Strata`
+| `~/.local/share/FreeCAD/Mod/Strata`
+| `~/Library/Application Support/FreeCAD/Mod/Strata`
+|===
+
+For example, with Git:
+
+.Windows (PowerShell), FreeCAD 1.1
+[source,powershell]
+----
+git clone https://github.com/Foadsf/freecad-strata.git "$env:APPDATA\FreeCAD\v1-1\Mod\Strata"
+----
+
+.Linux, FreeCAD 1.1
+[source,bash]
+----
+git clone https://github.com/Foadsf/freecad-strata.git ~/.local/share/FreeCAD/v1-1/Mod/Strata
+----
+
+Restart FreeCAD afterwards.
+
+WARNING: Use either the Addon Manager or a manual install, not both. Two copies would load Strata twice.
+
+== Check the installation
+
+After restarting FreeCAD you should see:
+
+* the *Versions and history* panel on the right (press kbd:[Ctrl+Shift+H] if it is hidden),
+* five new entries at the bottom of the menu:Tools[] menu, with their keyboard shortcuts,
+* a *Strata* toolbar, and a *Strata* entry in the workbench selector.
+
+image::screenshots/16_tools_menu.png[Strata commands in the Tools menu,role=screenshot,width=320]
+
+If none of these appear, open menu:View[Panels > Report view] and look for a line starting with `Strata failed to start`.
+See xref:faq.adoc#strata-does-not-appear[Strata does not appear] for help.
+
+== Update
+
+Addon Manager:: menu:Tools[Addon manager] shows an update for *freecad-strata* when one is available. Click btn:[Update] and restart FreeCAD.
+Manual install:: run `git pull` in the `Strata` folder, or replace its contents with the new release, then restart FreeCAD.
+
+Updating Strata never touches your projects or their history.
+
+== Uninstall
+
+Addon Manager:: select *freecad-strata* and click btn:[Uninstall], then restart FreeCAD.
+Manual install:: close FreeCAD and delete the `Strata` folder from `Mod`.
+
+Your projects keep their history in their own `.strata` folders. Re-installing Strata later picks it up again.
+
+[NOTE]
+====
+On Windows, FreeCAD 1.1.4's Addon Manager may report _Failed to remove some files_.
+The add-on's files are removed, but an empty `Mod\freecad-strata` folder remains because the Addon Manager's own update check left FreeCAD's working directory inside it.
+Close FreeCAD and delete that empty folder.
+====

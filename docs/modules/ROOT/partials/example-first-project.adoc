@@ -1,0 +1,11 @@
+.first_project.py: record edits, create a version, restore it
+[source,python]
+----
+include::example$first_project.py[]
+----
+
+.Output of `freecadcmd first_project.py`
+[source,text]
+----
+include::example$first_project.out[]
+----

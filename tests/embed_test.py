@@ -74,10 +74,9 @@ def live_start():
     check(sorted(acts) == sorted(sb.COMMAND_NAMES), "actions() returns the five commands")
     check(acts["Strata_Panel"].isEnabled(), "Versions and history action enabled without a project")
     check(not acts["Strata_CreateVersion"].isEnabled(), "Create version disabled without a project")
-    check(fallback_visible() or "manipulator" in sb._state, "default mode provides a toolbar")
+    check(fallback_visible(), "default mode provides a toolbar")
     sb.configure(host_toolbar=True, panel_area="left")
     check(not fallback_visible(), "host_toolbar=True hides Strata's toolbar")
-    check("manipulator" not in sb._state, "host_toolbar=True removes the workbench manipulator")
     check(not sb._state["toolbar_timer"].isActive(), "host_toolbar=True stops the toolbar timer")
     check(area() == "left", "panel_area='left' docks the panel left")
     from PySide import QtWidgets
@@ -178,7 +177,6 @@ def prestart():
     check(sb.host_provides_toolbar(), "preference HostProvidesToolbar persisted")
     check(sb.is_ready(), "Strata started on its own")
     check("fallback_toolbar" not in sb._state, "no Strata toolbar was created at startup in host mode")
-    check("manipulator" not in sb._state, "no workbench manipulator registered in host mode")
     check(area() == "left", "panel created in the left dock area")
     ev_path = os.path.join(CFG["out"], "shutdown_events.txt")
     events = open(ev_path, encoding="utf-8").read().split() if os.path.exists(ev_path) else []
@@ -191,11 +189,89 @@ def prestart():
 
 
 def prestart_end():
-    import strata.boot as sb
     check(area() == "right", "panel_area='right' moves it back")
-    check(fallback_visible() or "manipulator" in sb._state, "toolbar back after host_toolbar=False")
+    check(fallback_visible(), "toolbar back after host_toolbar=False")
     finish()
 
 
-later(4000, live_start if PHASE == "live" else prestart)
+# ------------------------------------------------------------------ phase keys
+def keys_start():
+    import strata.boot as sb
+    from PySide import QtWidgets as QW
+    from PySide6 import QtTest
+    for name, accel in sb.SHORTCUTS.items():
+        got = Gui.Command.get(name).getShortcut()
+        check(got == accel, "%s has default shortcut %s (got %r)" % (name, accel, got))
+        if hasattr(Gui.Command, "listByShortcut"):
+            owners = Gui.Command.listByShortcut(accel)
+            check(owners == [name], "%s is used by %s only (owners: %s)" % (accel, name, owners))
+    mw = Gui.getMainWindow()
+    tools = [a for a in mw.menuBar().actions() if a.text().replace("&", "") == "Tools"]
+    entries = [a.text() for a in tools[0].menu().actions() if a.text()] if tools else []
+    want = [sb._state["commands"][n].text for n in sb.COMMAND_NAMES]
+    check(entries[-len(want):] == want, "Tools menu ends with Strata's commands: %s" % entries[-len(want):])
+    mw.activateWindow()
+    QW.QApplication.processEvents()
+    S_active = QW.QApplication.activeWindow() is mw
+    p = sb.panel()
+    p.user_set_visible(True)
+    if not S_active:
+        check(True, "COULD NOT TELL: main window not active on this desktop, key presses not tested")
+        finish()
+    QtTest.QTest.keyClick(mw, QtCore.Qt.Key_H, QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier)
+    QW.QApplication.processEvents()
+    check(not p.isVisible(), "Ctrl+Shift+H hides the panel")
+    QtTest.QTest.keyClick(mw, QtCore.Qt.Key_H, QtCore.Qt.ControlModifier | QtCore.Qt.ShiftModifier)
+    QW.QApplication.processEvents()
+    check(p.isVisible(), "Ctrl+Shift+H shows it again")
+    # panel keys need a project with history
+    root = tempfile.mkdtemp(prefix="strata-keys-")
+    from strata.project import Project
+    doc = App.newDocument("Keys")
+    box = doc.addObject("Part::Box", "Box")
+    doc.recompute()
+    doc.saveAs(os.path.join(root, "Keys.FCStd"))
+    Project.create(root, "Tester", "t@example.com")
+    box.Length = 20
+    doc.recompute()
+    doc.save()
+    later(2500, lambda: keys_panel(root, doc))
+
+
+def keys_panel(root, doc):
+    import strata.boot as sb
+    from PySide import QtWidgets as QW
+    from PySide6 import QtTest
+    p = sb.panel()
+    p.refresh()
+    h = p.history
+    rows = [r for r in range(h.count()) if h.item(r).data(QtCore.Qt.UserRole + 2) is not None]
+    check(len(rows) >= 2, "history has entries (%d)" % len(rows))
+    h.setFocus()
+    h.setCurrentRow(rows[0])
+    QtTest.QTest.keyClick(h, QtCore.Qt.Key_Down)
+    check(h.currentRow() == rows[1], "Down arrow moves to the next history entry")
+    activated = []
+    h.entry_activated.disconnect()
+    h.entry_activated.connect(lambda e: activated.append(e.title))
+    QtTest.QTest.keyClick(h, QtCore.Qt.Key_Return)
+    check(len(activated) == 1, "Enter on a history entry views it (%s)" % activated)
+    QtTest.QTest.keyClick(h, QtCore.Qt.Key_F, QtCore.Qt.ControlModifier)
+    QW.QApplication.processEvents()
+    check(p.search.isVisible() and p.search.hasFocus(), "Ctrl+F opens the history search")
+    QtTest.QTest.keyClicks(p.search, "Length")
+    QtTest.QTest.keyClick(p.search, QtCore.Qt.Key_Escape)
+    check(p.search.isVisible() and p.search.text() == "", "Esc clears the search")
+    QtTest.QTest.keyClick(p.search, QtCore.Qt.Key_Escape)
+    QW.QApplication.processEvents()
+    check(not p.search.isVisible(), "Esc again closes the search")
+    from strata.project import Project
+    for proj in Project._instances.values():
+        proj.repo.close()
+    App.closeDocument(doc.Name)
+    shutil.rmtree(root, ignore_errors=True)
+    finish()
+
+
+later(4000, {"live": live_start, "prestart": prestart, "keys": keys_start}[PHASE])
 later(120 * 1000, lambda: (check(False, "global timeout"), finish()))

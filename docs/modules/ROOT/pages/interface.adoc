@@ -1,0 +1,140 @@
+= The interface
+:description: A tour of the Versions and history panel, its menus, the details card, the status-bar indicator, the toolbar and every dialog.
+
+Everything Strata does is reachable from the *Versions and history* panel. It is available in every workbench.
+Show or hide it with kbd:[Ctrl+Shift+H], menu:Tools[Versions and history], the history-clock button on the Strata toolbar, or the _project · workspace_ indicator in the status bar.
+
+image::screenshots/08_workspace.png[The panel while working in the Lightweight workspace,role=screenshot]
+
+== The panel at a glance
+
+Title bar::
+*Versions and history*, with buttons for *Compare*, *Releases*, *Sync*, a btn:[⋯] menu and btn:[×] to close the panel.
+
+Project line::
+The project folder's name and how many documents it contains.
+
+Workspace pill::
+The current workspace, for example btn:[Main ▾]. Click it to switch workspace, create a new one, or merge another workspace into this one.
+
+Create version::
+The blue button. Creates a named snapshot of the whole project (kbd:[Ctrl+Shift+V]).
+
+Banner::
+Appears when something needs your attention: unsaved changes (with a btn:[Save] link), or that you are viewing a read-only copy or a 3D comparison (with btn:[Close]).
+
+Versions::
+The version graph. Each workspace has its own coloured lane.
++
+* a *solid node* is a version;
+* an *open node* is the latest state of a workspace; the current one has a halo and a *Current* chip;
+* the *square* at the bottom is the project's *Start*;
+* coloured chips show releases, for example *BRK-100 A*: green for released, amber for pending, red for rejected, grey for obsolete.
+
+History::
+Every recorded change of the current workspace, newest first, grouped as _Today_, _Yesterday_, _This week_ and then by month.
+Ordinary saves show the author's initials; milestones (versions, restores, merges, new workspaces) show an icon.
+The newest entry is marked *Latest*. Click the magnifier or press kbd:[Ctrl+F] to filter by feature, person or document.
+
+Footer::
+Whether the project is shared. _Only on this computer · Share..._ or _Shared · synced 5 min ago · Sync now_.
+
+== Working with history entries and versions
+
+Hover a history entry to reveal two buttons: the *eye* opens that point as a read-only copy, the *arrow* restores it.
+Double-click an entry, or select it and press kbd:[Enter], to view it.
+
+Select an entry or a node in the graph to open the *details card* below the lists:
+
+image::screenshots/02_history_entry.png[The details card of a history entry,role=screenshot,width=380]
+
+The card lists what changed: `+` added, `−` deleted, `~` edited (with old → new values), and a muted line for features that were only rebuilt as a consequence.
+Its buttons depend on what you selected:
+
+[cols="1,3"]
+|===
+| History entry | btn:[View], btn:[Restore], btn:[Compare]
+| Version | btn:[View], btn:[Branch], btn:[Release]
+| Another workspace | btn:[Switch], btn:[Merge into ...]
+| Your workspace | btn:[Create version]
+|===
+
+Press kbd:[Esc] to close the card.
+
+=== Right-click menus
+
+History entry::
+View this point · Compare with latest · Show what changed here · Restore to this point... · Restore only _document_... · Create version here... · Branch from here...
+
+Version or workspace in the graph::
+Switch to _workspace_ · Merge _workspace_ into _current_ · View · Compare with latest · Branch to create workspace... · Release... (versions) or Create version here... · Restore _workspace_ to this point... · Delete workspace...
+
+== Workspace menu
+
+image::screenshots/03_workspace_menu.png[The workspace menu,role=screenshot,width=220]
+
+The pill's menu lists all workspaces with a tick on the current one. Workspaces a colleague created that you have not worked in yet are marked _(from team)_; choosing one switches to it like any other.
+Below the list: *New workspace...* and *Merge into _current_* with a sub-menu of the other workspaces.
+
+== The ⋯ menu
+
+Create version... · New workspace... · Compare... · Releases... · Share project... (or Sync now) · Project settings... · Open a shared project... · Turn on version control... (when the active document's folder is not a project yet).
+
+== When version control is off
+
+If the active document is not in a project, the panel offers to turn version control on, or to open a project a colleague shared.
+If the document has never been saved, it asks you to save it into a project folder first.
+
+image::screenshots/14_turn_on.png[The panel when version control is off,role=screenshot,width=300]
+
+== Status bar and toolbar
+
+The status bar shows _project · workspace_ on the right, for example _Gearbox · Lightweight_. Click it to show or hide the panel.
+
+The *Strata* toolbar holds Versions and history, Create version, Compare, Releases and Sync.
+The same commands are at the bottom of the menu:Tools[] menu, with their xref:shortcuts.adoc[keyboard shortcuts].
+
+== Dialogs
+
+[cols="1,3"]
+|===
+| Dialog | What it does
+
+| Turn on version control
+| Choose the project folder (shows how many documents it contains) and your name.
+
+| Create version
+| Version name (the next `Vn` is suggested) and a description. Lists the documents included.
+
+| Create workspace
+| Name and optional description. Starts from the latest state, or from the version or entry you branched from.
+
+| Compare
+| Pick *From* and *To* (latest, workspaces, versions, recent history). Shows a tree of documents and features. btn:[Show in 3D] overlays both states of the selected document.
+
+| Merge
+| Lists documents taken over automatically and, for documents changed on both sides, a choice of *Keep mine*, *Take theirs* or *Keep both (copy)*, with a summary of each side's change.
+
+| Release
+| One row per document of the version: tick, part number, revision (next letter suggested), description. *Require approval* turns btn:[Release] into btn:[Submit for approval].
+
+| Releases
+| The register of all part numbers and revisions with state, document, version, requester and approver. btn:[Approve], btn:[Reject], btn:[Mark obsolete], btn:[View].
+
+| Share project
+| The shared location: a folder (btn:[Browse...]) or a Git server address.
+
+| Open shared project
+| The shared location and the folder to put your copy in.
+
+| Project settings
+| Your name and email, whether saves are recorded, whether binary attachments are shared.
+|===
+
+Every dialog follows the usual keys: kbd:[Enter] for the blue button, kbd:[Esc] to cancel.
+
+== Light and dark
+
+Strata follows FreeCAD's theme. When FreeCAD switches between light and dark, the panel follows without a restart.
+
+image::screenshots/13_dark_theme.png[The panel in a dark theme,role=screenshot,width=320]

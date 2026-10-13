@@ -1,0 +1,6 @@
+Workspaces: Main, Lightweight
+Height in Main: 12.0 mm
+Compare Bracket.FCStd: Body.Height 12 mm -> 6 mm
+Taken automatically: ['Bracket.FCStd'] | conflicts: []
+Height in Main after merge: 6.0 mm
+Latest entry: Merged Lightweight into Main

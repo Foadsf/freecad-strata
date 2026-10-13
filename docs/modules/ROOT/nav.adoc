@@ -1,0 +1,31 @@
+* xref:index.adoc[Welcome]
+
+.Getting started
+* xref:install.adoc[Installation]
+* xref:quickstart.adoc[Quick start in five minutes]
+* xref:concepts.adoc[Key concepts]
+
+.Using Strata
+* xref:interface.adoc[The interface]
+* xref:shortcuts.adoc[Keyboard shortcuts]
+* xref:settings.adoc[Settings and preferences]
+
+.Tutorials
+* xref:tutorials/index.adoc[Overview]
+* xref:tutorials/go-back-in-time.adoc[Go back in time]
+* xref:tutorials/workspaces.adoc[Explore an alternative]
+* xref:tutorials/compare.adoc[Compare two designs]
+* xref:tutorials/assemblies.adoc[Assemblies and linked parts]
+* xref:tutorials/releases.adoc[Release a design]
+* xref:tutorials/team.adoc[Work as a team]
+* xref:tutorials/scripting.adoc[Automate with Python]
+
+.Reference
+* xref:reference/python-api.adoc[Python API]
+* xref:reference/embedding.adoc[Embedding Strata in an add-on]
+* xref:reference/storage.adoc[How history is stored]
+
+.Help
+* xref:faq.adoc[FAQ and troubleshooting]
+* xref:contributing.adoc[Contributing and testing]
+* xref:changelog.adoc[Changelog]
