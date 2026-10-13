@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Merge workspaces :: Strata for FreeCAD</title>
+    <link rel="canonical" href="https://foadsf.github.io/freecad-strata/strata/tutorials/merging.html">
+    <link rel="prev" href="workspaces.html">
+    <link rel="next" href="compare.html">
+    <meta name="description" content="Bring the changes of one workspace into another: merge strategies, a choice per document, compare with base, and undo.">
+    <meta name="generator" content="Antora 3.1.10">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+    <link rel="stylesheet" href="../../_/css/site.css">
+    <link rel="stylesheet" href="../../_/css/strata.css">
+    <link rel="icon" href="../../_/img/strata.svg" type="image/svg+xml">
+    <meta name="theme-color" content="#0F1B2D">
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <a class="navbar-item strata-brand" href="https://foadsf.github.io/freecad-strata">
+        <img src="../../_/img/strata.svg" alt="" width="28" height="28">
+        <span class="strata-name">Strata</span>
+        <span class="strata-tag">for FreeCAD</span>
+      </a>
+      <div class="navbar-item search hide-for-print">
+        <div id="search-field" class="field">
+          <input id="search-input" type="text" placeholder="Search the docs">
+        </div>
+      </div>
+      <button class="navbar-burger" aria-controls="topbar-nav" aria-expanded="false" aria-label="Toggle main menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+    <div id="topbar-nav" class="navbar-menu">
+      <div class="navbar-end">
+        <a class="navbar-item" href="../install.html">Install</a>
+        <a class="navbar-item" href="index.html">Tutorials</a>
+        <a class="navbar-item" href="../shortcuts.html">Shortcuts</a>
+        <a class="navbar-item" href="../reference/python-api.html">Python API</a>
+        <div class="navbar-item">
+          <span class="control">
+            <a class="button strata-gh" href="">
+              <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+              GitHub
+            </a>
+          </span>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="body">
+<div class="nav-container" data-component="strata" data-version="">
+  <aside class="nav">
+    <div class="panels">
+<div class="nav-panel-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <button class="nav-menu-toggle" aria-label="Toggle expand/collapse all" style="display: none"></button>
+    <h3 class="title"><a href="../index.html">Strata</a></h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../index.html">Welcome</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Getting started</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../install.html">Installation</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../quickstart.html">Quick start in five minutes</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../concepts.html">Key concepts</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Using Strata</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../interface.html">The interface</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../shortcuts.html">Keyboard shortcuts</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../settings.html">Settings and preferences</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Tutorials</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="index.html">Overview</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="coming-from-onshape.html">Coming from Onshape</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="go-back-in-time.html">Go back in time</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="workspaces.html">Explore an alternative</a>
+  </li>
+  <li class="nav-item is-current-page" data-depth="1">
+    <a class="nav-link" href="merging.html">Merge workspaces</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="compare.html">Compare two designs</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="assemblies.html">Assemblies and linked parts</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="properties.html">Part numbers and properties</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="releases.html">Release a design</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="revision-history.html">Revision history and obsolete revisions</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="team.html">Work as a team</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="scripting.html">Automate with Python</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Reference</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../reference/python-api.html">Python API</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../reference/embedding.html">Embedding Strata in an add-on</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../reference/storage.html">How history is stored</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Help</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../faq.html">FAQ and troubleshooting</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../contributing.html">Contributing and testing</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../changelog.html">Changelog</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+<div class="nav-panel-explore" data-panel="explore">
+  <div class="context">
+    <span class="title">Strata</span>
+    <span class="version"></span>
+  </div>
+  <ul class="components">
+    <li class="component is-current">
+      <div class="title"><a href="../index.html">Strata</a></div>
+    </li>
+  </ul>
+</div>
+    </div>
+  </aside>
+</div>
+<main class="article">
+<div class="toolbar" role="navigation">
+<button class="nav-toggle"></button>
+  <a href="../index.html" class="home-link"></a>
+<nav class="breadcrumbs" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="../index.html">Strata</a></li>
+    <li>Tutorials</li>
+    <li><a href="merging.html">Merge workspaces</a></li>
+  </ul>
+</nav>
+<div class="edit-this-page"><a href="https://github.com/Foadsf/freecad-strata/edit/main/docs/modules/ROOT/pages/tutorials/merging.adoc">Edit this Page</a></div>
+</div>
+  <div class="content">
+<aside class="toc sidebar" data-title="Contents" data-levels="2">
+  <div class="toc-menu"></div>
+</aside>
+<article class="doc">
+<h1 class="page">Merge workspaces</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p><strong>Goal:</strong> adopt the lighter bracket from the <em>Lightweight</em> workspace in <em>Main</em>, while Main has moved on too.</p>
+</div>
+<div class="paragraph">
+<p><strong>You need:</strong> a project with two workspaces that both changed since they split. The <a href="workspaces.html" class="xref page">Explore an alternative</a> tutorial creates one.</p>
+</div>
+<div class="paragraph">
+<p>This tutorial follows Onshape&#8217;s <a href="https://cad.onshape.com/help/Content/Document/merging.htm">Merging workspaces and versions</a> help page, step for step.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="the-situation"><a class="anchor" href="#the-situation"></a>The situation</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Since <em>Lightweight</em> was created from <em>Main</em>:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>in <strong>Lightweight</strong> the base plate of the bracket became 6 mm thin and was renamed <em>Base plate (thin)</em>;</p>
+</li>
+<li>
+<p>in <strong>Main</strong> someone gave every document a part number and description (see <a href="properties.html" class="xref page">Part numbers and properties</a>) and made the shaft thicker.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>So the bracket changed on both sides, and the shaft and the assembly changed only in Main.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="open-the-merge-dialog"><a class="anchor" href="#open-the-merge-dialog"></a>Open the merge dialog</h2>
+<div class="sectionbody">
+<div class="olist arabic steps">
+<ol class="arabic">
+<li>
+<p>Switch to the workspace that should receive the changes, here <strong>Main</strong>. In Onshape terms Main is the <em>target</em> and Lightweight the <em>source</em>.</p>
+</li>
+<li>
+<p>Click the workspace pill <b class="button">Main ▾</b> and choose <strong>Merge into Main &gt; Lightweight</strong>. Or right-click Lightweight&#8217;s node in the <strong>Versions</strong> graph and choose <strong>Merge Lightweight into Main</strong>.</p>
+</li>
+<li>
+<p>If documents have unsaved changes, Strata asks to save them first.</p>
+</li>
+</ol>
+</div>
+<div class="imageblock screenshot">
+<div class="content">
+<img src="../_images/screenshots/09_merge.png" alt="The merge dialog with a strategy and a choice per document" width="680">
+</div>
+</div>
+<div class="paragraph">
+<p>Each card is one document. It says what changed on each side since the workspaces split, and what will happen to it.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="choose-a-merge-strategy"><a class="anchor" href="#choose-a-merge-strategy"></a>Choose a merge strategy</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The <strong>Overall merge strategy</strong> sets the default for every document, as in Onshape:</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Strategy</th>
+<th class="tableblock halign-left valign-top">What happens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Merge changes</strong> (default)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Takes what only Lightweight changed, keeps what only Main changed. Documents changed on both sides need a choice.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Keep Main</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Records the merge but keeps every document as it is in Main. Use it to mark Lightweight as considered and rejected.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Replace with Lightweight</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Every document becomes exactly what it is in Lightweight, including documents only Main changed.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect1">
+<h2 id="decide-per-document"><a class="anchor" href="#decide-per-document"></a>Decide per document</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The list on the right of each card overrides the strategy for that one document. This is Onshape&#8217;s per-tab merge choice.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Choice</th>
+<th class="tableblock halign-left valign-top">Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Keep Main</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">the document stays as it is in Main</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Take Lightweight</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">the document becomes Lightweight&#8217;s version</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Keep both (copy)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">for documents changed on both sides: Main&#8217;s stays, and Lightweight&#8217;s is saved next to it as <code>Bracket (Lightweight).FCStd</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Combine both changes</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">offered when one side only edited the document&#8217;s properties (part number, description, custom properties): the model comes from the side that changed it, the properties from the other side</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>In the example the bracket shows <strong>Combine both changes</strong>: Lightweight changed the model, Main only its properties, so nothing is lost.
+If both sides had edited the model, the card would show an amber warning and you would choose Keep Main, Take Lightweight or Keep both.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Strata merges whole documents, not single features. When both sides edited the same part&#8217;s features, keep both copies, then copy the features you need from one into the other.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="compare-before-merging"><a class="anchor" href="#compare-before-merging"></a>Compare before merging</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Click <b class="button">Compare with base</b> to open the comparison with the <strong>common base</strong>, the point where the two workspaces split, already selected on one side.
+Switch either side between the base, Main and Lightweight, and use the 3D overlay to see the geometry change. See <a href="compare.html" class="xref page">Compare two designs</a>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="merge"><a class="anchor" href="#merge"></a>Merge</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Click <b class="button">Merge</b>. Strata writes the merged documents, reloads the ones open in FreeCAD, and adds one history entry, <strong>Merged Lightweight into Main</strong>. Its details list the documents that changed.</p>
+</div>
+<div class="paragraph">
+<p>The Versions graph shows Lightweight&#8217;s lane joining Main.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="undo-the-merge"><a class="anchor" href="#undo-the-merge"></a>Undo the merge</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Right after merging, a banner at the top of the panel offers <b class="button">Undo merge</b>, as Onshape&#8217;s <em>Revert</em> link does.</p>
+</div>
+<div class="imageblock screenshot">
+<div class="content">
+<img src="../_images/screenshots/21_undo_merge.png" alt="The Undo merge banner after a merge" width="380">
+</div>
+</div>
+<div class="paragraph">
+<p>Undo returns Main to its state before the merge, and the merge entry leaves history, so Lightweight can be merged again later.
+Undo is possible until another change is recorded in Main or Main is synced. After that, restore the entry just below the merge instead; see <a href="go-back-in-time.html" class="xref page">Go back in time</a>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="same-thing-in-python"><a class="anchor" href="#same-thing-in-python"></a>Same thing in Python</h2>
+<div class="sectionbody">
+<div class="listingblock">
+<div class="title">merging.py: properties, Merge changes with a properties edit on one side, undo, Keep Main</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python"># SPDX-License-Identifier: LGPL-2.1-or-later
+"""Minimal working example: properties, merge strategies, combining a properties edit, undo merge.
+
+Run with FreeCAD's console (Strata installed):
+    freecadcmd merging.py [empty-folder]
+"""
+import os
+import sys
+import tempfile
+
+import FreeCAD as App
+
+from strata import fc
+from strata.project import Project
+
+folder = next((a for a in sys.argv[1:] if not a.endswith(".py")), None) or tempfile.mkdtemp()
+path = os.path.join(folder, "Bracket.FCStd")
+
+doc = App.newDocument("Bracket")
+body = doc.addObject("Part::Box", "Body")
+body.Length, body.Width, body.Height = 60, 40, 12
+doc.recompute()
+doc.saveAs(path)
+App.closeDocument(doc.Name)
+
+project = Project.create(folder, "Ada Lovelace", "ada@example.com")
+project.create_version("V1", "Baseline")
+
+# Lightweight changes the model ...
+project.create_workspace("Lightweight")
+doc = App.openDocument(path)
+doc.getObject("Body").Height = 6
+doc.recompute()
+doc.save()
+project.record()
+App.closeDocument(doc.Name)
+
+# ... while Main only gives the document a part number and properties (one history entry)
+project.switch_workspace("main")
+fc.set_document_properties(project, {"Bracket.FCStd": {
+    "Part number": "BRK-100", "Description": "Mounting bracket", "Material": "S235"}})
+print("Latest entry:", project.history()[0].title)
+
+# Both sides changed the bracket, but one side only its properties: no conflict
+plan = project.merge_plan("Lightweight")
+print("Conflicts:", plan.conflicts, "| combined automatically:", plan.auto_merge)
+project.merge(plan)
+
+
+def state():
+    d = App.openDocument(path)
+    out = "Height %s, part number %s, material %s" % (d.getObject("Body").Height, d.Id, dict(d.Meta).get("Material"))
+    App.closeDocument(d.Name)
+    return out
+
+
+print("After Merge changes:", state())
+
+# Undo is possible right after a merge; then try another strategy
+project.undo_merge()
+print("After undo:", state(), "| latest entry:", project.history()[0].title)
+project.merge(project.merge_plan("Lightweight"), strategy="keep")
+print("After Keep Main:", state(), "| latest entry:", project.history()[0].title)
+project.repo.close()</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Output of <code>freecadcmd merging.py</code></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-text hljs" data-lang="text">Latest entry: Properties: Description Mounting bracket; Part number BRK-100; Material S235
+Conflicts: [] | combined automatically: {'Bracket.FCStd': 'ours'}
+After Merge changes: Height 6.0 mm, part number BRK-100, material S235
+After undo: Height 12.0 mm, part number BRK-100, material S235 | latest entry: Properties: Description Mounting bracket; Part number BRK-100; Material S235
+After Keep Main: Height 12.0 mm, part number BRK-100, material S235 | latest entry: Merged Lightweight into Main (kept Main)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>A per-document choice is passed as <code>project.merge(plan, {"Bracket.FCStd": "ours"})</code>; see the <a href="../reference/python-api.html" class="xref page">Python API</a> for every argument.</p>
+</div>
+</div>
+</div>
+<nav class="pagination">
+  <span class="prev"><a href="workspaces.html">Explore an alternative</a></span>
+  <span class="next"><a href="compare.html">Compare two designs</a></span>
+</nav>
+</article>
+  </div>
+</main>
+</div>
+<footer class="footer strata-footer">
+  <div class="strata-footer-inner">
+    <div class="strata-footer-brand">
+      <img src="../../_/img/strata.svg" alt="" width="24" height="24">
+      <span>Strata for FreeCAD</span>
+    </div>
+    <p>Versions, workspaces, history and releases for FreeCAD. Free software under the
+      <a href="/blob/main/LICENSE">LGPL-2.1-or-later</a>.</p>
+    <p>
+      <a href="">Source code</a> ·
+      <a href="/issues">Report an issue</a> ·
+      <a href="https://forum.freecad.org/viewtopic.php?t=89249">Forum discussion</a> ·
+      <a href="https://www.freecad.org">FreeCAD</a>
+    </p>
+  </div>
+</footer>
+<script id="site-script" src="../../_/js/site.js" data-ui-root-path="../../_"></script>
+<script async src="../../_/js/vendor/highlight.js"></script>
+<script src="../../_/js/vendor/lunr.js"></script>
+<script src="../../_/js/search-ui.js" id="search-ui-script" data-site-root-path="../.." data-snippet-length="100" data-stylesheet="../../_/css/search.css"></script>
+<script async src="../../search-index.js"></script>
+  </body>
+</html>

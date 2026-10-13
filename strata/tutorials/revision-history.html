@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Revision history and obsolete revisions :: Strata for FreeCAD</title>
+    <link rel="canonical" href="https://foadsf.github.io/freecad-strata/strata/tutorials/revision-history.html">
+    <link rel="prev" href="releases.html">
+    <link rel="next" href="team.html">
+    <meta name="description" content="See every revision of one part number, release a new revision, mark the old one obsolete, and export a released revision.">
+    <meta name="generator" content="Antora 3.1.10">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+    <link rel="stylesheet" href="../../_/css/site.css">
+    <link rel="stylesheet" href="../../_/css/strata.css">
+    <link rel="icon" href="../../_/img/strata.svg" type="image/svg+xml">
+    <meta name="theme-color" content="#0F1B2D">
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <a class="navbar-item strata-brand" href="https://foadsf.github.io/freecad-strata">
+        <img src="../../_/img/strata.svg" alt="" width="28" height="28">
+        <span class="strata-name">Strata</span>
+        <span class="strata-tag">for FreeCAD</span>
+      </a>
+      <div class="navbar-item search hide-for-print">
+        <div id="search-field" class="field">
+          <input id="search-input" type="text" placeholder="Search the docs">
+        </div>
+      </div>
+      <button class="navbar-burger" aria-controls="topbar-nav" aria-expanded="false" aria-label="Toggle main menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+    <div id="topbar-nav" class="navbar-menu">
+      <div class="navbar-end">
+        <a class="navbar-item" href="../install.html">Install</a>
+        <a class="navbar-item" href="index.html">Tutorials</a>
+        <a class="navbar-item" href="../shortcuts.html">Shortcuts</a>
+        <a class="navbar-item" href="../reference/python-api.html">Python API</a>
+        <div class="navbar-item">
+          <span class="control">
+            <a class="button strata-gh" href="">
+              <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+              GitHub
+            </a>
+          </span>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="body">
+<div class="nav-container" data-component="strata" data-version="">
+  <aside class="nav">
+    <div class="panels">
+<div class="nav-panel-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <button class="nav-menu-toggle" aria-label="Toggle expand/collapse all" style="display: none"></button>
+    <h3 class="title"><a href="../index.html">Strata</a></h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../index.html">Welcome</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Getting started</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../install.html">Installation</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../quickstart.html">Quick start in five minutes</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../concepts.html">Key concepts</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Using Strata</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../interface.html">The interface</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../shortcuts.html">Keyboard shortcuts</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../settings.html">Settings and preferences</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Tutorials</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="index.html">Overview</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="coming-from-onshape.html">Coming from Onshape</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="go-back-in-time.html">Go back in time</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="workspaces.html">Explore an alternative</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="merging.html">Merge workspaces</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="compare.html">Compare two designs</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="assemblies.html">Assemblies and linked parts</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="properties.html">Part numbers and properties</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="releases.html">Release a design</a>
+  </li>
+  <li class="nav-item is-current-page" data-depth="1">
+    <a class="nav-link" href="revision-history.html">Revision history and obsolete revisions</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="team.html">Work as a team</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="scripting.html">Automate with Python</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Reference</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../reference/python-api.html">Python API</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../reference/embedding.html">Embedding Strata in an add-on</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../reference/storage.html">How history is stored</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Help</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../faq.html">FAQ and troubleshooting</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../contributing.html">Contributing and testing</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../changelog.html">Changelog</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+<div class="nav-panel-explore" data-panel="explore">
+  <div class="context">
+    <span class="title">Strata</span>
+    <span class="version"></span>
+  </div>
+  <ul class="components">
+    <li class="component is-current">
+      <div class="title"><a href="../index.html">Strata</a></div>
+    </li>
+  </ul>
+</div>
+    </div>
+  </aside>
+</div>
+<main class="article">
+<div class="toolbar" role="navigation">
+<button class="nav-toggle"></button>
+  <a href="../index.html" class="home-link"></a>
+<nav class="breadcrumbs" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="../index.html">Strata</a></li>
+    <li>Tutorials</li>
+    <li><a href="revision-history.html">Revision history and obsolete revisions</a></li>
+  </ul>
+</nav>
+<div class="edit-this-page"><a href="https://github.com/Foadsf/freecad-strata/edit/main/docs/modules/ROOT/pages/tutorials/revision-history.adoc">Edit this Page</a></div>
+</div>
+  <div class="content">
+<aside class="toc sidebar" data-title="Contents" data-levels="2">
+  <div class="toc-menu"></div>
+</aside>
+<article class="doc">
+<h1 class="page">Revision history and obsolete revisions</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p><strong>Goal:</strong> release revision B of the bracket, retire revision A, and send revision B to a supplier.</p>
+</div>
+<div class="paragraph">
+<p><strong>You need:</strong> a part number with at least one released revision, see <a href="releases.html" class="xref page">Release a design</a>.</p>
+</div>
+<div class="paragraph">
+<p>This tutorial follows Onshape&#8217;s <a href="https://cad.onshape.com/help/Content/Release/viewing_revision_history_and_obsoleting_parts.htm">Viewing revision history and obsoleting parts</a> help page.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="release-the-next-revision"><a class="anchor" href="#release-the-next-revision"></a>Release the next revision</h2>
+<div class="sectionbody">
+<div class="olist arabic steps">
+<ol class="arabic">
+<li>
+<p>Make the change, for example a thinner base plate, and create a version, here <em>V3 – Production release</em>.</p>
+</li>
+<li>
+<p>Release V3 as in <a href="releases.html" class="xref page">Release a design</a>. The bracket keeps part number <strong>BRK-100</strong>; Strata proposes revision <strong>B</strong>.</p>
+</li>
+<li>
+<p>If approval is required, approve it in <strong>Releases</strong>, with a comment such as <em>Checked against drawing D-100</em>.</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="open-the-revision-history"><a class="anchor" href="#open-the-revision-history"></a>Open the revision history</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Right-click the version node that carries the <strong>BRK-100</strong> chip and choose <strong>Revision history of BRK-100&#8230;&#8203;</strong>. Or open <strong>Releases</strong> (<span class="keyseq"><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd></span>) and choose <strong>BRK-100 (revision history)</strong> under <strong>Show</strong>.</p>
+</div>
+<div class="imageblock screenshot">
+<div class="content">
+<img src="../_images/screenshots/22_revision_history.png" alt="The revision history of part number BRK-100" width="860">
+</div>
+</div>
+<div class="paragraph">
+<p>Revisions are listed newest first, with their state, the version they were released from, who requested and approved them, and the comment.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="mark-the-old-revision-obsolete"><a class="anchor" href="#mark-the-old-revision-obsolete"></a>Mark the old revision obsolete</h2>
+<div class="sectionbody">
+<div class="olist arabic steps">
+<ol class="arabic">
+<li>
+<p>Select revision <strong>A</strong> and click <b class="button">Obsolete&#8230;&#8203;</b>.</p>
+</li>
+<li>
+<p>Enter a reason, for example <em>Replaced by rev B</em>.</p>
+</li>
+<li>
+<p>Leave <strong>Mark revision as re-releasable</strong> unticked: revision A stays used. Tick it only if A never reached production and its letter may be given to a later release.</p>
+</li>
+<li>
+<p>Click <b class="button">Obsolete</b>.</p>
+</li>
+</ol>
+</div>
+<div class="imageblock screenshot">
+<div class="content">
+<img src="../_images/screenshots/23_obsolete.png" alt="Marking revision A obsolete" width="520">
+</div>
+</div>
+<div class="paragraph">
+<p>Revision A now reads <strong>Obsolete</strong> with the reason. It stays in the record, and <b class="button">View</b> still opens it, but it is no longer valid for manufacturing.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="export-a-released-revision"><a class="anchor" href="#export-a-released-revision"></a>Export a released revision</h2>
+<div class="sectionbody">
+<div class="olist arabic steps">
+<ol class="arabic">
+<li>
+<p>Select revision <strong>B</strong> and click <b class="button">Export&#8230;&#8203;</b>.</p>
+</li>
+<li>
+<p>Choose a folder.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Strata writes <code>BRK-100_revB.FCStd</code>, the document exactly as released, and <code>BRK-100_revB.step</code> with its visible solids, ready for a supplier. Your working documents are not touched.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="same-thing-in-python"><a class="anchor" href="#same-thing-in-python"></a>Same thing in Python</h2>
+<div class="sectionbody">
+<div class="listingblock">
+<div class="title">revision_history.py: reject and resubmit, revision history, obsolete, numeric revisions, export</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python"># SPDX-License-Identifier: LGPL-2.1-or-later
+"""Minimal working example: reject and resubmit, revision history, obsolete, numeric revisions, export.
+
+Run with FreeCAD's console (Strata installed):
+    freecadcmd revision_history.py [empty-folder]
+"""
+import os
+import sys
+import tempfile
+
+import FreeCAD as App
+
+from strata import fc
+from strata.project import Project
+
+folder = next((a for a in sys.argv[1:] if not a.endswith(".py")), None) or tempfile.mkdtemp()
+path = os.path.join(folder, "Project", "Bracket.FCStd")
+os.makedirs(os.path.dirname(path))
+
+doc = App.newDocument("Bracket")
+plate = doc.addObject("Part::Box", "Plate")
+plate.Length, plate.Width, plate.Height = 60, 40, 12
+doc.recompute()
+doc.saveAs(path)
+
+project = Project.create(os.path.dirname(path), "Ada Lovelace", "ada@example.com")
+
+
+def change(height, version):
+    plate.Height = height
+    doc.recompute()
+    doc.save()
+    project.record()
+    return project.create_version(version)
+
+
+# Submitted for approval, rejected with a reason: the revision letter stays free
+v1 = project.create_version("V1", "First article")
+rev = project.release(v1, "Bracket.FCStd", "BRK-100", approval=True)
+project.set_release_state(rev, "Rejected", "Hole pattern does not match drawing")
+print("Next revision after a rejection:", project.next_revision("BRK-100"))
+
+# Fixed and resubmitted under the same revision, then approved
+rev = project.release(change(10, "V1.1"), "Bracket.FCStd", "BRK-100", approval=True)
+project.set_release_state(rev, "Released", "Checked against drawing D-100")
+
+# Revision B replaces A; A becomes obsolete
+rev_b = project.release(change(8, "V2"), "Bracket.FCStd", "BRK-100")
+project.set_release_state(rev, "Obsolete", "Replaced by rev B")
+
+print("Revision history of BRK-100:")
+for r in project.revision_history("BRK-100"):
+    print("  rev %s  attempt %d  %-9s from %-4s %s" % (r.revision, r.attempt, r.state, r.version, r.comment))
+
+# Numbered revisions for new part numbers
+project.save_settings({"revision_scheme": "numeric"})
+print("First numeric revision of SFT-200:", project.next_revision("SFT-200"))
+
+# Export revision B for a supplier: the document as released plus a STEP file
+out = fc.export_revision(project, rev_b.sha, rev_b.document, os.path.join(folder, "Released"), "BRK-100_revB")
+print("Exported:", ", ".join(os.path.basename(f) for f in out))
+App.closeDocument(doc.Name)
+project.repo.close()</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Output of <code>freecadcmd revision_history.py</code></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-text hljs" data-lang="text">Next revision after a rejection: A
+Revision history of BRK-100:
+  rev B  attempt 1  Released  from V2   
+  rev A  attempt 2  Obsolete  from V1.1 Replaced by rev B
+  rev A  attempt 1  Rejected  from V1   Hole pattern does not match drawing
+First numeric revision of SFT-200: 1
+Exported: BRK-100_revB.FCStd, BRK-100_revB.step</code></pre>
+</div>
+</div>
+</div>
+</div>
+<nav class="pagination">
+  <span class="prev"><a href="releases.html">Release a design</a></span>
+  <span class="next"><a href="team.html">Work as a team</a></span>
+</nav>
+</article>
+  </div>
+</main>
+</div>
+<footer class="footer strata-footer">
+  <div class="strata-footer-inner">
+    <div class="strata-footer-brand">
+      <img src="../../_/img/strata.svg" alt="" width="24" height="24">
+      <span>Strata for FreeCAD</span>
+    </div>
+    <p>Versions, workspaces, history and releases for FreeCAD. Free software under the
+      <a href="/blob/main/LICENSE">LGPL-2.1-or-later</a>.</p>
+    <p>
+      <a href="">Source code</a> ·
+      <a href="/issues">Report an issue</a> ·
+      <a href="https://forum.freecad.org/viewtopic.php?t=89249">Forum discussion</a> ·
+      <a href="https://www.freecad.org">FreeCAD</a>
+    </p>
+  </div>
+</footer>
+<script id="site-script" src="../../_/js/site.js" data-ui-root-path="../../_"></script>
+<script async src="../../_/js/vendor/highlight.js"></script>
+<script src="../../_/js/vendor/lunr.js"></script>
+<script src="../../_/js/search-ui.js" id="search-ui-script" data-site-root-path="../.." data-snippet-length="100" data-stylesheet="../../_/css/search.css"></script>
+<script async src="../../search-index.js"></script>
+  </body>
+</html>

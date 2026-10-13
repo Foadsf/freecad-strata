@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Coming from Onshape :: Strata for FreeCAD</title>
+    <link rel="canonical" href="https://foadsf.github.io/freecad-strata/strata/tutorials/coming-from-onshape.html">
+    <link rel="prev" href="index.html">
+    <link rel="next" href="go-back-in-time.html">
+    <meta name="description" content="Onshape's PDM, release management and document tutorials, mapped to Strata step by step.">
+    <meta name="generator" content="Antora 3.1.10">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+    <link rel="stylesheet" href="../../_/css/site.css">
+    <link rel="stylesheet" href="../../_/css/strata.css">
+    <link rel="icon" href="../../_/img/strata.svg" type="image/svg+xml">
+    <meta name="theme-color" content="#0F1B2D">
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <a class="navbar-item strata-brand" href="https://foadsf.github.io/freecad-strata">
+        <img src="../../_/img/strata.svg" alt="" width="28" height="28">
+        <span class="strata-name">Strata</span>
+        <span class="strata-tag">for FreeCAD</span>
+      </a>
+      <div class="navbar-item search hide-for-print">
+        <div id="search-field" class="field">
+          <input id="search-input" type="text" placeholder="Search the docs">
+        </div>
+      </div>
+      <button class="navbar-burger" aria-controls="topbar-nav" aria-expanded="false" aria-label="Toggle main menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+    <div id="topbar-nav" class="navbar-menu">
+      <div class="navbar-end">
+        <a class="navbar-item" href="../install.html">Install</a>
+        <a class="navbar-item" href="index.html">Tutorials</a>
+        <a class="navbar-item" href="../shortcuts.html">Shortcuts</a>
+        <a class="navbar-item" href="../reference/python-api.html">Python API</a>
+        <div class="navbar-item">
+          <span class="control">
+            <a class="button strata-gh" href="">
+              <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+              GitHub
+            </a>
+          </span>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="body">
+<div class="nav-container" data-component="strata" data-version="">
+  <aside class="nav">
+    <div class="panels">
+<div class="nav-panel-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <button class="nav-menu-toggle" aria-label="Toggle expand/collapse all" style="display: none"></button>
+    <h3 class="title"><a href="../index.html">Strata</a></h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../index.html">Welcome</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Getting started</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../install.html">Installation</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../quickstart.html">Quick start in five minutes</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../concepts.html">Key concepts</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Using Strata</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../interface.html">The interface</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../shortcuts.html">Keyboard shortcuts</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../settings.html">Settings and preferences</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Tutorials</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="index.html">Overview</a>
+  </li>
+  <li class="nav-item is-current-page" data-depth="1">
+    <a class="nav-link" href="coming-from-onshape.html">Coming from Onshape</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="go-back-in-time.html">Go back in time</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="workspaces.html">Explore an alternative</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="merging.html">Merge workspaces</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="compare.html">Compare two designs</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="assemblies.html">Assemblies and linked parts</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="properties.html">Part numbers and properties</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="releases.html">Release a design</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="revision-history.html">Revision history and obsolete revisions</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="team.html">Work as a team</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="scripting.html">Automate with Python</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Reference</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../reference/python-api.html">Python API</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../reference/embedding.html">Embedding Strata in an add-on</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../reference/storage.html">How history is stored</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Help</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../faq.html">FAQ and troubleshooting</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../contributing.html">Contributing and testing</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../changelog.html">Changelog</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+<div class="nav-panel-explore" data-panel="explore">
+  <div class="context">
+    <span class="title">Strata</span>
+    <span class="version"></span>
+  </div>
+  <ul class="components">
+    <li class="component is-current">
+      <div class="title"><a href="../index.html">Strata</a></div>
+    </li>
+  </ul>
+</div>
+    </div>
+  </aside>
+</div>
+<main class="article">
+<div class="toolbar" role="navigation">
+<button class="nav-toggle"></button>
+  <a href="../index.html" class="home-link"></a>
+<nav class="breadcrumbs" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="../index.html">Strata</a></li>
+    <li>Tutorials</li>
+    <li><a href="coming-from-onshape.html">Coming from Onshape</a></li>
+  </ul>
+</nav>
+<div class="edit-this-page"><a href="https://github.com/Foadsf/freecad-strata/edit/main/docs/modules/ROOT/pages/tutorials/coming-from-onshape.adoc">Edit this Page</a></div>
+</div>
+  <div class="content">
+<aside class="toc sidebar" data-title="Contents" data-levels="2">
+  <div class="toc-menu"></div>
+</aside>
+<article class="doc">
+<h1 class="page">Coming from Onshape</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>Strata&#8217;s panel follows Onshape&#8217;s <em>Versions and history</em> panel, and its release workflow follows Onshape&#8217;s release management.
+This page maps each Onshape help topic to the Strata tutorial that walks through the same steps in FreeCAD.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="tutorials-side-by-side"><a class="anchor" href="#tutorials-side-by-side"></a>Tutorials, side by side</h2>
+<div class="sectionbody">
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 28.5714%;">
+<col style="width: 28.5714%;">
+<col style="width: 42.8572%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Onshape help topic</th>
+<th class="tableblock halign-left valign-top">Strata tutorial</th>
+<th class="tableblock halign-left valign-top">What you do</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://cad.onshape.com/help/Content/Document/versions_and_history.htm">Versions and history</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="go-back-in-time.html" class="xref page">Go back in time</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">view an earlier state, create versions, restore all or some documents</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://cad.onshape.com/help/Content/Document/merging.htm">Merging workspaces and versions</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="merging.html" class="xref page">Merge workspaces</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">merge strategy, choice per document, compare with base, undo the merge</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Branching and workspaces</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="workspaces.html" class="xref page">Explore an alternative</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">branch to create a workspace, switch, delete</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Compare</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="compare.html" class="xref page">Compare two designs</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">feature and parameter differences, 3D overlay</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://cad.onshape.com/help/Content/Release/release_management.htm">Release management</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="releases.html" class="xref page">Release a design</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">release candidate, approval, reject and resubmit, revision scheme</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://cad.onshape.com/help/Content/Release/viewing_revision_history_and_obsoleting_parts.htm">Revision history and obsoleting</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="revision-history.html" class="xref page">Revision history and obsolete revisions</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">revision table of a part number, obsolete, re-releasable, export</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://www.onshape.com/en/resource-center/tech-tips/how-to-keep-your-product-designs-organized">Keeping designs organized</a> (tech tip)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="properties.html" class="xref page">Part numbers and properties</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">part numbers, descriptions and custom properties for all documents in one table</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Share and collaborate</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="team.html" class="xref page">Work as a team</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">share a project, join, sync</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect1">
+<h2 id="words"><a class="anchor" href="#words"></a>Words</h2>
+<div class="sectionbody">
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 60%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Onshape</th>
+<th class="tableblock halign-left valign-top">Strata</th>
+<th class="tableblock halign-left valign-top">Note</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Document</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Project</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">a folder of FreeCAD documents with version control turned on</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Tab (Part Studio, Assembly)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Document</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">one <code>.FCStd</code> file</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Workspace</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Workspace</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Main is the default one</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Version</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Version</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">a named, permanent point in history</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Microversion</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">History entry</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">recorded on every save</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Release candidate</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Release</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Pending, Released, Rejected, Obsolete</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Revision</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Revision</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">per part number; letters or numbers</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Merge strategy</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Merge strategy</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Merge changes, Keep target, Replace with source</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Restore with Keep/Replace per tab</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Restore dialog</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">tick the documents to bring back</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Properties panel</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Properties table</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">part number, description, company, custom properties</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect1">
+<h2 id="what-works-differently"><a class="anchor" href="#what-works-differently"></a>What works differently</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Strata keeps your files on your disk and works without a server. That changes a few things:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Merging is per document.</strong> Onshape merges feature by feature inside a Part Studio. Strata decides per document: take, keep, keep both, or combine when one side only changed properties.</p>
+</li>
+<li>
+<p><strong>Approvals are by name, not by role.</strong> Anyone who opens <strong>Releases</strong> can approve. There are no approver lists, release workflows with several steps, or notifications.</p>
+</li>
+<li>
+<p><strong>Sharing goes through a folder.</strong> A network share, a synced folder or a Git server holds the shared history. There is no browser, no live co-editing, and no follow mode.</p>
+</li>
+<li>
+<p><strong>The Documents page is your file manager.</strong> Strata has no labels, Onshape-style folders or search across projects.</p>
+</li>
+<li>
+<p><strong>No BOM table yet.</strong> Part numbers and properties are stored in the documents, so FreeCAD&#8217;s BOM tools and macros can read them.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>These are the gaps against Onshape today. The <a href="../changelog.html" class="xref page">changelog</a> lists what each release added.</p>
+</div>
+</div>
+</div>
+<nav class="pagination">
+  <span class="prev"><a href="index.html">Overview</a></span>
+  <span class="next"><a href="go-back-in-time.html">Go back in time</a></span>
+</nav>
+</article>
+  </div>
+</main>
+</div>
+<footer class="footer strata-footer">
+  <div class="strata-footer-inner">
+    <div class="strata-footer-brand">
+      <img src="../../_/img/strata.svg" alt="" width="24" height="24">
+      <span>Strata for FreeCAD</span>
+    </div>
+    <p>Versions, workspaces, history and releases for FreeCAD. Free software under the
+      <a href="/blob/main/LICENSE">LGPL-2.1-or-later</a>.</p>
+    <p>
+      <a href="">Source code</a> ·
+      <a href="/issues">Report an issue</a> ·
+      <a href="https://forum.freecad.org/viewtopic.php?t=89249">Forum discussion</a> ·
+      <a href="https://www.freecad.org">FreeCAD</a>
+    </p>
+  </div>
+</footer>
+<script id="site-script" src="../../_/js/site.js" data-ui-root-path="../../_"></script>
+<script async src="../../_/js/vendor/highlight.js"></script>
+<script src="../../_/js/vendor/lunr.js"></script>
+<script src="../../_/js/search-ui.js" id="search-ui-script" data-site-root-path="../.." data-snippet-length="100" data-stylesheet="../../_/css/search.css"></script>
+<script async src="../../search-index.js"></script>
+  </body>
+</html>

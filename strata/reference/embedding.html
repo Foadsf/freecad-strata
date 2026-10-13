@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Embedding Strata in an add-on :: Strata for FreeCAD</title>
+    <link rel="canonical" href="https://foadsf.github.io/freecad-strata/strata/reference/embedding.html">
+    <link rel="prev" href="python-api.html">
+    <link rel="next" href="storage.html">
+    <meta name="description" content="The API for add-ons that host Strata in their own interface: configure, on_ready, actions, activate_commands and theme overrides.">
+    <meta name="generator" content="Antora 3.1.10">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+    <link rel="stylesheet" href="../../_/css/site.css">
+    <link rel="stylesheet" href="../../_/css/strata.css">
+    <link rel="icon" href="../../_/img/strata.svg" type="image/svg+xml">
+    <meta name="theme-color" content="#0F1B2D">
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <a class="navbar-item strata-brand" href="https://foadsf.github.io/freecad-strata">
+        <img src="../../_/img/strata.svg" alt="" width="28" height="28">
+        <span class="strata-name">Strata</span>
+        <span class="strata-tag">for FreeCAD</span>
+      </a>
+      <div class="navbar-item search hide-for-print">
+        <div id="search-field" class="field">
+          <input id="search-input" type="text" placeholder="Search the docs">
+        </div>
+      </div>
+      <button class="navbar-burger" aria-controls="topbar-nav" aria-expanded="false" aria-label="Toggle main menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+    <div id="topbar-nav" class="navbar-menu">
+      <div class="navbar-end">
+        <a class="navbar-item" href="../install.html">Install</a>
+        <a class="navbar-item" href="../tutorials/index.html">Tutorials</a>
+        <a class="navbar-item" href="../shortcuts.html">Shortcuts</a>
+        <a class="navbar-item" href="python-api.html">Python API</a>
+        <div class="navbar-item">
+          <span class="control">
+            <a class="button strata-gh" href="">
+              <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+              GitHub
+            </a>
+          </span>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="body">
+<div class="nav-container" data-component="strata" data-version="">
+  <aside class="nav">
+    <div class="panels">
+<div class="nav-panel-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <button class="nav-menu-toggle" aria-label="Toggle expand/collapse all" style="display: none"></button>
+    <h3 class="title"><a href="../index.html">Strata</a></h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../index.html">Welcome</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Getting started</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../install.html">Installation</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../quickstart.html">Quick start in five minutes</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../concepts.html">Key concepts</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Using Strata</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../interface.html">The interface</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../shortcuts.html">Keyboard shortcuts</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../settings.html">Settings and preferences</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Tutorials</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../tutorials/index.html">Overview</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../tutorials/coming-from-onshape.html">Coming from Onshape</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../tutorials/go-back-in-time.html">Go back in time</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../tutorials/workspaces.html">Explore an alternative</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../tutorials/merging.html">Merge workspaces</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../tutorials/compare.html">Compare two designs</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../tutorials/assemblies.html">Assemblies and linked parts</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../tutorials/properties.html">Part numbers and properties</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../tutorials/releases.html">Release a design</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../tutorials/revision-history.html">Revision history and obsolete revisions</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../tutorials/team.html">Work as a team</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../tutorials/scripting.html">Automate with Python</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Reference</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="python-api.html">Python API</a>
+  </li>
+  <li class="nav-item is-current-page" data-depth="1">
+    <a class="nav-link" href="embedding.html">Embedding Strata in an add-on</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="storage.html">How history is stored</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Help</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../faq.html">FAQ and troubleshooting</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../contributing.html">Contributing and testing</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../changelog.html">Changelog</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+<div class="nav-panel-explore" data-panel="explore">
+  <div class="context">
+    <span class="title">Strata</span>
+    <span class="version"></span>
+  </div>
+  <ul class="components">
+    <li class="component is-current">
+      <div class="title"><a href="../index.html">Strata</a></div>
+    </li>
+  </ul>
+</div>
+    </div>
+  </aside>
+</div>
+<main class="article">
+<div class="toolbar" role="navigation">
+<button class="nav-toggle"></button>
+  <a href="../index.html" class="home-link"></a>
+<nav class="breadcrumbs" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="../index.html">Strata</a></li>
+    <li>Reference</li>
+    <li><a href="embedding.html">Embedding Strata in an add-on</a></li>
+  </ul>
+</nav>
+<div class="edit-this-page"><a href="https://github.com/Foadsf/freecad-strata/edit/main/docs/modules/ROOT/pages/reference/embedding.adoc">Edit this Page</a></div>
+</div>
+  <div class="content">
+<aside class="toc sidebar" data-title="Contents" data-levels="2">
+  <div class="toc-menu"></div>
+</aside>
+<article class="doc">
+<h1 class="page">Embedding Strata in an add-on</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>Add-ons that bring their own interface can host Strata without changing it.
+<a href="https://github.com/Foadsf/freecad-nxstyle">freecad-nxstyle</a>, a Siemens NX-style interface for FreeCAD, uses this API to put Strata in place of Teamcenter: the panel sits behind the Part Navigator, the commands are on a PLM ribbon tab, and the colours follow the NX theme.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="quick-example"><a class="anchor" href="#quick-example"></a>Quick example</h2>
+<div class="sectionbody">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">import strata.boot as sb
+from strata.ui import theme
+
+# From the host's InitGui.py, before Strata starts; stored as preferences.
+sb.configure(host_toolbar=True, panel_area="left",
+             shortcuts={"Strata_Compare": None,              # key taken by the host: leave unbound
+                        "Strata_Sync": "Ctrl+Alt+Shift+Y"})  # or move it
+
+def build_plm_tab():
+    for action in sb.actions().values():     # QActions owned by Strata
+        my_ribbon.add(action)
+    theme.set_overrides(light={"accent": "#00838F", "accent_hover": "#006D77"},
+                        lanes_light=["#00838F", "#8250DF", "#BF5B04"])
+    sb.activate_commands()                   # build Strata's menu entries and key bindings now
+    my_ui.reapply_my_shortcuts()
+
+sb.on_ready(build_plm_tab)                   # runs once Strata is up, or at once if it already is</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="api"><a class="anchor" href="#api"></a>API</h2>
+<div class="sectionbody">
+<div class="dlist">
+<dl>
+<dt class="hdlist1"><code>strata.boot.configure(host_toolbar=None, panel_area=None, shortcuts=None)</code></dt>
+<dd>
+<p><code>host_toolbar=True</code>: Strata creates no toolbar of its own and does not rebuild the current workbench at startup.
+<code>panel_area="left"</code> or <code>"right"</code>: where the panel docks. When set before Strata starts, the panel is created there, so nothing moves on screen.
+<code>shortcuts={command: keys or None}</code>: the host&#8217;s choice of keys. <code>None</code> (or <code>""</code>) leaves a command without a key, a key string such as <code>"Ctrl+Alt+K"</code> replaces the default, commands not listed keep Strata&#8217;s default, and <code>{}</code> returns to all defaults. Unknown command names raise <code>KeyError</code>.
+All three are stored as preferences (<code>HostProvidesToolbar</code>, <code>PanelArea</code>, <code>Shortcuts</code>).
+<code>host_toolbar</code> and <code>panel_area</code> also apply live. Key bindings are created when Strata registers its commands, so <code>shortcuts</code> must be set <strong>before</strong> Strata starts, from the host&#8217;s <code>InitGui.py</code>; a later call takes effect at the next start.</p>
+</dd>
+<dt class="hdlist1"><code>strata.boot.effective_shortcuts()</code></dt>
+<dd>
+<p><code>{command: keys}</code> in effect after the host&#8217;s choices; <code>""</code> means unbound.
+A user&#8217;s own changes in <span class="menuseq"><b class="menu">Tools</b>&#160;<i class="fa fa-angle-right caret"></i> <b class="menuitem">Customize&#8230;&#8203;</b></span> take precedence over both.</p>
+</dd>
+<dt class="hdlist1"><code>strata.boot.on_ready(callback)</code></dt>
+<dd>
+<p>Calls <code>callback()</code> once Strata has started, or immediately if it already has. Use this instead of polling.</p>
+</dd>
+<dt class="hdlist1"><code>strata.boot.is_ready()</code></dt>
+<dd>
+<p><code>True</code> once Strata has started.</p>
+</dd>
+<dt class="hdlist1"><code>strata.boot.actions()</code></dt>
+<dd>
+<p><code>{command name: QAction}</code> for <code>Strata_Panel</code>, <code>Strata_CreateVersion</code>, <code>Strata_Compare</code>, <code>Strata_Releases</code>, <code>Strata_Sync</code>, <code>Strata_Properties</code> (new in 0.3.0; it has no default shortcut).
+Strata creates them at startup and enables or disables them with the active project.
+They do not carry key bindings; FreeCAD&#8217;s own commands do (see below).</p>
+</dd>
+<dt class="hdlist1"><code>strata.boot.activate_commands()</code></dt>
+<dd>
+<p>Rebuilds the active workbench so FreeCAD creates Strata&#8217;s menu entries and, with them, the keyboard shortcuts.
+Strata calls it at startup unless <code>host_toolbar</code> is set, because rebuilding the workbench can reset a host&#8217;s own shortcuts. Hosts call it when it suits them.</p>
+</dd>
+<dt class="hdlist1"><code>strata.boot.panel()</code></dt>
+<dd>
+<p>The panel (a <code>QDockWidget</code>). <code>panel().user_set_visible(True)</code> shows it as if the user did; plain <code>show()</code> and <code>hide()</code> do not change the remembered visibility.</p>
+</dd>
+<dt class="hdlist1"><code>strata.boot.SHORTCUTS</code></dt>
+<dd>
+<p>The default shortcut of each command.</p>
+</dd>
+<dt class="hdlist1"><code>strata.ui.theme.set_overrides(light=None, dark=None, lanes_light=None, lanes_dark=None)</code></dt>
+<dd>
+<p>Merge colour tokens into the light and dark themes and restyle Strata&#8217;s open widgets. Unknown token names raise <code>KeyError</code>; the token names are in <code>strata/ui/theme.py</code> (<code>accent</code>, <code>accent_hover</code>, <code>accent_soft</code>, <code>selected</code>, <code>panel</code>, <code>surface</code>, <code>text</code>, <code>muted</code>, &#8230;&#8203;).
+<code>lanes_light[0]</code> is the colour of Main&#8217;s lane in the version graph.</p>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="rules-that-keep-both-add-ons-healthy"><a class="anchor" href="#rules-that-keep-both-add-ons-healthy"></a>Rules that keep both add-ons healthy</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Check Strata&#8217;s default keys (<code>strata.boot.SHORTCUTS</code>) against yours and use <code>configure(shortcuts=&#8230;&#8203;)</code> for any clash. Two commands on one key means neither works.</p>
+</li>
+<li>
+<p>Load Strata <strong>once</strong>. If a copy is already installed in FreeCAD&#8217;s <code>Mod</code> folder, use it instead of bundling a second one.</p>
+</li>
+<li>
+<p>Never change the process working directory (<code>os.chdir</code>). On Windows a folder that is a working directory cannot be deleted, which breaks uninstalling add-ons.</p>
+</li>
+<li>
+<p>Do not walk <code>QApplication.allWidgets()</code> to find Strata&#8217;s widgets; use <code>strata.boot.panel()</code>. A full widget walk has crashed FreeCAD 1.1.4 with a spreadsheet open.</p>
+</li>
+<li>
+<p>Remember that the user owns the panel&#8217;s visibility: use <code>user_set_visible</code> only in response to a user action.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="tested"><a class="anchor" href="#tested"></a>Tested</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><code>tests/embed_test.py</code> checks this API in a running FreeCAD, in three phases with Strata starting on its own:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>live</strong>: configure, actions and theme;</p>
+</li>
+<li>
+<p><strong>prestart</strong>: the preferences already set at start (including host-chosen and unbound keys), and visibility surviving a real shutdown;</p>
+</li>
+<li>
+<p><strong>keys</strong>: shortcuts, the Tools menu and panel keys.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<nav class="pagination">
+  <span class="prev"><a href="python-api.html">Python API</a></span>
+  <span class="next"><a href="storage.html">How history is stored</a></span>
+</nav>
+</article>
+  </div>
+</main>
+</div>
+<footer class="footer strata-footer">
+  <div class="strata-footer-inner">
+    <div class="strata-footer-brand">
+      <img src="../../_/img/strata.svg" alt="" width="24" height="24">
+      <span>Strata for FreeCAD</span>
+    </div>
+    <p>Versions, workspaces, history and releases for FreeCAD. Free software under the
+      <a href="/blob/main/LICENSE">LGPL-2.1-or-later</a>.</p>
+    <p>
+      <a href="">Source code</a> ·
+      <a href="/issues">Report an issue</a> ·
+      <a href="https://forum.freecad.org/viewtopic.php?t=89249">Forum discussion</a> ·
+      <a href="https://www.freecad.org">FreeCAD</a>
+    </p>
+  </div>
+</footer>
+<script id="site-script" src="../../_/js/site.js" data-ui-root-path="../../_"></script>
+<script async src="../../_/js/vendor/highlight.js"></script>
+<script src="../../_/js/vendor/lunr.js"></script>
+<script src="../../_/js/search-ui.js" id="search-ui-script" data-site-root-path="../.." data-snippet-length="100" data-stylesheet="../../_/css/search.css"></script>
+<script async src="../../search-index.js"></script>
+  </body>
+</html>

@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Python API :: Strata for FreeCAD</title>
+    <link rel="canonical" href="https://foadsf.github.io/freecad-strata/strata/reference/python-api.html">
+    <link rel="prev" href="../tutorials/scripting.html">
+    <link rel="next" href="embedding.html">
+    <meta name="description" content="Reference for strata.project (the engine), strata.docdiff (the semantic comparison) and strata.fc (FreeCAD helpers).">
+    <meta name="generator" content="Antora 3.1.10">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+    <link rel="stylesheet" href="../../_/css/site.css">
+    <link rel="stylesheet" href="../../_/css/strata.css">
+    <link rel="icon" href="../../_/img/strata.svg" type="image/svg+xml">
+    <meta name="theme-color" content="#0F1B2D">
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <a class="navbar-item strata-brand" href="https://foadsf.github.io/freecad-strata">
+        <img src="../../_/img/strata.svg" alt="" width="28" height="28">
+        <span class="strata-name">Strata</span>
+        <span class="strata-tag">for FreeCAD</span>
+      </a>
+      <div class="navbar-item search hide-for-print">
+        <div id="search-field" class="field">
+          <input id="search-input" type="text" placeholder="Search the docs">
+        </div>
+      </div>
+      <button class="navbar-burger" aria-controls="topbar-nav" aria-expanded="false" aria-label="Toggle main menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+    <div id="topbar-nav" class="navbar-menu">
+      <div class="navbar-end">
+        <a class="navbar-item" href="../install.html">Install</a>
+        <a class="navbar-item" href="../tutorials/index.html">Tutorials</a>
+        <a class="navbar-item" href="../shortcuts.html">Shortcuts</a>
+        <a class="navbar-item" href="python-api.html">Python API</a>
+        <div class="navbar-item">
+          <span class="control">
+            <a class="button strata-gh" href="">
+              <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+              GitHub
+            </a>
+          </span>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="body">
+<div class="nav-container" data-component="strata" data-version="">
+  <aside class="nav">
+    <div class="panels">
+<div class="nav-panel-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <button class="nav-menu-toggle" aria-label="Toggle expand/collapse all" style="display: none"></button>
+    <h3 class="title"><a href="../index.html">Strata</a></h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../index.html">Welcome</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Getting started</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../install.html">Installation</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../quickstart.html">Quick start in five minutes</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../concepts.html">Key concepts</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Using Strata</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../interface.html">The interface</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../shortcuts.html">Keyboard shortcuts</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../settings.html">Settings and preferences</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Tutorials</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../tutorials/index.html">Overview</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../tutorials/coming-from-onshape.html">Coming from Onshape</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../tutorials/go-back-in-time.html">Go back in time</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../tutorials/workspaces.html">Explore an alternative</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../tutorials/merging.html">Merge workspaces</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../tutorials/compare.html">Compare two designs</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../tutorials/assemblies.html">Assemblies and linked parts</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../tutorials/properties.html">Part numbers and properties</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../tutorials/releases.html">Release a design</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../tutorials/revision-history.html">Revision history and obsolete revisions</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../tutorials/team.html">Work as a team</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../tutorials/scripting.html">Automate with Python</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Reference</span>
+<ul class="nav-list">
+  <li class="nav-item is-current-page" data-depth="1">
+    <a class="nav-link" href="python-api.html">Python API</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="embedding.html">Embedding Strata in an add-on</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="storage.html">How history is stored</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Help</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../faq.html">FAQ and troubleshooting</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../contributing.html">Contributing and testing</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../changelog.html">Changelog</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+<div class="nav-panel-explore" data-panel="explore">
+  <div class="context">
+    <span class="title">Strata</span>
+    <span class="version"></span>
+  </div>
+  <ul class="components">
+    <li class="component is-current">
+      <div class="title"><a href="../index.html">Strata</a></div>
+    </li>
+  </ul>
+</div>
+    </div>
+  </aside>
+</div>
+<main class="article">
+<div class="toolbar" role="navigation">
+<button class="nav-toggle"></button>
+  <a href="../index.html" class="home-link"></a>
+<nav class="breadcrumbs" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="../index.html">Strata</a></li>
+    <li>Reference</li>
+    <li><a href="python-api.html">Python API</a></li>
+  </ul>
+</nav>
+<div class="edit-this-page"><a href="https://github.com/Foadsf/freecad-strata/edit/main/docs/modules/ROOT/pages/reference/python-api.adoc">Edit this Page</a></div>
+</div>
+  <div class="content">
+<aside class="toc sidebar" data-title="Contents" data-levels="2">
+  <div class="toc-menu"></div>
+</aside>
+<article class="doc">
+<h1 class="page">Python API</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>Strata&#8217;s engine lives in <code>strata.project</code> and has no FreeCAD or Qt dependency: it can run in FreeCAD&#8217;s Python console, in <code>freecadcmd</code>, or in plain Python (it needs Git).
+The examples in <a href="../tutorials/scripting.html" class="xref page">Automate with Python</a> are tested and are the best place to start.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">from strata.project import Project
+
+project = Project.locate("C:/cad/Gearbox/Gearbox.FCStd")   # None if not in a project
+project.create_version("V3", "Released for tooling")
+for entry in project.history()[:5]:
+    print(entry.author, entry.title)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Revision arguments (<code>rev</code>, <code>rev_a</code>, <code>rev_b</code>, <code>from_rev</code>) are commit ids such as <code>entry.sha</code> or <code>version.sha</code>.
+For the latest state of a workspace use <code>project.repo.rev_parse("refs/heads/&lt;workspace&gt;")</code>; <code>project.head()</code> is the latest state of the current one.
+<code>merge_plan</code> is the exception: it takes a workspace name.
+Document paths (<code>doc</code>, <code>docs</code>) are relative to the project folder with forward slashes, for example <code>Parts/Bracket.FCStd</code>; <code>project.rel(path)</code> converts an absolute path.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="opening-and-creating-projects"><a class="anchor" href="#opening-and-creating-projects"></a>Opening and creating projects</h2>
+<div class="sectionbody">
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 40%;">
+<col style="width: 60%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Project.locate(path)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The project containing <code>path</code> (a file or folder), searching upwards; <code>None</code> if there is none.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Project.open(root)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The project at <code>root</code> (cached per folder).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Project.create(root, user=None, email=None)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Turn on version control for <code>root</code> and record <strong>Start</strong>. Returns the existing project if there already is one.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Project.join(url, root, user=None, email=None)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Copy a shared project from <code>url</code> into <code>root</code> (new or empty) with its full history and write out its documents.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Attributes: <code>root</code> (folder), <code>name</code> (folder name), <code>dir</code> (the <code>.strata</code> folder), <code>repo</code> (low-level <code>strata.gitcore.Repo</code>).</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="recording-and-history"><a class="anchor" href="#recording-and-history"></a>Recording and history</h2>
+<div class="sectionbody">
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 40%;">
+<col style="width: 60%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>record(docs=None, kind="save", title=None, body="")</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Record the files on disk as a history entry of the current workspace. <code>docs</code> limits it to some documents (default: all in the folder). The title is generated from the changes unless given. Returns the commit id, or <code>None</code> if nothing changed.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>history(workspace=None, limit=500)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>HistoryEntry</code> list for a workspace (default: current), newest first.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>documents(rev=None)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Documents in the project at <code>rev</code> (default: latest).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>documents_on_disk()</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>.FCStd</code> files currently in the folder.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>export_document(rev, doc, dest_dir=None)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Write <code>doc</code> as it was at <code>rev</code> to <code>dest_dir</code> (default <code>.strata/previews/&#8230;&#8203;</code>) and return its path.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p><code>HistoryEntry</code>: <code>sha</code>, <code>title</code>, <code>body</code>, <code>kind</code> (<code>start</code>, <code>save</code>, <code>workspace</code>, <code>restore</code>, <code>merge</code>), <code>author</code>, <code>time</code> (Unix time), <code>docs</code>, <code>parents</code>, <code>versions</code> (names of versions at this entry).</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="versions"><a class="anchor" href="#versions"></a>Versions</h2>
+<div class="sectionbody">
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 40%;">
+<col style="width: 60%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>versions()</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">All versions, newest first, as <code>Version(name, description, sha, ref, author, time, workspace)</code>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>suggest_version_name()</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The next free <code>Vn</code>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>create_version(name, description="", rev=None)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Create a version of <code>rev</code>, or of the current state (recorded first) if <code>rev</code> is <code>None</code>. Names must be unique.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect1">
+<h2 id="workspaces"><a class="anchor" href="#workspaces"></a>Workspaces</h2>
+<div class="sectionbody">
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 40%;">
+<col style="width: 60%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>current_workspace()</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Name of the current workspace (<code>main</code> for Main).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>workspaces()</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Workspace(name, head, current, remote_only)</code> list; <code>.display</code> is the readable name.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>create_workspace(name, from_rev=None, description="", switch=True)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Create a workspace from <code>from_rev</code> (default: latest) and switch to it. Returns <code>(name, changed_docs)</code>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>switch_workspace(name)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Record, then switch. Returns the documents rewritten on disk.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>delete_workspace(name)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Delete a workspace other than Main and the current one. Versions are kept.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect1">
+<h2 id="restore-compare-and-merge"><a class="anchor" href="#restore-compare-and-merge"></a>Restore, compare and merge</h2>
+<div class="sectionbody">
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 40%;">
+<col style="width: 60%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>restore(rev, docs=None)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Bring the current workspace back to <code>rev</code>, completely or only <code>docs</code>, as a new history entry. Returns the documents rewritten on disk.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>diff(rev_a, rev_b)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>{doc: DocDiff}</code> for every document that differs (see <a href="#docdiff">strata.docdiff</a>).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>merge_plan(source)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Analyse merging workspace <code>source</code> (or a full ref) into the current one: <code>MergePlan(take_theirs, ours_only, conflicts, auto_merge, unchanged, fast_forward, &#8230;&#8203;)</code>. <code>take_theirs</code>: changed only in the source; <code>ours_only</code>: changed only in the target; <code>conflicts</code>: changed in both; <code>auto_merge</code>: <code>{doc: side}</code> changed in both where <code>side</code> (<code>"ours"</code> or <code>"theirs"</code>) only edited the document&#8217;s properties.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>merge_decisions(plan, strategy="merge", resolutions=None)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">What <code>merge</code> would do: <code>{doc: "ours" | "theirs" | "both" | "merged" | None}</code>; <code>None</code> means a choice is needed.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>merge(plan, resolutions=None, strategy="merge")</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Perform it. <code>strategy</code> is <code>"merge"</code> (Merge changes), <code>"keep"</code> (Keep target) or <code>"replace"</code> (Replace with source). <code>resolutions</code> overrides per document with <code>"ours"</code>, <code>"theirs"</code>, <code>"both"</code> (keep a copy) or <code>"merged"</code> (combine model and properties). Raises <code>StrataError</code> if a conflict is left without a choice. Returns the documents rewritten on disk.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>can_undo_merge()</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>True</code> if the latest entry is a merge that has not been synced.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>undo_merge()</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Return to the state before that merge; the merge leaves history. Returns the documents rewritten on disk.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>document_properties(doc, rev=None)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>{"Part number", "Description", "Company", custom&#8230;&#8203;}</code> of a document, on disk or at <code>rev</code>.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect1">
+<h2 id="releases"><a class="anchor" href="#releases"></a>Releases</h2>
+<div class="sectionbody">
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 40%;">
+<col style="width: 60%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>release(version, document, part_number, revision=None, description="", approval=False)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Release one document of a <code>Version</code>. The revision defaults to the next free one. With <code>approval=True</code> the release is created as <strong>Pending</strong>. A rejected revision, or an obsolete one marked re-releasable, can be released again as a new attempt.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>set_release_state(release, state, comment="", reusable=False)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"Released"</code> (approve), <code>"Rejected"</code> or <code>"Obsolete"</code>, with a comment. <code>reusable=True</code> with <code>"Obsolete"</code> marks the revision as re-releasable.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>releases()</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Release(part_number, revision, description, state, sha, version, document, author, time, approver, attempt, reusable, comment)</code> list, one per release attempt; for a revision released more than once, the attempt with the highest number counts.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>revision_history(part_number)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Every attempt of every revision of a part number, newest first.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>next_revision(part_number)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The next free revision in the project&#8217;s revision scheme.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p><code>strata.project.next_revision(existing, scheme="letters")</code> computes the same from a list of labels; <code>REVISION_SCHEMES</code> lists the schemes (<code>"letters"</code>, <code>"numeric"</code>).</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="sharing"><a class="anchor" href="#sharing"></a>Sharing</h2>
+<div class="sectionbody">
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 40%;">
+<col style="width: 60%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>remote_url()</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The shared location, or <code>None</code>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>set_remote(url)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Set the shared location. A local or network folder is prepared automatically.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sync()</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Record, fetch, fast-forward or merge, and push. Returns <code>SyncResult(pushed, pulled, merged, needs_merge, changed_docs)</code>. Workspaces in <code>needs_merge</code> changed on both sides in the same documents; merge them with <code>merge_plan("refs/remotes/origin/&lt;name&gt;")</code>.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect1">
+<h2 id="settings"><a class="anchor" href="#settings"></a>Settings</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><code>settings()</code> returns the project settings (<code>record_on_save</code>, <code>track_binary</code>, <code>revision_scheme</code>); <code>save_settings({&#8230;&#8203;})</code> updates them. <code>project.repo.set_identity(name, email)</code> sets your name and email for this project.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="docdiff"><a class="anchor" href="#docdiff"></a>strata.docdiff</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><code>DocDiff</code> describes how one document changed:</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>status</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>"added"</code>, <code>"removed"</code>, <code>"modified"</code> or <code>"unchanged"</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>added</code>, <code>removed</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">lists of <code>(name, label, type)</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>modified</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">list of <code>ObjChange(name, label, type, props, geometry, appearance, renamed_from)</code>; <code>props</code> is a list of <code>PropChange(name, old, new)</code> with readable values such as <code>"12 mm"</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>document_props</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">changes to the document&#8217;s own properties</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p><code>docdiff.summarize(diff)</code> returns the one-line description used for history titles.
+<code>docdiff.diff_documents(old_xml, new_xml, &#8230;&#8203;)</code> compares two <code>Document.xml</code> contents directly.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="strata-fc-inside-freecad"><a class="anchor" href="#strata-fc-inside-freecad"></a>strata.fc (inside FreeCAD)</h2>
+<div class="sectionbody">
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 40%;">
+<col style="width: 60%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>fc.project_for(doc)</code>, <code>fc.active_project()</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The project of a FreeCAD document, or of the active one.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>fc.open_preview(project, rev, doc, label)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Open a read-only copy of <code>doc</code> at <code>rev</code>, labelled <code>Name @ label</code>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>fc.compare_overlay(project, rev_a, rev_b, doc, label_a, label_b)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Create the 3D comparison document and return the volume summary.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>fc.reload(project, docs)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Re-open documents after their files changed on disk.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>fc.set_document_properties(project, {doc: {column: value}})</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Write part number, description, company and custom properties into documents, save them and record one history entry. An empty custom value removes that property.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>fc.export_revision(project, rev, doc, folder, basename)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Write <code>doc</code> as recorded at <code>rev</code> to <code>&lt;basename&gt;.FCStd</code> and, if it has solids, <code>&lt;basename&gt;.step</code>. Returns the paths.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect1">
+<h2 id="errors"><a class="anchor" href="#errors"></a>Errors</h2>
+<div class="sectionbody">
+<div class="dlist">
+<dl>
+<dt class="hdlist1"><code>strata.project.StrataError</code></dt>
+<dd>
+<p>a request that cannot be done, with a message meant for users, for example <em>A version named 'V1' already exists</em>.</p>
+</dd>
+<dt class="hdlist1"><code>strata.gitcore.GitError</code></dt>
+<dd>
+<p>Git reported an error, for example an unreachable shared location.</p>
+</dd>
+<dt class="hdlist1"><code>strata.gitcore.GitMissing</code></dt>
+<dd>
+<p>Git is not installed.</p>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+<nav class="pagination">
+  <span class="prev"><a href="../tutorials/scripting.html">Automate with Python</a></span>
+  <span class="next"><a href="embedding.html">Embedding Strata in an add-on</a></span>
+</nav>
+</article>
+  </div>
+</main>
+</div>
+<footer class="footer strata-footer">
+  <div class="strata-footer-inner">
+    <div class="strata-footer-brand">
+      <img src="../../_/img/strata.svg" alt="" width="24" height="24">
+      <span>Strata for FreeCAD</span>
+    </div>
+    <p>Versions, workspaces, history and releases for FreeCAD. Free software under the
+      <a href="/blob/main/LICENSE">LGPL-2.1-or-later</a>.</p>
+    <p>
+      <a href="">Source code</a> ·
+      <a href="/issues">Report an issue</a> ·
+      <a href="https://forum.freecad.org/viewtopic.php?t=89249">Forum discussion</a> ·
+      <a href="https://www.freecad.org">FreeCAD</a>
+    </p>
+  </div>
+</footer>
+<script id="site-script" src="../../_/js/site.js" data-ui-root-path="../../_"></script>
+<script async src="../../_/js/vendor/highlight.js"></script>
+<script src="../../_/js/vendor/lunr.js"></script>
+<script src="../../_/js/search-ui.js" id="search-ui-script" data-site-root-path="../.." data-snippet-length="100" data-stylesheet="../../_/css/search.css"></script>
+<script async src="../../search-index.js"></script>
+  </body>
+</html>

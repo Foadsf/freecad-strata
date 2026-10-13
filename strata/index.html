@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Strata: versions and history for FreeCAD :: Strata for FreeCAD</title>
+    <link rel="canonical" href="https://foadsf.github.io/freecad-strata/strata/index.html">
+    <link rel="next" href="install.html">
+    <meta name="description" content="Strata adds Onshape-style versions, workspaces, history, compare and releases to FreeCAD. Every save is recorded; nobody has to learn Git.">
+    <meta name="generator" content="Antora 3.1.10">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+    <link rel="stylesheet" href="../_/css/site.css">
+    <link rel="stylesheet" href="../_/css/strata.css">
+    <link rel="icon" href="../_/img/strata.svg" type="image/svg+xml">
+    <meta name="theme-color" content="#0F1B2D">
+  </head>
+  <body class="article home">
+<header class="header">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <a class="navbar-item strata-brand" href="https://foadsf.github.io/freecad-strata">
+        <img src="../_/img/strata.svg" alt="" width="28" height="28">
+        <span class="strata-name">Strata</span>
+        <span class="strata-tag">for FreeCAD</span>
+      </a>
+      <div class="navbar-item search hide-for-print">
+        <div id="search-field" class="field">
+          <input id="search-input" type="text" placeholder="Search the docs" autofocus>
+        </div>
+      </div>
+      <button class="navbar-burger" aria-controls="topbar-nav" aria-expanded="false" aria-label="Toggle main menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+    <div id="topbar-nav" class="navbar-menu">
+      <div class="navbar-end">
+        <a class="navbar-item" href="install.html">Install</a>
+        <a class="navbar-item" href="tutorials/index.html">Tutorials</a>
+        <a class="navbar-item" href="shortcuts.html">Shortcuts</a>
+        <a class="navbar-item" href="reference/python-api.html">Python API</a>
+        <div class="navbar-item">
+          <span class="control">
+            <a class="button strata-gh" href="">
+              <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+              GitHub
+            </a>
+          </span>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="body">
+<div class="nav-container" data-component="strata" data-version="">
+  <aside class="nav">
+    <div class="panels">
+<div class="nav-panel-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <button class="nav-menu-toggle" aria-label="Toggle expand/collapse all" style="display: none"></button>
+    <h3 class="title"><a href="index.html">Strata</a></h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item is-current-page" data-depth="1">
+    <a class="nav-link" href="index.html">Welcome</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Getting started</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="install.html">Installation</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="quickstart.html">Quick start in five minutes</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="concepts.html">Key concepts</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Using Strata</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="interface.html">The interface</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="shortcuts.html">Keyboard shortcuts</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="settings.html">Settings and preferences</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Tutorials</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="tutorials/index.html">Overview</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="tutorials/coming-from-onshape.html">Coming from Onshape</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="tutorials/go-back-in-time.html">Go back in time</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="tutorials/workspaces.html">Explore an alternative</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="tutorials/merging.html">Merge workspaces</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="tutorials/compare.html">Compare two designs</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="tutorials/assemblies.html">Assemblies and linked parts</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="tutorials/properties.html">Part numbers and properties</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="tutorials/releases.html">Release a design</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="tutorials/revision-history.html">Revision history and obsolete revisions</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="tutorials/team.html">Work as a team</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="tutorials/scripting.html">Automate with Python</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Reference</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="reference/python-api.html">Python API</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="reference/embedding.html">Embedding Strata in an add-on</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="reference/storage.html">How history is stored</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Help</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="faq.html">FAQ and troubleshooting</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="contributing.html">Contributing and testing</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="changelog.html">Changelog</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+<div class="nav-panel-explore" data-panel="explore">
+  <div class="context">
+    <span class="title">Strata</span>
+    <span class="version"></span>
+  </div>
+  <ul class="components">
+    <li class="component is-current">
+      <div class="title"><a href="index.html">Strata</a></div>
+    </li>
+  </ul>
+</div>
+    </div>
+  </aside>
+</div>
+<main class="article">
+<div class="toolbar" role="navigation">
+<button class="nav-toggle"></button>
+  <a href="index.html" class="home-link is-current"></a>
+<nav class="breadcrumbs" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="index.html">Strata</a></li>
+    <li><a href="index.html">Welcome</a></li>
+  </ul>
+</nav>
+<div class="edit-this-page"><a href="https://github.com/Foadsf/freecad-strata/edit/main/docs/modules/ROOT/pages/index.adoc">Edit this Page</a></div>
+</div>
+  <div class="content">
+<aside class="toc sidebar" data-title="Contents" data-levels="2">
+  <div class="toc-menu"></div>
+</aside>
+<article class="doc">
+<h1 class="page">Strata: versions and history for FreeCAD</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="openblock hero">
+<div class="content">
+<div class="paragraph">
+<p><strong>Strata</strong> gives FreeCAD the product data management engineers expect from modern CAD.
+Every save is recorded and described in plain language, milestones become <strong>versions</strong>, ideas live in <strong>workspaces</strong>, and any point in time can be viewed, compared or restored.
+Git does the storage underneath; you never see it.</p>
+</div>
+<div class="paragraph">
+<p><a href="install.html" class="xref page">Install Strata</a> · <a href="quickstart.html" class="xref page">Five-minute quick start</a> · <a href="https://github.com/Foadsf/freecad-strata">Source on GitHub</a></p>
+</div>
+</div>
+</div>
+<div class="imageblock screenshot">
+<div class="content">
+<img src="_images/screenshots/01_overview.png" alt="The Versions and history panel next to an assembly in FreeCAD">
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="what-you-can-do"><a class="anchor" href="#what-you-can-do"></a>What you can do</h2>
+<div class="sectionbody">
+<div class="ulist cards">
+<ul>
+<li>
+<p><strong>Automatic history</strong><br>
+Every save becomes an entry such as <em>Edited Base plate: Length 10 mm → 12 mm</em>. Nobody writes commit messages.</p>
+</li>
+<li>
+<p><strong>Versions</strong><br>
+Named, permanent snapshots of the whole project for milestones: <em>V2 – Prototype sent to supplier</em>.</p>
+</li>
+<li>
+<p><strong>Workspaces</strong><br>
+Try a design alternative without touching Main, then merge it back when it is ready.</p>
+</li>
+<li>
+<p><strong>Go back in time</strong><br>
+Open any point as a read-only copy, or restore it. Restoring never deletes anything.</p>
+</li>
+<li>
+<p><strong>Compare</strong><br>
+See every feature and parameter that changed, and overlay both states in 3D with the volume change.</p>
+</li>
+<li>
+<p><strong>Releases</strong><br>
+Part numbers, revision letters, an optional approval step and an obsolete state.</p>
+</li>
+<li>
+<p><strong>Team sync</strong><br>
+Share through a network folder, a synced drive or any Git server. Works offline.</p>
+</li>
+<li>
+<p><strong>Everywhere in FreeCAD</strong><br>
+One panel, toolbar, Tools-menu entries and keyboard shortcuts in every workbench, light and dark themes.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="where-to-start"><a class="anchor" href="#where-to-start"></a>Where to start</h2>
+<div class="sectionbody">
+<div class="ulist cards">
+<ul>
+<li>
+<p><strong><a href="install.html" class="xref page">Installation</a></strong><br>
+Requirements and installing with the Addon Manager or by hand.</p>
+</li>
+<li>
+<p><strong><a href="quickstart.html" class="xref page">Quick start</a></strong><br>
+Turn on version control, save, create a version and go back in time.</p>
+</li>
+<li>
+<p><strong><a href="concepts.html" class="xref page">Key concepts</a></strong><br>
+Projects, history, versions, workspaces, releases and sync in one page.</p>
+</li>
+<li>
+<p><strong><a href="tutorials/index.html" class="xref page">Tutorials</a></strong><br>
+Step-by-step guides for every task, with runnable examples.</p>
+</li>
+<li>
+<p><strong><a href="shortcuts.html" class="xref page">Keyboard shortcuts</a></strong><br>
+All keys at a glance.</p>
+</li>
+<li>
+<p><strong><a href="reference/python-api.html" class="xref page">Python API</a></strong><br>
+Script Strata or build it into your own tools.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="why-strata"><a class="anchor" href="#why-strata"></a>Why Strata</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Strata implements the proposal discussed in the FreeCAD forum thread <a href="https://forum.freecad.org/viewtopic.php?t=89249"><em>Proposal for Integrated Version Control in FreeCAD for PLM/PDM Functionality</em></a>.
+It answers the objections raised there:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>History lives <strong>beside</strong> your files, not inside them, so <code>.FCStd</code> files stay ordinary FreeCAD files. FreeCAD rewrites the archive on every save and drops entries it does not know, so a repository inside the file could not survive.</p>
+</li>
+<li>
+<p>A project is a <strong>folder</strong>, so assemblies and the parts they link to are always versioned together.</p>
+</li>
+<li>
+<p>Geometry stored as BREP text is versioned too, so imported solids such as STEP imports restore exactly.</p>
+</li>
+<li>
+<p>It works completely <strong>offline</strong>; a server is only needed if you choose to share.</p>
+</li>
+<li>
+<p>The engine has <strong>no FreeCAD or Qt dependency</strong>, so it can be scripted and connected to other systems.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Strata is free software under the <a href="https://github.com/Foadsf/freecad-strata/blob/main/LICENSE">LGPL-2.1-or-later</a>, the same licence as FreeCAD.</p>
+</div>
+</div>
+</div>
+<nav class="pagination">
+  <span class="next"><a href="install.html">Installation</a></span>
+</nav>
+</article>
+  </div>
+</main>
+</div>
+<footer class="footer strata-footer">
+  <div class="strata-footer-inner">
+    <div class="strata-footer-brand">
+      <img src="../_/img/strata.svg" alt="" width="24" height="24">
+      <span>Strata for FreeCAD</span>
+    </div>
+    <p>Versions, workspaces, history and releases for FreeCAD. Free software under the
+      <a href="/blob/main/LICENSE">LGPL-2.1-or-later</a>.</p>
+    <p>
+      <a href="">Source code</a> ·
+      <a href="/issues">Report an issue</a> ·
+      <a href="https://forum.freecad.org/viewtopic.php?t=89249">Forum discussion</a> ·
+      <a href="https://www.freecad.org">FreeCAD</a>
+    </p>
+  </div>
+</footer>
+<script id="site-script" src="../_/js/site.js" data-ui-root-path="../_"></script>
+<script async src="../_/js/vendor/highlight.js"></script>
+<script src="../_/js/vendor/lunr.js"></script>
+<script src="../_/js/search-ui.js" id="search-ui-script" data-site-root-path=".." data-snippet-length="100" data-stylesheet="../_/css/search.css"></script>
+<script async src="../search-index.js"></script>
+  </body>
+</html>

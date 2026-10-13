@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>The interface :: Strata for FreeCAD</title>
+    <link rel="canonical" href="https://foadsf.github.io/freecad-strata/strata/interface.html">
+    <link rel="prev" href="concepts.html">
+    <link rel="next" href="shortcuts.html">
+    <meta name="description" content="A tour of the Versions and history panel, its menus, the details card, the status-bar indicator, the toolbar and every dialog.">
+    <meta name="generator" content="Antora 3.1.10">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+    <link rel="stylesheet" href="../_/css/site.css">
+    <link rel="stylesheet" href="../_/css/strata.css">
+    <link rel="icon" href="../_/img/strata.svg" type="image/svg+xml">
+    <meta name="theme-color" content="#0F1B2D">
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <a class="navbar-item strata-brand" href="https://foadsf.github.io/freecad-strata">
+        <img src="../_/img/strata.svg" alt="" width="28" height="28">
+        <span class="strata-name">Strata</span>
+        <span class="strata-tag">for FreeCAD</span>
+      </a>
+      <div class="navbar-item search hide-for-print">
+        <div id="search-field" class="field">
+          <input id="search-input" type="text" placeholder="Search the docs">
+        </div>
+      </div>
+      <button class="navbar-burger" aria-controls="topbar-nav" aria-expanded="false" aria-label="Toggle main menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+    <div id="topbar-nav" class="navbar-menu">
+      <div class="navbar-end">
+        <a class="navbar-item" href="install.html">Install</a>
+        <a class="navbar-item" href="tutorials/index.html">Tutorials</a>
+        <a class="navbar-item" href="shortcuts.html">Shortcuts</a>
+        <a class="navbar-item" href="reference/python-api.html">Python API</a>
+        <div class="navbar-item">
+          <span class="control">
+            <a class="button strata-gh" href="">
+              <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+              GitHub
+            </a>
+          </span>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="body">
+<div class="nav-container" data-component="strata" data-version="">
+  <aside class="nav">
+    <div class="panels">
+<div class="nav-panel-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <button class="nav-menu-toggle" aria-label="Toggle expand/collapse all" style="display: none"></button>
+    <h3 class="title"><a href="index.html">Strata</a></h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="index.html">Welcome</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Getting started</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="install.html">Installation</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="quickstart.html">Quick start in five minutes</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="concepts.html">Key concepts</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Using Strata</span>
+<ul class="nav-list">
+  <li class="nav-item is-current-page" data-depth="1">
+    <a class="nav-link" href="interface.html">The interface</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="shortcuts.html">Keyboard shortcuts</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="settings.html">Settings and preferences</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Tutorials</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="tutorials/index.html">Overview</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="tutorials/coming-from-onshape.html">Coming from Onshape</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="tutorials/go-back-in-time.html">Go back in time</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="tutorials/workspaces.html">Explore an alternative</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="tutorials/merging.html">Merge workspaces</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="tutorials/compare.html">Compare two designs</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="tutorials/assemblies.html">Assemblies and linked parts</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="tutorials/properties.html">Part numbers and properties</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="tutorials/releases.html">Release a design</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="tutorials/revision-history.html">Revision history and obsolete revisions</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="tutorials/team.html">Work as a team</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="tutorials/scripting.html">Automate with Python</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Reference</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="reference/python-api.html">Python API</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="reference/embedding.html">Embedding Strata in an add-on</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="reference/storage.html">How history is stored</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Help</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="faq.html">FAQ and troubleshooting</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="contributing.html">Contributing and testing</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="changelog.html">Changelog</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+<div class="nav-panel-explore" data-panel="explore">
+  <div class="context">
+    <span class="title">Strata</span>
+    <span class="version"></span>
+  </div>
+  <ul class="components">
+    <li class="component is-current">
+      <div class="title"><a href="index.html">Strata</a></div>
+    </li>
+  </ul>
+</div>
+    </div>
+  </aside>
+</div>
+<main class="article">
+<div class="toolbar" role="navigation">
+<button class="nav-toggle"></button>
+  <a href="index.html" class="home-link"></a>
+<nav class="breadcrumbs" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="index.html">Strata</a></li>
+    <li>Using Strata</li>
+    <li><a href="interface.html">The interface</a></li>
+  </ul>
+</nav>
+<div class="edit-this-page"><a href="https://github.com/Foadsf/freecad-strata/edit/main/docs/modules/ROOT/pages/interface.adoc">Edit this Page</a></div>
+</div>
+  <div class="content">
+<aside class="toc sidebar" data-title="Contents" data-levels="2">
+  <div class="toc-menu"></div>
+</aside>
+<article class="doc">
+<h1 class="page">The interface</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>Everything Strata does is reachable from the <strong>Versions and history</strong> panel. It is available in every workbench.
+Show or hide it with <span class="keyseq"><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>H</kbd></span>, <span class="menuseq"><b class="menu">Tools</b>&#160;<i class="fa fa-angle-right caret"></i> <b class="menuitem">Versions and history</b></span>, the history-clock button on the Strata toolbar, or the <em>project · workspace</em> indicator in the status bar.</p>
+</div>
+<div class="imageblock screenshot">
+<div class="content">
+<img src="_images/screenshots/08_workspace.png" alt="The panel while working in the Lightweight workspace">
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="the-panel-at-a-glance"><a class="anchor" href="#the-panel-at-a-glance"></a>The panel at a glance</h2>
+<div class="sectionbody">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Title bar</dt>
+<dd>
+<p><strong>Versions and history</strong>, with buttons for <strong>Compare</strong>, <strong>Releases</strong>, <strong>Sync</strong>, a <b class="button">⋯</b> menu and <b class="button">×</b> to close the panel.</p>
+</dd>
+<dt class="hdlist1">Project line</dt>
+<dd>
+<p>The project folder&#8217;s name and how many documents it contains.</p>
+</dd>
+<dt class="hdlist1">Workspace pill</dt>
+<dd>
+<p>The current workspace, for example <b class="button">Main ▾</b>. Click it to switch workspace, create a new one, or merge another workspace into this one.</p>
+</dd>
+<dt class="hdlist1">Create version</dt>
+<dd>
+<p>The blue button. Creates a named snapshot of the whole project (<span class="keyseq"><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>V</kbd></span>).</p>
+</dd>
+<dt class="hdlist1">Banner</dt>
+<dd>
+<p>Appears when something needs your attention: unsaved changes (with a <b class="button">Save</b> link), or that you are viewing a read-only copy or a 3D comparison (with <b class="button">Close</b>).</p>
+</dd>
+<dt class="hdlist1">Versions</dt>
+<dd>
+<p>The version graph. Each workspace has its own coloured lane.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>a <strong>solid node</strong> is a version;</p>
+</li>
+<li>
+<p>an <strong>open node</strong> is the latest state of a workspace; the current one has a halo and a <strong>Current</strong> chip;</p>
+</li>
+<li>
+<p>the <strong>square</strong> at the bottom is the project&#8217;s <strong>Start</strong>;</p>
+</li>
+<li>
+<p>coloured chips show releases, for example <strong>BRK-100 A</strong>: green for released, amber for pending, red for rejected, grey for obsolete.</p>
+</li>
+</ul>
+</div>
+</dd>
+<dt class="hdlist1">History</dt>
+<dd>
+<p>Every recorded change of the current workspace, newest first, grouped as <em>Today</em>, <em>Yesterday</em>, <em>This week</em> and then by month.
+Ordinary saves show the author&#8217;s initials; milestones (versions, restores, merges, new workspaces) show an icon.
+The newest entry is marked <strong>Latest</strong>. Click the magnifier or press <span class="keyseq"><kbd>Ctrl</kbd>+<kbd>F</kbd></span> to filter by feature, person or document.</p>
+</dd>
+<dt class="hdlist1">Footer</dt>
+<dd>
+<p>Whether the project is shared. <em>Only on this computer · Share&#8230;&#8203;</em> or <em>Shared · synced 5 min ago · Sync now</em>.</p>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="working-with-history-entries-and-versions"><a class="anchor" href="#working-with-history-entries-and-versions"></a>Working with history entries and versions</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Hover a history entry to reveal two buttons: the <strong>eye</strong> opens that point as a read-only copy, the <strong>arrow</strong> restores it.
+Double-click an entry, or select it and press <kbd>Enter</kbd>, to view it.</p>
+</div>
+<div class="paragraph">
+<p>Select an entry or a node in the graph to open the <strong>details card</strong> below the lists:</p>
+</div>
+<div class="imageblock screenshot">
+<div class="content">
+<img src="_images/screenshots/02_history_entry.png" alt="The details card of a history entry" width="380">
+</div>
+</div>
+<div class="paragraph">
+<p>The card lists what changed: <code>+</code> added, <code>−</code> deleted, <code>~</code> edited (with old → new values), and a muted line for features that were only rebuilt as a consequence.
+Its buttons depend on what you selected:</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">History entry</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><b class="button">View</b>, <b class="button">Restore</b>, <b class="button">Compare</b></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Version</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><b class="button">View</b>, <b class="button">Branch</b>, <b class="button">Release</b></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Another workspace</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><b class="button">Switch</b>, <b class="button">Merge into &#8230;&#8203;</b></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Your workspace</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><b class="button">Create version</b></p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Press <kbd>Esc</kbd> to close the card.</p>
+</div>
+<div class="sect2">
+<h3 id="right-click-menus"><a class="anchor" href="#right-click-menus"></a>Right-click menus</h3>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">History entry</dt>
+<dd>
+<p>View this point · Compare with latest · Show what changed here · Restore to this point&#8230;&#8203; · Restore only <em>document</em>&#8230;&#8203; · Create version here&#8230;&#8203; · Branch from here&#8230;&#8203;</p>
+</dd>
+<dt class="hdlist1">Version or workspace in the graph</dt>
+<dd>
+<p>Switch to <em>workspace</em> · Merge <em>workspace</em> into <em>current</em> · View · Compare with latest · Branch to create workspace&#8230;&#8203; · Release&#8230;&#8203; (versions) or Create version here&#8230;&#8203; · Revision history of <em>part number</em>&#8230;&#8203; (versions with a release) · Restore <em>workspace</em> to this point&#8230;&#8203; · Delete workspace&#8230;&#8203;</p>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="workspace-menu"><a class="anchor" href="#workspace-menu"></a>Workspace menu</h2>
+<div class="sectionbody">
+<div class="imageblock screenshot">
+<div class="content">
+<img src="_images/screenshots/03_workspace_menu.png" alt="The workspace menu" width="220">
+</div>
+</div>
+<div class="paragraph">
+<p>The pill&#8217;s menu lists all workspaces with a tick on the current one. Workspaces a colleague created that you have not worked in yet are marked <em>(from team)</em>; choosing one switches to it like any other.
+Below the list: <strong>New workspace&#8230;&#8203;</strong> and <strong>Merge into <em>current</em></strong> with a sub-menu of the other workspaces.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="the-menu"><a class="anchor" href="#the-menu"></a>The ⋯ menu</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Create version&#8230;&#8203; · New workspace&#8230;&#8203; · Compare&#8230;&#8203; · Releases&#8230;&#8203; · Properties&#8230;&#8203; · Share project&#8230;&#8203; (or Sync now) · Project settings&#8230;&#8203; · Open a shared project&#8230;&#8203; · Turn on version control&#8230;&#8203; (when the active document&#8217;s folder is not a project yet).</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="when-version-control-is-off"><a class="anchor" href="#when-version-control-is-off"></a>When version control is off</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>If the active document is not in a project, the panel offers to turn version control on, or to open a project a colleague shared.
+If the document has never been saved, it asks you to save it into a project folder first.</p>
+</div>
+<div class="imageblock screenshot">
+<div class="content">
+<img src="_images/screenshots/14_turn_on.png" alt="The panel when version control is off" width="300">
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="status-bar-and-toolbar"><a class="anchor" href="#status-bar-and-toolbar"></a>Status bar and toolbar</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The status bar shows <em>project · workspace</em> on the right, for example <em>Gearbox · Lightweight</em>. Click it to show or hide the panel.</p>
+</div>
+<div class="paragraph">
+<p>The <strong>Strata</strong> toolbar holds Versions and history, Create version, Compare, Releases, Sync and Properties.
+The same commands are at the bottom of the <b class="menuref">Tools</b> menu, with their <a href="shortcuts.html" class="xref page">keyboard shortcuts</a>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="dialogs"><a class="anchor" href="#dialogs"></a>Dialogs</h2>
+<div class="sectionbody">
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Dialog</th>
+<th class="tableblock halign-left valign-top">What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Turn on version control</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Choose the project folder (shows how many documents it contains) and your name.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Create version</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Version name (the next <code>Vn</code> is suggested) and a description. Lists the documents included.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Create workspace</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Name and optional description. Starts from the latest state, or from the version or entry you branched from.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Compare</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Pick <strong>From</strong> and <strong>To</strong> (latest, workspaces, versions, recent history). Shows a tree of documents and features. <b class="button">Show in 3D</b> overlays both states of the selected document.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Merge</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">An overall strategy (<strong>Merge changes</strong>, <strong>Keep <em>target</em></strong>, <strong>Replace with <em>source</em></strong>) and one card per document with a summary of each side&#8217;s change and a choice: <strong>Keep</strong>, <strong>Take</strong>, <strong>Keep both (copy)</strong> or <strong>Combine both changes</strong>. <b class="button">Compare with base</b>. See <a href="tutorials/merging.html" class="xref page">Merge workspaces</a>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Restore</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The documents that differ from the chosen point, each with what restoring would undo. Untick the ones to keep. <b class="button">Compare changes</b>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Properties</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">One row per document: part number, description, company and custom columns. <b class="button">Add property&#8230;&#8203;</b>. See <a href="tutorials/properties.html" class="xref page">Part numbers and properties</a>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Release</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">One row per document of the version: tick, part number and description (from the document&#8217;s properties at that version), revision (next one suggested). <strong>Require approval</strong> turns <b class="button">Release</b> into <b class="button">Submit for approval</b>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Releases</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The register of all part numbers and revisions with state, document, version, requester, approver and comment, or the revision history of one part number (<strong>Show</strong>). <b class="button">Approve</b>, <b class="button">Reject</b>, <b class="button">Obsolete&#8230;&#8203;</b>, <b class="button">View</b>, <b class="button">Export&#8230;&#8203;</b>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Obsolete</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A reason, and <strong>Mark revision as re-releasable</strong>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Share project</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The shared location: a folder (<b class="button">Browse&#8230;&#8203;</b>) or a Git server address.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Open shared project</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The shared location and the folder to put your copy in.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Project settings</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Your name and email, whether saves are recorded, whether binary attachments are shared, the revision scheme.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Every dialog follows the usual keys: <kbd>Enter</kbd> for the blue button, <kbd>Esc</kbd> to cancel.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="light-and-dark"><a class="anchor" href="#light-and-dark"></a>Light and dark</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Strata follows FreeCAD&#8217;s theme. When FreeCAD switches between light and dark, the panel follows without a restart.</p>
+</div>
+<div class="imageblock screenshot">
+<div class="content">
+<img src="_images/screenshots/13_dark_theme.png" alt="The panel in a dark theme" width="320">
+</div>
+</div>
+</div>
+</div>
+<nav class="pagination">
+  <span class="prev"><a href="concepts.html">Key concepts</a></span>
+  <span class="next"><a href="shortcuts.html">Keyboard shortcuts</a></span>
+</nav>
+</article>
+  </div>
+</main>
+</div>
+<footer class="footer strata-footer">
+  <div class="strata-footer-inner">
+    <div class="strata-footer-brand">
+      <img src="../_/img/strata.svg" alt="" width="24" height="24">
+      <span>Strata for FreeCAD</span>
+    </div>
+    <p>Versions, workspaces, history and releases for FreeCAD. Free software under the
+      <a href="/blob/main/LICENSE">LGPL-2.1-or-later</a>.</p>
+    <p>
+      <a href="">Source code</a> ·
+      <a href="/issues">Report an issue</a> ·
+      <a href="https://forum.freecad.org/viewtopic.php?t=89249">Forum discussion</a> ·
+      <a href="https://www.freecad.org">FreeCAD</a>
+    </p>
+  </div>
+</footer>
+<script id="site-script" src="../_/js/site.js" data-ui-root-path="../_"></script>
+<script async src="../_/js/vendor/highlight.js"></script>
+<script src="../_/js/vendor/lunr.js"></script>
+<script src="../_/js/search-ui.js" id="search-ui-script" data-site-root-path=".." data-snippet-length="100" data-stylesheet="../_/css/search.css"></script>
+<script async src="../search-index.js"></script>
+  </body>
+</html>
