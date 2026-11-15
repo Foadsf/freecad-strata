@@ -1,6 +1,12 @@
 = Changelog
 :description: What changed in each Strata release.
 
+== 0.3.1 (2026-11-15)
+
+Fixed::
+* btn:[Show in 3D] opened an empty comparison document when anything referred to the part, such as a TechDraw view or a spreadsheet expression (https://github.com/Foadsf/freecad-strata/issues/1[#1]).
+* When neither state has solid geometry, btn:[Show in 3D] says so instead of opening an empty document.
+
 == 0.3.0 (2026-10-13)
 
 Onshape's PDM and release tutorials, replicated in Strata; see xref:tutorials/coming-from-onshape.adoc[Coming from Onshape].
