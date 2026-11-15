@@ -223,6 +223,28 @@ def main():
         step_shape = Part.read(os.path.join(out_dir, "BRK-100_A.step"))
         check(abs(step_shape.Volume - 300) < 1e-3, "exported STEP has the released geometry (volume %.3f)"
               % step_shape.Volume)
+        check(not App.listDocuments(), "export leaves no document open: %s" % list(App.listDocuments()))
+        close_all()
+
+        # a part that an assembly opened only partly: FreeCAD skips saving such a document with just a log line
+        part = App.openDocument(part_path)
+        part.addObject("Spreadsheet::Sheet", "Sheet")  # the assembly's link does not need it: partial load
+        part.recompute()
+        part.save()
+        close_all()
+        fc.set_document_properties(p, {"Gearbox.FCStd": {"Description": "Gearbox"},
+                                       "Parts/Bracket.FCStd": {"Material": "S355"}})
+        check(not App.listDocuments(), "writing properties leaves no document open: %s" % list(App.listDocuments()))
+        check(p.document_properties("Parts/Bracket.FCStd").get("Material") == "S355",
+              "a part written after its assembly gets its properties")
+        asm = App.openDocument(asm_path, True)
+        partial = App.getDocument("Bracket")
+        lines.append("INFO Bracket partly loaded with the assembly: %s" % partial.Partial)
+        fc.set_document_properties(p, {"Parts/Bracket.FCStd": {"Material": ""}})
+        check("Material" not in p.document_properties("Parts/Bracket.FCStd"),
+              "a partly loaded part still takes its properties")
+        check(not App.getDocument("Bracket").Partial and asm.Name in App.listDocuments(),
+              "the part is now fully loaded and the assembly stays open")
         close_all()
         lines.append("ALL PASSED")
         return 0

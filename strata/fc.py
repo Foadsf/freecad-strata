@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import contextlib
 import os
 
 import FreeCAD as App
@@ -119,6 +120,24 @@ def open_preview(project: Project, rev: str, rel: str, label: str):
     return doc
 
 
+@contextlib.contextmanager
+def _open_hidden(path: str):
+    """Open a document without a window; on exit close it and every document its opening pulled in.
+
+    Opening an assembly loads its linked parts too, often only partly. Left open, such a part looks like a
+    document the user has open, and FreeCAD refuses to save a partly loaded document (it only logs), so a
+    later write to it would be lost. Documents that were open before are left alone."""
+    before = set(App.listDocuments())
+    doc = App.openDocument(path, True)
+    name = doc.Name
+    try:
+        yield doc
+    finally:
+        for n in [name] + sorted(set(App.listDocuments()) - before - {name}):
+            if n not in before and n in App.listDocuments():
+                App.closeDocument(n)
+
+
 _overlays: set = set()  # names of comparison documents created by compare_overlay
 
 
@@ -180,12 +199,9 @@ def compare_overlay(project: Project, rev_a: str, rev_b: str, rel: str, label_a:
         if not os.path.isfile(path):
             shapes.append(None)
             continue
-        d = App.openDocument(path, True)  # hidden
-        try:
+        with _open_hidden(path) as d:
             d.recompute()
             shapes.append(_visible_solids(d))
-        finally:
-            App.closeDocument(d.Name)
     stem = os.path.splitext(os.path.basename(rel))[0]
     if shapes == [None, None]:
         raise StrataError("Neither %s nor %s of %s shows any solid geometry to overlay." % (label_a, label_b, stem))
@@ -229,6 +245,24 @@ def set_document_properties(project: Project, values: dict) -> str | None:
     """values: {doc: {'Part number': ..., 'Description': ..., 'Company': ..., custom: ...}}.
     Writes them into the documents (opening closed ones hidden), saves, and records ONE history entry.
     Custom properties go to the document's Meta map; an empty value removes a custom property."""
+    def write(doc, props):
+        if getattr(doc, "Partial", False):
+            raise StrataError("%s is only partly loaded, so FreeCAD cannot save it." % doc.Label)
+        meta = dict(doc.Meta)
+        for name, value in props.items():
+            value = (value or "").strip()
+            if name in PROPERTY_FIELDS:
+                setattr(doc, PROPERTY_FIELDS[name], value)
+            elif value:
+                meta[name] = value
+            else:
+                meta.pop(name, None)
+        doc.Meta = meta
+        doc.save()
+        # a save from Python does not clear the window's "modified" mark
+        if Gui is not None and Gui.getDocument(doc.Name) is not None:
+            Gui.getDocument(doc.Name).Modified = False
+
     changed = []
     _suspended[0] += 1
     try:
@@ -236,28 +270,16 @@ def set_document_properties(project: Project, values: dict) -> str | None:
             path = project.abspath(rel)
             doc = next((d for d in App.listDocuments().values()
                         if os.path.normcase(getattr(d, "FileName", "")) == os.path.normcase(path)), None)
-            opened = doc is None
-            if opened:
+            if doc is not None and getattr(doc, "Partial", False):
+                # loaded only as far as an open assembly needs it; FreeCAD would skip its save with nothing
+                # but a log line. Opening it again loads it fully, and it stays open as it was.
                 doc = App.openDocument(path, True)
-            try:
-                meta = dict(doc.Meta)
-                for name, value in props.items():
-                    value = (value or "").strip()
-                    if name in PROPERTY_FIELDS:
-                        setattr(doc, PROPERTY_FIELDS[name], value)
-                    elif value:
-                        meta[name] = value
-                    else:
-                        meta.pop(name, None)
-                doc.Meta = meta
-                doc.save()
-                # a save from Python does not clear the window's "modified" mark
-                if Gui is not None and Gui.getDocument(doc.Name) is not None:
-                    Gui.getDocument(doc.Name).Modified = False
-                changed.append(rel)
-            finally:
-                if opened:
-                    App.closeDocument(doc.Name)
+            if doc is None:
+                with _open_hidden(path) as doc:
+                    write(doc, props)
+            else:
+                write(doc, props)
+            changed.append(rel)
     finally:
         _suspended[0] -= 1
     if not changed:
@@ -281,8 +303,7 @@ def export_revision(project: Project, rev: str, rel: str, folder: str, basename:
         fcstd = os.path.join(folder, basename + ".FCStd")
         shutil.copyfile(src, fcstd)
         out.append(fcstd)
-        doc = App.openDocument(src, True)
-        try:
+        with _open_hidden(src) as doc:
             doc.recompute()
             solids = [o for o, _ in _shown_objects(doc)]
             if solids:
@@ -290,8 +311,6 @@ def export_revision(project: Project, rev: str, rel: str, folder: str, basename:
                 step = os.path.join(folder, basename + ".step")
                 Import.export(solids, step)
                 out.append(step)
-        finally:
-            App.closeDocument(doc.Name)
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
     return out
