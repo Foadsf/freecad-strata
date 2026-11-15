@@ -6,6 +6,7 @@
 Fixed::
 * btn:[Show in 3D] opened an empty comparison document when anything referred to the part, such as a TechDraw view or a spreadsheet expression (https://github.com/Foadsf/freecad-strata/issues/1[#1]).
 * When neither state has solid geometry, btn:[Show in 3D] says so instead of opening an empty document.
+* btn:[Export...] of a released revision left the part out of the `.step` file for the same reason.
 
 == 0.3.0 (2026-10-13)
 

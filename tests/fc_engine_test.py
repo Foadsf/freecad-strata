@@ -171,6 +171,7 @@ def main():
         d.recompute()
         shown = fc._visible_solids(d)
         check(shown is not None and abs(shown.Volume - 500) < 1e-6, "a Body a spreadsheet reads stays shown")
+        check([o.Name for o, _ in fc._shown_objects(d)] == ["Body"], "STEP export would write the referenced Body")
         close_all()
 
         # what counts as shown: a boolean's visible operands are not added again; a plain folder hides nothing

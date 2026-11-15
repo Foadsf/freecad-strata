@@ -130,8 +130,8 @@ def is_preview(doc) -> bool:
     return (os.sep + ".strata" + os.sep + "previews" + os.sep) in fn
 
 
-def _visible_solids(doc):
-    """What the document shows: its visible solids, each counted once.
+def _shown_objects(doc) -> list:
+    """The objects whose solids the document shows, each solid counted once.
 
     An object is left out when it sits inside a shape-bearing group (a feature in its Body, a Body in an
     App::Part, a link in an assembly), because the group's shape already contains it, or when another
@@ -159,7 +159,13 @@ def _visible_solids(doc):
         found.append((o, s))
     names = {o.Name for o, _ in found}
     inputs = {d.Name for o, _ in found for d in o.OutListRecursive if d.Name in names and d is not o}
-    shapes = [s.copy() for o, s in found if o.Name not in inputs]
+    return [(o, s) for o, s in found if o.Name not in inputs]
+
+
+def _visible_solids(doc):
+    """What the document shows, as one compound of its solids, or None."""
+    import Part
+    shapes = [s.copy() for _, s in _shown_objects(doc)]
     return Part.makeCompound(shapes) if shapes else None
 
 
@@ -278,8 +284,7 @@ def export_revision(project: Project, rev: str, rel: str, folder: str, basename:
         doc = App.openDocument(src, True)
         try:
             doc.recompute()
-            solids = [o for o in doc.Objects if not o.InList and hasattr(o, "Shape")
-                      and getattr(o, "Visibility", True) and not o.Shape.isNull() and o.Shape.Solids]
+            solids = [o for o, _ in _shown_objects(doc)]
             if solids:
                 import Import
                 step = os.path.join(folder, basename + ".step")
