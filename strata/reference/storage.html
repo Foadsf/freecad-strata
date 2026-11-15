@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>How history is stored :: Strata for FreeCAD</title>
+    <link rel="canonical" href="https://foadsf.github.io/freecad-strata/strata/reference/storage.html">
+    <link rel="prev" href="embedding.html">
+    <link rel="next" href="../faq.html">
+    <meta name="description" content="The .strata folder, how .FCStd archives are split into text and binary entries, how documents are rebuilt, and why history does not live inside the files.">
+    <meta name="generator" content="Antora 3.1.10">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+    <link rel="stylesheet" href="../../_/css/site.css">
+    <link rel="stylesheet" href="../../_/css/strata.css">
+    <link rel="icon" href="../../_/img/strata.svg" type="image/svg+xml">
+    <meta name="theme-color" content="#0F1B2D">
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <a class="navbar-item strata-brand" href="https://foadsf.github.io/freecad-strata">
+        <img src="../../_/img/strata.svg" alt="" width="28" height="28">
+        <span class="strata-name">Strata</span>
+        <span class="strata-tag">for FreeCAD</span>
+      </a>
+      <div class="navbar-item search hide-for-print">
+        <div id="search-field" class="field">
+          <input id="search-input" type="text" placeholder="Search the docs">
+        </div>
+      </div>
+      <button class="navbar-burger" aria-controls="topbar-nav" aria-expanded="false" aria-label="Toggle main menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+    <div id="topbar-nav" class="navbar-menu">
+      <div class="navbar-end">
+        <a class="navbar-item" href="../install.html">Install</a>
+        <a class="navbar-item" href="../tutorials/index.html">Tutorials</a>
+        <a class="navbar-item" href="../shortcuts.html">Shortcuts</a>
+        <a class="navbar-item" href="python-api.html">Python API</a>
+        <div class="navbar-item">
+          <span class="control">
+            <a class="button strata-gh" href="">
+              <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+              GitHub
+            </a>
+          </span>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="body">
+<div class="nav-container" data-component="strata" data-version="">
+  <aside class="nav">
+    <div class="panels">
+<div class="nav-panel-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <button class="nav-menu-toggle" aria-label="Toggle expand/collapse all" style="display: none"></button>
+    <h3 class="title"><a href="../index.html">Strata</a></h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../index.html">Welcome</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Getting started</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../install.html">Installation</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../quickstart.html">Quick start in five minutes</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../concepts.html">Key concepts</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Using Strata</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../interface.html">The interface</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../shortcuts.html">Keyboard shortcuts</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../settings.html">Settings and preferences</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Tutorials</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../tutorials/index.html">Overview</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../tutorials/coming-from-onshape.html">Coming from Onshape</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../tutorials/go-back-in-time.html">Go back in time</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../tutorials/workspaces.html">Explore an alternative</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../tutorials/merging.html">Merge workspaces</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../tutorials/compare.html">Compare two designs</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../tutorials/assemblies.html">Assemblies and linked parts</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../tutorials/properties.html">Part numbers and properties</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../tutorials/releases.html">Release a design</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../tutorials/revision-history.html">Revision history and obsolete revisions</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../tutorials/team.html">Work as a team</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../tutorials/scripting.html">Automate with Python</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Reference</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="python-api.html">Python API</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="embedding.html">Embedding Strata in an add-on</a>
+  </li>
+  <li class="nav-item is-current-page" data-depth="1">
+    <a class="nav-link" href="storage.html">How history is stored</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Help</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../faq.html">FAQ and troubleshooting</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../contributing.html">Contributing and testing</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../changelog.html">Changelog</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+<div class="nav-panel-explore" data-panel="explore">
+  <div class="context">
+    <span class="title">Strata</span>
+    <span class="version"></span>
+  </div>
+  <ul class="components">
+    <li class="component is-current">
+      <div class="title"><a href="../index.html">Strata</a></div>
+    </li>
+  </ul>
+</div>
+    </div>
+  </aside>
+</div>
+<main class="article">
+<div class="toolbar" role="navigation">
+<button class="nav-toggle"></button>
+  <a href="../index.html" class="home-link"></a>
+<nav class="breadcrumbs" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="../index.html">Strata</a></li>
+    <li>Reference</li>
+    <li><a href="storage.html">How history is stored</a></li>
+  </ul>
+</nav>
+<div class="edit-this-page"><a href="https://github.com/Foadsf/freecad-strata/edit/main/docs/modules/ROOT/pages/reference/storage.adoc">Edit this Page</a></div>
+</div>
+  <div class="content">
+<aside class="toc sidebar" data-title="Contents" data-levels="2">
+  <div class="toc-menu"></div>
+</aside>
+<article class="doc">
+<h1 class="page">How history is stored</h1>
+<div class="sect1">
+<h2 id="why-not-inside-the-fcstd-file"><a class="anchor" href="#why-not-inside-the-fcstd-file"></a>Why not inside the .FCStd file?</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The original proposal suggested a Git repository <strong>inside</strong> each <code>.FCStd</code> archive.
+On FreeCAD 1.1.4 that cannot work: FreeCAD writes the whole archive anew on every save and silently drops entries it does not know.
+A repository placed inside the file would be erased by the next save.
+History therefore lives beside the documents, in the project folder&#8217;s hidden <code>.strata</code> folder.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="the-strata-folder"><a class="anchor" href="#the-strata-folder"></a>The .strata folder</h2>
+<div class="sectionbody">
+<div class="listingblock">
+<div class="content">
+<pre>Gearbox/
+├── Gearbox.FCStd
+├── Parts/...
+└── .strata/                 hidden; do not edit
+    ├── repo.git/            the history: a bare Git repository
+    ├── blobs/               binary entries, this computer only
+    ├── previews/            read-only copies opened with View (safe to delete)
+    ├── trash/               documents removed by a restore or switch
+    ├── settings.json        project settings
+    └── README.txt</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="what-is-recorded"><a class="anchor" href="#what-is-recorded"></a>What is recorded</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>An <code>.FCStd</code> file is a zip archive. For each document Strata stores its entries under the document&#8217;s path:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Parts/Bracket.FCStd/Document.xml          the model: objects, parameters, expressions
+Parts/Bracket.FCStd/GuiDocument.xml       visibility, colours, camera
+Parts/Bracket.FCStd/Pad.Shape.brp         geometry as OpenCASCADE BREP text
+Parts/Bracket.FCStd/Pad.Shape.Map.txt     topological naming element maps
+Parts/Bracket.FCStd/.strata.json          manifest: entry order, binary entries and their hashes</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>An entry is <strong>text</strong> if it contains no NUL byte and is valid UTF-8. Text entries go into Git. Binary entries go to <code>.strata/blobs</code>, a content-addressed store, unless <strong>Also share binary attachments</strong> is on.
+Because the BREP geometry is text by default, imported, non-parametric solids such as STEP imports are restored exactly, without a recompute.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="rebuilding-a-document"><a class="anchor" href="#rebuilding-a-document"></a>Rebuilding a document</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To restore or view a document, Strata writes a new archive from the recorded entries in their original order, with <code>Document.xml</code> first.
+Each binary entry comes from the local blob store, or, if it is not there (for example, a colleague&#8217;s thumbnail), from the same entry of the file currently on disk.
+Files are written to a temporary name and then renamed, so a document is never half-written.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="the-plain-language-descriptions"><a class="anchor" href="#the-plain-language-descriptions"></a>The plain-language descriptions</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>History titles and Compare come from <code>strata.docdiff</code>, which reads <code>Document.xml</code> and <code>GuiDocument.xml</code> and compares objects and properties:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>values are shown with units (<code>Length 10 mm → 12 mm</code>, angles in degrees, placements as position and angle);</p>
+</li>
+<li>
+<p>sketch constraints are compared one by one, so a dimension change is reported with its old and new value;</p>
+</li>
+<li>
+<p>external links are compared by target document and object, not by their save time stamp;</p>
+</li>
+<li>
+<p>FreeCAD bookkeeping is left out: origin features, attachment internals, placements that follow an attachment, values equal at display precision;</p>
+</li>
+<li>
+<p>when a feature is added, the resulting change of its body&#8217;s feature list is not repeated in the title.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="performance"><a class="anchor" href="#performance"></a>Performance</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Writing objects and references and reading history are done in Python, without starting Git. Starting a program costs about 0.1 s on a typical Windows laptop, so this keeps saves fast.
+Git itself is only started to create projects, to fetch and push, and to read packed objects received from colleagues.
+Recording a save of the test parts took about 0.1 s.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="using-git-directly"><a class="anchor" href="#using-git-directly"></a>Using Git directly</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><code>.strata/repo.git</code> is an ordinary bare repository, so read-only Git tools work, for example <code>git --git-dir .strata/repo.git log --oneline</code>.
+Do not commit, rebase or reset in it by hand: Strata expects to be the only writer.
+If the project folder is itself inside another Git repository, add <code>.strata/</code> to that repository&#8217;s <code>.gitignore</code>.</p>
+</div>
+</div>
+</div>
+<nav class="pagination">
+  <span class="prev"><a href="embedding.html">Embedding Strata in an add-on</a></span>
+  <span class="next"><a href="../faq.html">FAQ and troubleshooting</a></span>
+</nav>
+</article>
+  </div>
+</main>
+</div>
+<footer class="footer strata-footer">
+  <div class="strata-footer-inner">
+    <div class="strata-footer-brand">
+      <img src="../../_/img/strata.svg" alt="" width="24" height="24">
+      <span>Strata for FreeCAD</span>
+    </div>
+    <p>Versions, workspaces, history and releases for FreeCAD. Free software under the
+      <a href="/blob/main/LICENSE">LGPL-2.1-or-later</a>.</p>
+    <p>
+      <a href="">Source code</a> ·
+      <a href="/issues">Report an issue</a> ·
+      <a href="https://forum.freecad.org/viewtopic.php?t=89249">Forum discussion</a> ·
+      <a href="https://www.freecad.org">FreeCAD</a>
+    </p>
+  </div>
+</footer>
+<script id="site-script" src="../../_/js/site.js" data-ui-root-path="../../_"></script>
+<script async src="../../_/js/vendor/highlight.js"></script>
+<script src="../../_/js/vendor/lunr.js"></script>
+<script src="../../_/js/search-ui.js" id="search-ui-script" data-site-root-path="../.." data-snippet-length="100" data-stylesheet="../../_/css/search.css"></script>
+<script async src="../../search-index.js"></script>
+  </body>
+</html>
