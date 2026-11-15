@@ -7,5 +7,5 @@ nav:
 asciidoc:
   attributes:
     product: Strata
-    strata-version: '0.3.0'
+    strata-version: '0.3.1'
     freecad-min: '1.0'

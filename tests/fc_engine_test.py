@@ -150,6 +150,47 @@ def main():
         check(len(cmp.Objects) == 2, "overlay document has before and after")
         close_all()
 
+        # neither side has geometry: an error, not an empty comparison document
+        try:
+            fc.compare_overlay(p, v1.sha, p.head(), "Parts/Missing.FCStd", "V1", "Thin wall")
+            check(False, "overlay of a document with no geometry on either side raises")
+        except fc.StrataError as exc:
+            check("Neither V1 nor Thin wall" in str(exc), "no geometry on either side is reported: %s" % exc)
+        check(not App.listDocuments(), "no empty comparison document is left open")
+
+        # issue #1: a reference into the Body (spreadsheet expression, TechDraw view) emptied the overlay
+        d = App.newDocument("Referenced")
+        body = d.addObject("PartDesign::Body", "Body")
+        sk = body.newObject("Sketcher::SketchObject", "Sketch")
+        pts = [App.Vector(0, 0, 0), App.Vector(10, 0, 0), App.Vector(10, 10, 0), App.Vector(0, 10, 0)]
+        for i in range(4):
+            sk.addGeometry(Part.LineSegment(pts[i], pts[(i + 1) % 4]))
+        pad = body.newObject("PartDesign::Pad", "Pad")
+        pad.Profile, pad.Length = sk, 5
+        d.addObject("Spreadsheet::Sheet", "Sheet").set("A1", "=Body.Shape.Volume")
+        d.recompute()
+        shown = fc._visible_solids(d)
+        check(shown is not None and abs(shown.Volume - 500) < 1e-6, "a Body a spreadsheet reads stays shown")
+        check([o.Name for o, _ in fc._shown_objects(d)] == ["Body"], "STEP export would write the referenced Body")
+        close_all()
+
+        # what counts as shown: a boolean's visible operands are not added again; a plain folder hides nothing
+        d = App.newDocument("Shown")
+        box = d.addObject("Part::Box", "Box")
+        cyl = d.addObject("Part::Cylinder", "Cyl")
+        cyl.Radius = 2
+        cut = d.addObject("Part::Cut", "Cut")
+        cut.Base, cut.Tool = box, cyl
+        d.recompute()
+        shown = fc._visible_solids(d)
+        check(shown is not None and abs(shown.Volume - cut.Shape.Volume) < 1e-6,
+              "a boolean counts once although its operands are visible")
+        d.addObject("App::DocumentObjectGroup", "Folder").addObject(cut)
+        d.recompute()
+        shown = fc._visible_solids(d)
+        check(shown is not None and abs(shown.Volume - cut.Shape.Volume) < 1e-6, "a solid in a folder stays shown")
+        close_all()
+
         # merge Thin wall into Main
         p.switch_workspace("main")
         plan = p.merge_plan("Thin_wall")

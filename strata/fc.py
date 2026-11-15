@@ -130,23 +130,42 @@ def is_preview(doc) -> bool:
     return (os.sep + ".strata" + os.sep + "previews" + os.sep) in fn
 
 
-def _visible_solids(doc):
+def _shown_objects(doc) -> list:
+    """The objects whose solids the document shows, each solid counted once.
+
+    An object is left out when it sits inside a shape-bearing group (a feature in its Body, a Body in an
+    App::Part, a link in an assembly), because the group's shape already contains it, or when another
+    collected solid is built from it (a Cut's operands). A mere reference does not hide it: a TechDraw view,
+    a spreadsheet expression or an assembly joint pointing at a Body leaves the Body in the overlay.
+    """
     import Part
-    shapes = []
+    found = []
     for o in doc.Objects:
-        if o.InList or not hasattr(o, "Shape"):
-            continue
         if o.TypeId.startswith("App::") and o.TypeId not in ("App::Part", "App::Link"):
             continue
         if not getattr(o, "Visibility", True):
             continue
         try:
-            s = o.Shape
+            if o.getParentGeoFeatureGroup() is not None:
+                continue
+        except Exception:
+            pass
+        try:
+            s = o.Shape if hasattr(o, "Shape") else Part.getShape(o)
         except Exception:
             continue
         if s is None or s.isNull() or not s.Solids:
             continue
-        shapes.append(s.copy())
+        found.append((o, s))
+    names = {o.Name for o, _ in found}
+    inputs = {d.Name for o, _ in found for d in o.OutListRecursive if d.Name in names and d is not o}
+    return [(o, s) for o, s in found if o.Name not in inputs]
+
+
+def _visible_solids(doc):
+    """What the document shows, as one compound of its solids, or None."""
+    import Part
+    shapes = [s.copy() for _, s in _shown_objects(doc)]
     return Part.makeCompound(shapes) if shapes else None
 
 
@@ -168,6 +187,8 @@ def compare_overlay(project: Project, rev_a: str, rev_b: str, rel: str, label_a:
         finally:
             App.closeDocument(d.Name)
     stem = os.path.splitext(os.path.basename(rel))[0]
+    if shapes == [None, None]:
+        raise StrataError("Neither %s nor %s of %s shows any solid geometry to overlay." % (label_a, label_b, stem))
     cmp = App.newDocument("Compare")
     _overlays.add(cmp.Name)
     cmp.Label = "Compare %s: %s → %s" % (stem, label_a, label_b)
@@ -263,8 +284,7 @@ def export_revision(project: Project, rev: str, rel: str, folder: str, basename:
         doc = App.openDocument(src, True)
         try:
             doc.recompute()
-            solids = [o for o in doc.Objects if not o.InList and hasattr(o, "Shape")
-                      and getattr(o, "Visibility", True) and not o.Shape.isNull() and o.Shape.Solids]
+            solids = [o for o, _ in _shown_objects(doc)]
             if solids:
                 import Import
                 step = os.path.join(folder, basename + ".step")
