@@ -1,6 +1,12 @@
 = Changelog
 :description: What changed in each Strata release.
 
+== 0.3.2 (2026-11-15)
+
+Fixed::
+* *Properties...* could lose an edit without a word: when an assembly had loaded a part only partly, FreeCAD skipped saving the part, yet Strata recorded the change. The part is now loaded fully before writing.
+* Writing properties, comparing in 3D and exporting a revision no longer leave the linked documents they pulled in open in the background.
+
 == 0.3.1 (2026-11-15)
 
 Fixed::
